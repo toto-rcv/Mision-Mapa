@@ -1,0 +1,31 @@
+#map {
+    height: 80vh;
+    width: 100hw;
+}
+
+.leaflet-control-scale-line {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    border-radius: 100px;
+    border: 2px solid #777;
+    margin-left: 30%;
+    width: 100px;
+    /* Fija el ancho */
+    min-width: 100px; 
+    /* Evita que se reduzca */
+    max-width: 100px
+    /* Evita que se amplíe */
+    
+}
+
+h1 {
+    color: darkblue;
+    font-family: Verdana;
+    text-align: center;
+}
+
+select {
+    margin-bottom: 20px;
+    margin-left: 20px;
+}
