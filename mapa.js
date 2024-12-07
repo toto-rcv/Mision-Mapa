@@ -39,11 +39,9 @@ function addMarkersFromSelect() {
             const coords = value.split(",").map(parseFloat);
             const marker = L.circleMarker(L.latLng(coords[0], coords[1]), {
                 radius: 6,
-                fillColor: "#ff0000",
-                color: "blue",
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.6,
+                
+                color: "transparent",
+              
             }).addTo(map);
             markers.push(marker); // Guardar cada marcador en el array
         }
@@ -54,5 +52,28 @@ function addMarkersFromSelect() {
 
 // Llamar a la función para mostrar todos los marcadores
 const markers = addMarkersFromSelect();
+
+//Creamos un marcador
+function agregarMarcadores() {
+    var select = document.getElementById("select-location");
+    for (var i = 0; i < select.options.length; i++) {
+        var option = select.options[i];
+        if (option.value !== "-1") { // Ignorar la opción de "Seleccione un lugar"
+            var coords = option.value.split(",");
+            var lat = parseFloat(coords[0]);
+            var lng = parseFloat(coords[1]);
+
+            // Agregar marcador al mapa
+            L.marker([lat, lng]).addTo(map).bindPopup(option.text);
+        }
+    }
+}
+
+// Llamar a la función para agregar todos los marcadores
+agregarMarcadores();
+
+// agregamos todos los marcadores del HTML
+
+
 
 
