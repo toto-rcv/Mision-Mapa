@@ -5,13 +5,13 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
-document.getElementById("select-location").addEventListener("change",function(e){
-    let coords= e.target.value.split(",");
+document.getElementById("select-location").addEventListener("change", function (e) {
+    let coords = e.target.value.split(",");
 
-    map.flyTo(coords,16);
+    map.flyTo(coords, 16);
 })
 // Agregar mapa base
-var carto_light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {attribution: '©OpenStreetMap, ©CartoDB',subdomains: 'abcd',maxZoom: 24});
+var carto_light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '©OpenStreetMap, ©CartoDB', subdomains: 'abcd', maxZoom: 24 });
 
 // Agregar plugin MiniMap
 var minimap = new L.Control.MiniMap(carto_light,
@@ -22,7 +22,7 @@ var minimap = new L.Control.MiniMap(carto_light,
     }).addTo(map);
 
 //agrega escala para el minMapa
-new L.control.scale({imperial: false}).addTo(map);
+new L.control.scale({ imperial: false }).addTo(map);
 
 
 //agregar coordenadas marcador
@@ -39,9 +39,9 @@ function addMarkersFromSelect() {
             const coords = value.split(",").map(parseFloat);
             const marker = L.circleMarker(L.latLng(coords[0], coords[1]), {
                 radius: 6,
-                
+
                 color: "transparent",
-              
+
             }).addTo(map);
             markers.push(marker); // Guardar cada marcador en el array
         }
@@ -74,6 +74,16 @@ agregarMarcadores();
 
 // agregamos todos los marcadores del HTML
 
+map.on('click', function (e) {
+    // Obtener latitud y longitud del punto clickeado
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
 
+    // Mostrar latitud y longitud en la consola
+    console.log("Latitud: " + lat + ", Longitud: " + lng);
 
-
+    // Opcional: mostrar un marcador con un popup
+    L.marker([lat, lng]).addTo(map)
+        .bindPopup("Latitud: " + lat.toFixed(4) + "<br>Longitud: " + lng.toFixed(4))
+        .openPopup();
+});

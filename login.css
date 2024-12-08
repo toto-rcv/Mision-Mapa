@@ -1,0 +1,142 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url(Islas-Malvinas.jpeg) no-repeat center center; /* Imagen centrada */
+    background-size: cover; /* La imagen ocupará todo el espacio disponible */
+    flex-direction: column;
+    padding: 20px; /* Asegura espacio en pantallas pequeñas */
+}
+
+.login {
+    background-color: transparent;
+    border: 2px solid rgba(255, 255, 255, .2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    color: white;
+    border-radius: 10px;
+    padding: 30px 20px;
+    width: 100%;
+    max-width: 400px; /* Limita el ancho máximo */
+    box-sizing: border-box; /* Ajusta el ancho incluyendo padding y borde */
+}
+
+h2 {
+    color: white;
+    margin-bottom: 5%;
+    text-align: center;
+}
+
+.input-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaciado entre los campos */
+}
+
+.input-field {
+    position: relative;
+}
+
+.input-field input {
+    width: 100%; /* Ocupa todo el ancho disponible */
+    height: 50px; /* Ajuste para pantallas pequeñas */
+    border-radius: 6px;
+    font-size: 16px;
+    padding: 0 15px;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    outline: none;
+}
+
+.input-field label {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 16px;
+    pointer-events: none;
+    transition: .3s;
+}
+
+input:focus ~ label,
+input:valid ~ label {
+    top: 0;
+    left: 15px;
+    font-size: 14px;
+    padding: 0 2px;
+    background: #898b76;
+    border-radius: 5px;
+}
+
+.login .remember-count {
+    display: flex;
+    justify-content: space-between; /* Asegura que estén separados */
+    align-items: center; /* Alinea verticalmente los elementos */
+    margin-top: 5%;
+    color: white;
+    width: 100%; /* Ocupa todo el ancho disponible del contenedor padre */
+    gap: 10px; /* Espaciado opcional */
+}
+
+.remember-count label {
+    font-size: 14px;
+}
+
+.remember-count a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn {
+    display: block; /* Asegura que el botón sea un bloque */
+    margin: 20px auto 0; /* Centra el botón horizontalmente */
+    padding: 10px 20px; /* Ajusta el tamaño del botón */
+    background-color: #898b76; /* Color de fondo del botón */
+    color: white; /* Color del texto */
+    border: none; /* Sin bordes */
+    border-radius: 6px; /* Bordes redondeados */
+    font-size: 16px; /* Tamaño del texto */
+    cursor: pointer; /* Cambia el cursor al pasar el mouse */
+    transition: background-color 0.3s; /* Animación suave */
+}
+
+.btn:hover {
+    background-color: #a1a391; /* Color al pasar el mouse */
+}
+
+/* Media queries para pantallas pequeñas */
+@media (min-width: 768px) {
+    .login {
+        padding: 40px;
+    }
+
+    .remember-count {
+        flex-direction: row; /* Cambia a filas en pantallas más grandes */
+        justify-content: space-between;
+    }
+
+    .remember-count a {
+        font-size: 16px;
+    }
+
+    .input-field input {
+        height: 60px; /* Incrementa el tamaño en pantallas grandes */
+        font-size: 18px;
+    }
+
+    .btn {
+        width: 100%; /* Hace que el botón ocupe todo el ancho en pantallas pequeñas */
+    }
+}
+
