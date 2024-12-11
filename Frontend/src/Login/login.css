@@ -10,7 +10,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url(Islas-Malvinas.jpeg) no-repeat center center; /* Imagen centrada */
+    background: url(/static/Img/Islas-Malvinas.jpeg) no-repeat center center; /* Imagen centrada */
     background-size: cover; /* La imagen ocupará todo el espacio disponible */
     flex-direction: column;
     padding: 20px; /* Asegura espacio en pantallas pequeñas */
@@ -112,7 +112,7 @@ input:valid ~ label {
 }
 
 .btn:hover {
-    background-color: #a1a391; /* Color al pasar el mouse */
+    background-color: #506fb7; /* Color al pasar el mouse */
 }
 
 /* Media queries para pantallas pequeñas */
