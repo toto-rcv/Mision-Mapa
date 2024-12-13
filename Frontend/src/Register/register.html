@@ -13,52 +13,55 @@
 
 <body>
     <div class="register">
+
         <h2>Registro de usuario</h2>
         <h4> Ingrese sus datos para crear una cuenta</h4>
-        <div class="input-column">
-            <br>
-            <div class="input-field">
-                <input type="text" required>
-                <label>Rango Militar</label>
-            </div>
-            <br>
-            <div class="input-field">
-                <input type="email" required>
-                <label>Correo Electronico</label>
-            </div>
-            <br>
-            <div class="input-row">
+        <form id="form">
+            <div class="input-column">
+                <br>
                 <div class="input-field">
-                    <input type="text" required>
-                    <label>Nombre</label>
+                    <input type="text" name="rango_militar" required>
+                    <label>Rango Militar</label>
                 </div>
+                <br>
                 <div class="input-field">
-                    <input type="text" required>
-                    <label>Apellidos</label>
+                    <input type="email" name="correo_electronico" required>
+                    <label>Correo Electronico</label>
+                </div>
+                <br>
+                <div class="input-row">
+                    <div class="input-field">
+                        <input type="text" name="nombre" required>
+                        <label>Nombre</label>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" name="apellidos" required>
+                        <label>Apellidos</label>
+                    </div>
+                </div>
+                <br>
+                <div class="input-field">
+                    <input type="text" name="dni" required>
+                    <label>Dni</label>
+                </div>
+                <br>
+                <div class="input-field">
+                    <input type="text" name="contrasena" required>
+                    <label>Contraseña</label>
                 </div>
             </div>
-            <br>
-            <div class="input-field">
-                <input type="text" required>
-                <label>Dni</label>
-            </div>
-            <br>
-            <div class="input-field">
-                <input type="text" required>
-                <label>Contraseña</label>
-            </div>
-        </div>
 
-        <div class="remember-count">
-           
-            <button type="submit" class="btn" onclick="window.location.href='/Index/index.html';" >Crear Cuenta</button>
-          
-        </div>
-        
-        
+            <div class="remember-count">
+
+                <button type="submit" class="btn" id="create-account-btn">Crear Cuenta</button>
+        </form>
     </div>
 
 
+    </div>
+
+
+    <script src="./register.js"></script>
 
 </body>
 
