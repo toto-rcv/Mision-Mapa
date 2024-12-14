@@ -1,5 +1,5 @@
 const { hashPassword, comparePassword } = require("../utils/password.util");
-const { generateToken } = require("../utils/jwt.util");
+const { generateAccessToken,generateRefreshToken } = require("../utils/jwt.util");
 const db = require("../models");
 const User = db.User;
 exports.register = async (req, res) => {
@@ -38,14 +38,20 @@ exports.register = async (req, res) => {
 };
 exports.login = async (req, res) => {
     const { email, password } = req.body;
-    try {
-        const user = await User.findOne({ where: { email } });
-        if (!user || !(await comparePassword(password, user.password))) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
-        const token = generateToken(user);
-        res.json({ message: "Login successful", token });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) return res.status(401).json({ message: "Credenciales Incorrectas" });
+
+    const isValidPassword = await comparePassword(password, user.password);
+    if (!isValidPassword) return res.status(401).json({ message: "Credenciales Incorrectas" });
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.json({
+        message: "Acceso exitoso",
+        accessToken,
+        refreshToken,
+    });
+
 };

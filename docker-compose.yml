@@ -17,10 +17,12 @@ services:
       - .env
     networks:
       - auth_network
+    depends_on:
+      - backend  
 
   backend:
     build: 
-      context: ./backend 
+      context: ./Backend 
       dockerfile: Dockerfile
     container_name: sara-backend
     expose:
@@ -30,7 +32,8 @@ services:
       - DB_USER=${MYSQL_USER}
       - DB_PASSWORD=${MYSQL_PASSWORD}
       - DB_NAME=${MYSQL_DATABASE}
-      - JWT_SECRET=${JWT_SECRET_KEY}
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
     volumes:
       - ./backend/src:/app/src
       - /app/node_modules

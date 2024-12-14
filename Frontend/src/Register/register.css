@@ -1,165 +1,337 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --primary-color: #ffffff;
+    --secondary-color: #f0f0f0;
+    --background-color: rgba(0, 0, 0, 0.75);
+    --text-color: #ffffff;
+    --input-background: rgba(255, 255, 255, 0.1);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --input-placeholder: #999;
+    --button-text: #000000;
+    --focus-color: #4d90fe;
+    --error-color: #ff4136;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: sans-serif;
 }
 
 body {
+    font-family: 'Inter', sans-serif;
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+        url('/static/Img/Islas-Malvinas.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url(/static/Img/Islas-Malvinas.jpeg) no-repeat center center; /* Imagen centrada */
-    background-size: cover; /* La imagen ocupará todo el espacio disponible */
-    flex-direction: column;
-    padding: 20px; /* Asegura espacio en pantallas pequeñas */
+    color: var(--text-color);
+    line-height: 1.5;
 }
 
-.register {
-    background-color: transparent;
-    border: 2px solid rgba(255, 255, 255, .2);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    color: white;
-    border-radius: 10px;
-    padding: 30px 20px;
+
+.container {
     width: 100%;
-    max-width: 500px; /* Limita el ancho máximo */
-    box-sizing: border-box; /* Ajusta el ancho incluyendo padding y borde */
+    max-width: 450px;
+    padding: 20px;
 }
 
-h2 {
-    color: white;
-    
+.form-card {
+    background-color: var(--background-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
     text-align: center;
+    margin-bottom: 30px;
 }
 
-h4{
-    color: white;
-    margin-top: 2%;
-    text-align: center;
-}
-
-.input-column {
+.icon-container {
+    width: 48px;
+    height: 48px;
+    background-color: var(--input-background);
+    border-radius: 50%;
     display: flex;
-    flex-direction: column;
-    gap: 15px; /* Espaciado entre los campos */
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
 }
 
-.input-field {
+.user-plus-icon {
+    color: var(--primary-color);
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+p {
+    font-size: 14px;
+    color: var(--secondary-color);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--secondary-color);
+}
+
+input,
+select {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--input-background);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    color: var(--text-color);
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input::placeholder {
+    color: var(--input-placeholder);
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--focus-color);
+    box-shadow: 0 0 0 2px rgba(77, 144, 254, 0.2);
+}
+
+input.invalid,
+select.invalid {
+    border-color: var(--error-color);
+}
+
+input.invalid:focus,
+select.invalid:focus {
+    box-shadow: 0 0 0 2px rgba(255, 65, 54, 0.2);
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+.password-input-wrapper {
     position: relative;
 }
 
-.input-field input {
-    width: 100%; /* Ocupa todo el ancho disponible */
-    height: 50px; /* Ajuste para pantallas pequeñas */
+.password-input-wrapper input {
+    padding-right: 40px;
+}
+
+.password-input-wrapper button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.password-input-wrapper button:hover {
+    opacity: 0.8;
+}
+
+.password-input-wrapper .eye-icon {
+    width: 20px;
+    height: 20px;
+    transition: opacity 0.3s ease;
+}
+
+.password-input-wrapper .eye-icon.hidden {
+    opacity: 0;
+    position: absolute;
+}
+
+.password-input-wrapper .eye-icon.visible {
+    opacity: 1;
+}
+
+.password-input-wrapper button[aria-label="Ocultar contraseña"] .eye-icon.hidden {
+    opacity: 1;
+    position: static;
+}
+
+.password-input-wrapper button[aria-label="Ocultar contraseña"] .eye-icon.visible {
+    opacity: 0;
+    position: absolute;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.password-input-wrapper button:active .eye-icon {
+    animation: spin 0.3s linear;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    border: none;
     border-radius: 6px;
     font-size: 16px;
-    padding: 0 15px;
-    border: 2px solid white;
-    background: transparent;
-    color: white;
-    outline: none;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background-color 0.2s, transform 0.1s;
 }
 
-.input-row {
-    display: flex; /* Coloca los elementos en fila */
-    gap: 20px; /* Espacio entre los elementos */
-    justify-content: space-between; /* Ajusta el espacio entre los elementos */
+.submit-btn:hover {
+    background-color: var(--secondary-color);
 }
 
-.input-row .input-field {
-    flex: 1; /* Los campos tendrán el mismo tamaño */
+.submit-btn:active {
+    transform: translateY(1px);
 }
 
-.input-row .input-field input {
-    width: 100%; /* Asegura que el input ocupe todo el espacio disponible */
+.invalid-feedback {
+    display: none;
+    color: var(--error-color);
+    font-size: 12px;
+    margin-top: 4px;
 }
 
-
-
-.input-field label {
-    position: absolute;
-    top: 50%;
-    left: 15px;
-    transform: translateY(-50%);
-    color: white;
-    font-size: 16px;
-    pointer-events: none;
-    transition: .3s;
+.invalid+.invalid-feedback {
+    display: block;
 }
 
-input:focus ~ label,
-input:valid ~ label {
-    top: 0;
-    left: 15px;
-    font-size: 14px;
-    padding: 0 2px;
-    background: #898b76;
-    border-radius: 5px;
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
-.login .remember-count {
-    display: flex;
-    justify-content: space-between; /* Asegura que estén separados */
-    align-items: center; /* Alinea verticalmente los elementos */
-    margin-top: 5%;
-    color: white;
-    width: 100%; /* Ocupa todo el ancho disponible del contenedor padre */
-    gap: 10px; /* Espaciado opcional */
+input[type="number"] {
+    -moz-appearance: textfield;
 }
 
-.remember-count label {
-    font-size: 14px;
-}
-
-.remember-count a {
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.btn {
-    display: block; /* Asegura que el botón sea un bloque */
-    margin: 20px auto 0; /* Centra el botón horizontalmente */
-    padding: 10px 20px; /* Ajusta el tamaño del botón */
-    background-color: #cbcbcb; /* Color de fondo del botón */
-    color: black; /* Color del texto */
-    border: none; /* Sin bordes */
-    border-radius: 6px; /* Bordes redondeados */
-    font-size: 16px; /* Tamaño del texto */
-    cursor: pointer; /* Cambia el cursor al pasar el mouse */
-    transition: background-color 0.3s; /* Animación suave */
-    height: 52px;
-}
-
-.btn:hover {
-    background-color: #506fb7; /* Color al pasar el mouse */
-}
-
-/* Media queries para pantallas pequeñas */
-@media (min-width: 768px) {
-    .login {
-        padding: 40px;
+@media (max-width: 480px) {
+    .container {
+        padding: 16px;
     }
 
-    .remember-count {
-        flex-direction: row; /* Cambia a filas en pantallas más grandes */
-        justify-content: space-between;
+    .form-card {
+        padding: 24px;
     }
 
-    .remember-count a {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    input,
+    select,
+    .submit-btn {
         font-size: 16px;
     }
+}
 
-    .input-field input {
-        height: 60px; /* Incrementa el tamaño en pantallas grandes */
-        font-size: 18px;
-    }
 
-    .btn {
-        width: 100%; /* Hace que el botón ocupe todo el ancho en pantallas pequeñas */
+
+
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
     }
 }
 
+
+
+.success-message {
+    background-color: var(--background-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.success-message .icon-container {
+    background-color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+.success-message .check-icon {
+    color: var(--primary-color);
+}
+
+.success-message h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.success-message p {
+    font-size: 14px;
+    color: var(--secondary-color);
+    margin-bottom: 0;
+}
