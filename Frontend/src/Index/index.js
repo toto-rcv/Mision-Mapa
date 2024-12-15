@@ -1,4 +1,4 @@
-let map = L.map("map").setView([-34.6195398, -58.3913895], 4)
+let map = L.map("map", { doubleClickZoom: false }).setView([-34.6195398, -58.3913895], 4)
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -79,11 +79,17 @@ map.on('click', function (e) {
     var lat = e.latlng.lat;
     var lng = e.latlng.lng;
 
+
+
     // Mostrar latitud y longitud en la consola
     console.log("Latitud: " + lat + ", Longitud: " + lng);
 
     // Opcional: mostrar un marcador con un popup
-    L.marker([lat, lng]).addTo(map)
+    const marker = L.marker([lat, lng]).addTo(map)
         .bindPopup("Latitud: " + lat.toFixed(4) + "<br>Longitud: " + lng.toFixed(4))
         .openPopup();
+
+    marker.on('dblclick', function () {
+        map.removeLayer(marker); // Elimina el marcador del mapa
+    });
 });
