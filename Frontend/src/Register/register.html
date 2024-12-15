@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,43 +15,25 @@
             <form id="registrationForm" class="form-card" action="/register" method="POST">
                 <input type="hidden" name="csrf_token" value="{{csrf_token}}">
                 <header class="form-header">
-                    <div class="icon-container" aria-hidden="true">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="user-plus-icon">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <line x1="19" y1="8" x2="19" y2="14"></line>
-                            <line x1="22" y1="11" x2="16" y2="11"></line>
-                        </svg>
-                    </div>
                     <h1>Crear Cuenta</h1>
                     <p>Ingrese sus datos para comenzar</p>
                 </header>
                 <div class="form-group">
                     <label for="email">Correo electrónico</label>
-                    <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required
-                        aria-required="true" autocomplete="email">
+                    <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required aria-required="true" autocomplete="email">
                     <div class="invalid-feedback">Por favor, ingrese un valor válido.</div>
                 </div>
                 <div class="form-group">
                     <label for="password">Contraseña</label>
                     <div class="password-input-wrapper">
-                        <input type="password" id="password" name="password" placeholder="••••••••" required
-                            aria-required="true" autocomplete="new-password" minlength="8">
+                        <input type="password" id="password" name="password" placeholder="••••••••" required aria-required="true" autocomplete="new-password" minlength="8">
                         <button type="button" id="togglePassword" aria-label="Mostrar contraseña">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="eye-icon visible">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon visible">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
                             </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="eye-icon hidden">
-                                <path
-                                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
-                                </path>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon hidden">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                                 <line x1="1" y1="1" x2="23" y2="23"></line>
                             </svg>
                         </button>
@@ -61,21 +43,14 @@
                 <div class="form-group">
                     <label for="confirmPassword">Confirmar Contraseña</label>
                     <div class="password-input-wrapper">
-                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••"
-                            required aria-required="true" autocomplete="new-password" minlength="8">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required aria-required="true" autocomplete="new-password" minlength="8">
                         <button type="button" id="toggleConfirmPassword" aria-label="Mostrar contraseña">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="eye-icon visible">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon visible">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
                             </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="eye-icon hidden">
-                                <path
-                                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
-                                </path>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon hidden">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                                 <line x1="1" y1="1" x2="23" y2="23"></line>
                             </svg>
                         </button>
@@ -85,16 +60,12 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="name">Nombre</label>
-                        <input type="text" id="name" name="name" placeholder="Juan" required aria-required="true"
-                            autocomplete="given-name" pattern="^[A-Za-zÀ-ÿ\s]+$"
-                            title="Solo se permiten letras y espacios">
+                        <input type="text" id="name" name="name" placeholder="Juan" required aria-required="true" autocomplete="given-name" pattern="^[A-Za-zÀ-ÿ\s]+$" title="Solo se permiten letras y espacios">
                         <div class="invalid-feedback">Solo puede contener letras y espacios.</div>
                     </div>
                     <div class="form-group">
                         <label for="lastname">Apellidos</label>
-                        <input type="text" id="lastname" name="lastname" placeholder="Pérez" required
-                            aria-required="true" autocomplete="family-name" pattern="^[A-Za-zÀ-ÿ\s]+$"
-                            title="Solo se permiten letras y espacios">
+                        <input type="text" id="lastname" name="lastname" placeholder="Pérez" required aria-required="true" autocomplete="family-name" pattern="^[A-Za-zÀ-ÿ\s]+$" title="Solo se permiten letras y espacios">
                         <div class="invalid-feedback">Solo puede contener letras y espacios</div>
                     </div>
                 </div>
@@ -106,33 +77,36 @@
                 </div>
                 <div class="form-group">
                     <label for="dni">DNI</label>
-                    <input type="text" id="dni" name="dni" placeholder="44.000.000" required aria-required="true"
-                        inputmode="numeric">
+                    <input type="text" id="dni" name="dni" placeholder="44.000.000" required aria-required="true" inputmode="numeric">
                     <div class="invalid-feedback">Por favor, ingrese un DNI válido.</div>
                 </div>
-                <button type="submit" class="submit-btn">Crear Cuenta</button>
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">Crear Cuenta</span>
+                    <span class="spinner"></span>
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </button>
+                <div class="separator">
+                    <span>o</span>
+                </div>
+                <div class="signup-link">
+                    <p>¿Ya estás registrado? <a href="/login" class="register-link">Accede a tu cuenta</a></p>
+                </div>
             </form>
-
             <div id="successMessage" class="success-message" style="display: none;">
                 <div class="icon-container" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="check-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                 </div>
                 <h2>Registro Exitoso</h2>
-                <p>Su solicitud de registro fue recibida y está pendiente de aprobación por un administrador. Le
-                    notificaremos por correo electrónico cuando su cuenta este habilitada.</p>
+                <p>Su solicitud de registro ha sido recibida y está pendiente de aprobación por un administrador. Le notificaremos por correo electrónico cuando su cuenta esté activa.</p>
             </div>
-
-
         </main>
     </div>
     <noscript>
-        <p>Esta página requiere JavaScript para funcionar correctamente. Por favor, habilite JavaScript en su navegador.
-        </p>
+        <p>Esta página requiere JavaScript para funcionar correctamente. Por favor, habilite JavaScript en su navegador.</p>
     </noscript>
 </body>
-
 </html>

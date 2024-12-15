@@ -52,11 +52,5 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error('Error al conectar con el servidor:', err);
                 alert('Error al conectar con el servidor.');
             }
-
-
-
         })
-
-    
-
 });

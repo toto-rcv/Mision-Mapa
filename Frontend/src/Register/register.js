@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Seleccionar el botón y agregar un event listener
     const createAccountform = document.getElementById('registrationForm');
-
+    const successMessage = document.getElementById('successMessage');
+    const submitButton = registrationForm.querySelector('.submit-btn');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirmPassword');
     const togglePasswordButton = document.getElementById('togglePassword');
@@ -86,6 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
     createAccountform.addEventListener('submit', async (event) => {
 
         event.preventDefault();
+
+        submitButton.classList.add('loading');
+
         // Crear un objeto con los datos
         const formData = {
             email: document.getElementById("email").value,
@@ -95,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             militaryRank: document.getElementById("rankMilitar").value,
             dni: document.getElementById("dni").value,
         };
-        console.log(formData)
+
         try {
             // Enviar los datos al backend con fetch
             const response = await fetch('http://localhost:8070/api/auth/register', {
@@ -109,8 +113,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const result = await response.json();
 
-                registrationForm.style.display = 'none';
-                successMessage.style.display = 'block';
+                submitButton.classList.remove('loading');
+                submitButton.classList.add('success');
+          
+                // Wait for 1 second before transitioning to success message
+                setTimeout(() => {
+                    // Animate form out
+                    registrationForm.classList.add('fade-out');
+              
+                    setTimeout(() => {
+                        registrationForm.style.display = 'none';
+                        successMessage.style.display = 'block';
+                    
+                        // Trigger reflow to ensure the transition works
+                        void successMessage.offsetWidth;
+                    
+                        // Animate success message in
+                        successMessage.classList.add('fade-in');
+                    }, 500); // Wait for the form fade-out animation to complete
+                }, 1000);
 
             } else {
                 const error = await response.json();

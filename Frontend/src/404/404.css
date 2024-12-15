@@ -1,0 +1,181 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+    --primary-color: #ffffff;
+    --secondary-color: #f0f0f0;
+    --background-color: rgba(0, 0, 0, 0.75);
+    --text-color: #ffffff;
+    --link-color: #64D2FF;
+    --error-color: #ff4136;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/61f5eb2611cb4.jpg-k3DvIxdTNSQsRxPl8pQPFXPtkwa035.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+.error-card {
+    background-color: var(--background-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.error-content {
+    flex: 1;
+    min-width: 300px;
+}
+
+h1 {
+    font-size: 72px;
+    font-weight: 700;
+    color: var(--error-color);
+    margin-bottom: 20px;
+    letter-spacing: -2px;
+}
+
+.error-message {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+}
+
+.error-description {
+    font-size: 16px;
+    color: var(--secondary-color);
+    margin-bottom: 32px;
+    line-height: 1.5;
+}
+
+.home-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: var(--link-color);
+    color: var(--background-color);
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.home-button:hover {
+    background-color: #4FA8FF;
+}
+
+.home-button:active {
+    transform: translateY(1px);
+}
+
+.error-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.plane-image {
+    max-width: 80%;
+    height: auto;
+    transform: rotate(-5deg) translateY(0);
+    animation: float 6s ease-in-out infinite;
+    filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.3));
+    transition: filter 0.3s ease;
+}
+
+.plane-image:hover {
+    filter: drop-shadow(0 15px 15px rgba(0, 0, 0, 0.4));
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: rotate(-5deg) translateY(0);
+    }
+    50% {
+        transform: rotate(-5deg) translateY(-20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .error-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 32px;
+    }
+
+    .error-content {
+        padding-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .error-image {
+        order: -1;
+        margin-bottom: 20px;
+    }
+
+    .plane-image {
+        max-width: 60%;
+        transform: rotate(-5deg) translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 16px;
+    }
+
+    .error-card {
+        padding: 24px;
+    }
+
+    h1 {
+        font-size: 56px;
+    }
+
+    .error-message {
+        font-size: 24px;
+    }
+
+    .error-description {
+        font-size: 14px;
+    }
+
+    .plane-image {
+        max-width: 70%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .plane-image {
+        animation: none;
+    }
+}
