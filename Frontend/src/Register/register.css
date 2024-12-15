@@ -24,7 +24,7 @@ body {
   font-family: 'Inter', sans-serif;
   background:
     linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
-    url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/61f5eb2611cb4.jpg-k3DvIxdTNSQsRxPl8pQPFXPtkwa035.jpeg');
+    url(/static/img/Islas-Malvinas.jpeg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
