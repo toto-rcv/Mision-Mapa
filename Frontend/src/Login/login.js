@@ -46,6 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("accessToken", accessToken)
                 localStorage.setItem("refreshToken", refreshToken)
 
+                window.location.href = "/"
+
             } else {
                 const error = await response.json();
                 alert('Error: ' + error.message);
