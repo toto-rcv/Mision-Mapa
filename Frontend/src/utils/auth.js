@@ -7,4 +7,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Validar token contra backend
+    try {
+        // Enviar el token al backend para validarlo
+        const response = await fetch("http://localhost:3000/api/verify-token", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`, // Token en el header
+            },
+        });
+        /*
+        if (!response.ok) {
+            // Si la respuesta no es exitosa, limpiar el token y redirigir
+            localStorage.removeItem("accessToken");
+            window.location.href = "/login";
+            return;
+        }
+
+        // Obtener la respuesta del servidor (datos del usuario)
+        const data = await response.json();
+        console.log("Token válido:", data);
+        */
+
+    } catch (error) {
+        console.error("Error al validar el token:", error);
+        // Redirigir en caso de un error inesperado
+        localStorage.removeItem("accessToken");
+        window.location.href = "/login";
+    }
 })

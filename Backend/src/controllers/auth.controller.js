@@ -2,6 +2,7 @@ const { hashPassword, comparePassword } = require("../utils/password.util");
 const { generateAccessToken,generateRefreshToken } = require("../utils/jwt.util");
 const db = require("../models");
 const User = db.User;
+
 exports.register = async (req, res) => {
     try {
         const { dni, email, password, firstName, lastName, militaryRank } = req.body;
@@ -36,6 +37,7 @@ exports.register = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -54,4 +56,19 @@ exports.login = async (req, res) => {
         refreshToken,
     });
 
+};
+
+// Controlador para verificar el token
+exports.verifyToken = (req, res) => {
+  try {
+    const decoded = req.user; // Información decodificada pasada desde el middleware
+    res.status(200).json({
+      message: "Token válido",
+      user: decoded,
+    });
+  } catch (error) {
+    console.error("Error en el controlador:", error.message);
+
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
 };
