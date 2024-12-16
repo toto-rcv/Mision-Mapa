@@ -1,5 +1,6 @@
 const { hashPassword, comparePassword } = require("../utils/password.util");
 const { generateAccessToken,generateRefreshToken } = require("../utils/jwt.util");
+const { saveRefreshToken } = require("../utils/refreshTokens");
 const db = require("../models");
 const User = db.User;
 
@@ -50,6 +51,8 @@ exports.login = async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
+    saveRefreshToken(refreshToken)
+
     res.json({
         message: "Acceso exitoso",
         accessToken,
@@ -58,10 +61,10 @@ exports.login = async (req, res) => {
 
 };
 
-// Controlador para verificar el token
+// Verificar validez del access token token
 exports.verifyToken = (req, res) => {
   try {
-    const decoded = req.user; // Información decodificada pasada desde el middleware
+    const decoded = req.user;
     res.status(200).json({
       message: "Token válido",
       user: decoded,
@@ -71,4 +74,16 @@ exports.verifyToken = (req, res) => {
 
     res.status(500).json({ message: "Error interno del servidor" });
   }
+};
+
+// Generar nuevo access token usando refresh token
+exports.refreshAccessToken = (req, res) => {
+  const user = req.user; // Datos decodificados del Refresh Token
+
+  // Generar un nuevo Access Token
+  const newAccessToken = generateAccessToken({ id: user.id, email: user.email });
+
+  return res.status(200).json({
+      accessToken: newAccessToken,
+  });
 };
