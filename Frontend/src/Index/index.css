@@ -125,7 +125,8 @@ i{
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 20px;
+    padding-top: 2rem;
+    gap: 1rem;
 }
 
 .sidebar img {
@@ -138,14 +139,13 @@ i{
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 15px;
-    margin-top: 15px;
     cursor: pointer;
+    padding: 6px 12px;
 }
 
 .sidebar-icon {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -179,14 +179,13 @@ i{
 .sidebar-item:hover .sidebar-text,
 .sidebar-item.active .sidebar-text {
     color: var(--primary-color);
-    margin-top: -2px;
+    margin-top: -3px;
 }
 
 .sidebar-item.active {
     /* Update 3 */
     background-color: var(--primary-color);
     border-radius: 8px;
-    padding: 2px 8px 2px 8px;
 }
 
 .sidebar-item.active .sidebar-icon {
