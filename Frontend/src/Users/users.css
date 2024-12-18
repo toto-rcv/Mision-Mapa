@@ -1,0 +1,149 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1d1d1d;
+    color: #fff;
+    line-height: 1.6;
+}
+
+header {
+    background: linear-gradient(to right, #063751, #000);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.logo {
+    height: 60px;
+    margin-right: 5%; /* Agregado para separar el logo de los iconos */
+    border-radius: 15px;
+}
+
+/* Contenedor de los iconos */
+.icons {
+    display: flex;
+    gap: 20%;
+    align-items: center; /* Centra verticalmente los iconos con el logo */
+}
+
+/* Estilo de cada ícono y su botón */
+.icons_columns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 10px; /* Espacio entre columnas */
+}
+
+.icon {
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Botones con animaciones */
+.button {
+    margin-top: 8px;
+    border-radius: 5px;
+    min-width: 100px;
+    min-height: 25px;
+    background-color: #fff; /* Color principal del botón */
+    color: #000; /* Color del texto */
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Transición suave */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Sombra inicial */
+}
+
+/* Efecto hover */
+.button:hover {
+    background-color: #fff; /* Color más claro al pasar el mouse */
+    color: #333; /* Oscurece el texto */
+    transform: translateY(-3px); /* Efecto de levantar el botón */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.5); /* Aumenta la sombra */
+}
+
+/* Efecto de clic */
+.button:active {
+    transform: translateY(1px); /* Botón se "presiona" */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra se reduce */
+}
+
+/* Estilo adicional para los íconos */
+.icons_columns i {
+    font-size: 24px; /* Tamaño de los íconos */
+    color: #fff;
+    transition: color 0.3s ease, transform 0.3s ease; /* Transición para los íconos */
+}
+
+/* Efecto hover en los íconos */
+.icons_columns:hover i {
+    color: #fff; /* Cambio de color */
+    transform: scale(1.2); /* Ícono crece ligeramente */
+}
+
+.user-avatar {
+    margin-left: 55%; /* Esto empuja el avatar hacia la derecha */
+    font-size: 24px;
+}
+
+main {
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #000;
+}
+
+thead {
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+th,
+td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: center;
+}
+
+tbody tr {
+    background-color: #111;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #222;
+}
+
+th {
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+td {
+    font-size: 12px;
+    color: #ddd;
+}
