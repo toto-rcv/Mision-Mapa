@@ -13,7 +13,8 @@
 
 <body>
     <header class="header">
-        <div class="logo"></div>
+        
+        <img  class="logo" src="../assets/img/logo.jpg" alt="">
         <div class="title-container">
             <h1 class="title">Mapa de Avistamientos</h1>
             <span class="markers-count">3 marcadores</span>
@@ -69,8 +70,8 @@
             </div>
             <div id="map"></div>
             <div class="map-controls">
-                <button class="control-button" onclick="zoomIn()">+</button>
-                <button class="control-button" onclick="zoomOut()">−</button>
+                <button class="control-button" id="zoom-in">+</button>
+                <button class="control-button" id="zoom-out">-</button>
             </div>
             <button class="register-button">
                 <span class="sidebar-icon">

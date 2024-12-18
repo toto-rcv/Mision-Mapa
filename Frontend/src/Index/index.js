@@ -1,8 +1,19 @@
-let map = L.map("map", { doubleClickZoom: false , zoomControl: false}).setView([-34.6195398, -58.3913895], 4)
+let map = L.map("map", { doubleClickZoom: false, zoomControl: false }).setView([-34.6195398, -58.3913895], 4);
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19
 }).addTo(map);
+
+
+// Agregar funcionalidad al botón de acercar (zoom in)
+document.getElementById("zoom-in").addEventListener("click", function () {
+    map.zoomIn();  // Acerca el mapa
+});
+
+// Agregar funcionalidad al botón de alejar (zoom out)
+document.getElementById("zoom-out").addEventListener("click", function () {
+    map.zoomOut();  // Aleja el mapa
+});
 
 document.getElementById("select-location").addEventListener("change", function (e) {
     let coords = e.target.value.split(",");
@@ -22,6 +33,11 @@ var minimap = new L.Control.MiniMap(carto_light,
 
 //agrega escala para el minMapa
 new L.control.scale({ imperial: false }).addTo(map);
+
+
+
+
+
 
 
 //agregar coordenadas marcador
