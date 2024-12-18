@@ -39,10 +39,13 @@ body {
     justify-content: flex-start;
     align-items: center;
     border-bottom: 1px solid #333;
-    gap: 2.5rem;
+    gap: 2.6rem;
     /* Update 1 */
 }
 
+i{
+    align-items: center;
+}
 .logo {
     width: 40px;
     height: 40px;
@@ -137,7 +140,6 @@ body {
 .sidebar-icon {
     width: 40px;
     height: 40px;
-    background-color: #333;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -153,7 +155,7 @@ body {
 
 .sidebar-text {
     font-size: 12px;
-    margin-top: 5px;
+    
     text-align: center;
     color: var(--text-muted);
 }
@@ -171,13 +173,14 @@ body {
 .sidebar-item:hover .sidebar-text,
 .sidebar-item.active .sidebar-text {
     color: var(--primary-color);
+    margin-top: -2px;
 }
 
 .sidebar-item.active {
     /* Update 3 */
     background-color: var(--primary-color);
     border-radius: 8px;
-    padding: 4px;
+    padding: 2px 8px 2px 8px;
 }
 
 .sidebar-item.active .sidebar-icon {
@@ -261,15 +264,15 @@ body {
     background-color: #2a2a2a;
 }
 
-/* Register Button Styles */
+
 .register-button {
-    /* Update 4 */
+   
     position: absolute;
     bottom: 2rem;
     right: 2rem;
-    padding: 14px 28px;
-    background-color: white;
-    color: #00C2D1;
+    padding: 11px 20px;
+    background-color: #00C2D1;
+    color: white;
     border: none;
     border-radius: 25px;
     font-size: 16px;
@@ -282,12 +285,13 @@ body {
     z-index: 1000;
 }
 
+
 .register-button span {
     /* Update 4 */
-    background-color: #00C2D1;
-    color: white;
-    width: 24px;
-    height: 24px;
+    background-color: white;
+    color: #00C2D1;
+    width: 30px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
