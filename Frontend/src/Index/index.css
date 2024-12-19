@@ -23,10 +23,16 @@
     font-family: "Inter", sans-serif;
 }
 
-.leaflet-control-attribution.leaflet-control{
+.leaflet-control-attribution.leaflet-control {
     font-size: 0px;
 
 }
+
+.leaflet-control-scale-line {
+    max-width: 62px;
+
+}
+
 body {
     height: 100vh;
     display: flex;
@@ -47,9 +53,10 @@ body {
     /* Update 1 */
 }
 
-i{
+i {
     align-items: center;
 }
+
 .logo {
     width: 40px;
     height: 40px;
@@ -161,7 +168,7 @@ i{
 
 .sidebar-text {
     font-size: 12px;
-    
+
     text-align: center;
     color: var(--text-muted);
 }
@@ -271,7 +278,7 @@ i{
 
 
 .register-button {
-   
+
     position: absolute;
     bottom: 2rem;
     right: 2rem;
@@ -366,4 +373,77 @@ i{
         animation-iteration-count: 1 !important;
         scroll-behavior: auto !important;
     }
+}
+
+
+.modal {
+    position: absolute;
+    top: 19%;
+    left: 85%;
+    transform: translate(-50%, -20%);
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 15px;
+    width: 300px;
+    color: black;
+    display: none;
+}
+
+.modal.open {
+    display: block;
+    /* Visible cuando se activa */
+}
+
+.modal-content {
+    position: relative;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    /* Permite que el mapa esté debajo del modal */
+}
+
+
+
+
+.close-button {
+    display: flex;
+    font-size: 18px;
+    cursor: pointer;
+    color: #333;
+    justify-content: flex-end;
+}
+
+form label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #0056b3;
 }

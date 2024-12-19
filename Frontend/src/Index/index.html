@@ -7,14 +7,12 @@
     <title>Mapa de Avistamientos</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="index.css" />
 </head>
 
 <body>
     <header class="header">
-        
-        <img  class="logo" src="/static/img/logo.jpg" alt="">
+        <img class="logo" src="/static/img/logo.jpg" alt="">
         <div class="title-container">
             <h1 class="title">Mapa de Avistamientos</h1>
             <span class="markers-count">3 marcadores</span>
@@ -60,9 +58,9 @@
         </aside>
 
         <div class="map-container">
-            <div class="search-container" >
+            <div class="search-container">
                 <input type="text" class="search-input" placeholder="Buscar ubicación..." id="search-field">
-                <button class="filter-button" >
+                <button class="filter-button">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                     </svg>
@@ -81,6 +79,33 @@
             </button>
         </div>
     </main>
+
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-modal">&times;</span>
+            <h2>Registrar Avistamiento</h2>
+            <form id="register-form">
+                <label for="input1">Campo 1:</label>
+                <input type="text" id="input1" placeholder="Ingrese valor..." required>
+                <label for="input2">Campo 2:</label>
+                <input type="text" id="input2" placeholder="Ingrese valor..." required>
+                <label for="input3">Campo 3:</label>
+                <input type="text" id="input3" placeholder="Ingrese valor..." required>
+                <label for="input4">Campo 4:</label>
+                <input type="text" id="input4" placeholder="Ingrese valor..." required>
+                <label for="input5">Campo 5:</label>
+                <input type="text" id="input5" placeholder="Ingrese valor..." required>
+                <label for="input5">Campo 6:</label>
+                <input type="text" id="input5" placeholder="Ingrese valor..." required>
+                <label for="input5">Campo 7:</label>
+                <input type="text" id="input5" placeholder="Ingrese valor..." required>
+                <label for="input5">Campo 8:</label>
+                <input type="text" id="input5" placeholder="Ingrese valor..." required>
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="index.js"></script>
 </body>

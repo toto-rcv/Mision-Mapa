@@ -123,3 +123,26 @@ document.getElementById('search-field').addEventListener('keydown', function (ev
         searchLocation();
     }
 });
+
+
+
+const registerButton = document.querySelector('.register-button');
+const modal = document.getElementById('register-modal');
+const closeModalButton = document.getElementById('close-modal');
+
+// Función para mostrar el modal
+registerButton.addEventListener('click', () => {
+    modal.style.display = 'flex';
+});
+
+// Función para ocultar el modal
+closeModalButton.addEventListener('click', () => {
+    modal.style.display = 'none';
+});
+
+// Cerrar el modal al hacer clic fuera de él
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
