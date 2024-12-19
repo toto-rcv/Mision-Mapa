@@ -15,21 +15,11 @@ document.getElementById("zoom-out").addEventListener("click", function () {
     map.zoomOut();  // Aleja el mapa
 });
 
-document.getElementById("select-location").addEventListener("change", function (e) {
-    let coords = e.target.value.split(",");
-
-    map.flyTo(coords, 16);
-})
 // Agregar mapa base
 var carto_light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '©OpenStreetMap, ©CartoDB', subdomains: 'abcd', maxZoom: 24 });
 
 // Agregar plugin MiniMap
-var minimap = new L.Control.MiniMap(carto_light,
-    {
-        toggleDisplay: true,
-        minimized: false,
-        position: "bottomleft"
-    }).addTo(map);
+
 
 //agrega escala para el minMapa
 new L.control.scale({ imperial: false }).addTo(map);
@@ -43,33 +33,13 @@ new L.control.scale({ imperial: false }).addTo(map);
 //agregar coordenadas marcador
 
 // Función para agregar marcadores según las opciones en el select
-function addMarkersFromSelect() {
-    const select = document.getElementById("select-location");
-    const options = select.options;
-    const markers = []; // Array para almacenar los marcadores
 
-    for (let i = 0; i < options.length; i++) {
-        const value = options[i].value;
-        if (value !== "-1") { // Evitar la opción predeterminada
-            const coords = value.split(",").map(parseFloat);
-            const marker = L.circleMarker(L.latLng(coords[0], coords[1]), {
-                radius: 6,
-
-                color: "transparent",
-
-            }).addTo(map);
-            markers.push(marker); // Guardar cada marcador en el array
-        }
-    }
-
-    return markers; // Retornar el array con los marcadores
-}
 
 // Llamar a la función para mostrar todos los marcadores
-const markers = addMarkersFromSelect();
+
 
 //Creamos un marcador
-function agregarMarcadores() {
+/*function agregarMarcadores() {
     var select = document.getElementById("select-location");
     for (var i = 0; i < select.options.length; i++) {
         var option = select.options[i];
@@ -82,10 +52,10 @@ function agregarMarcadores() {
             L.marker([lat, lng]).addTo(map).bindPopup(option.text);
         }
     }
-}
+}*/
 
 // Llamar a la función para agregar todos los marcadores
-agregarMarcadores();
+//agregarMarcadores();
 
 // agregamos todos los marcadores del HTML
 
@@ -107,4 +77,49 @@ map.on('click', function (e) {
     marker.on('dblclick', function () {
         map.removeLayer(marker); // Elimina el marcador del mapa
     });
+});
+
+
+// Función para buscar ubicaciones
+function searchLocation() {
+    const query = document.getElementById('search-field').value;
+
+    if (!query) {
+        alert('Por favor, ingresa una ubicación para buscar.');
+        return;
+    }
+
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length === 0) {
+                alert('No se encontraron resultados.');
+                return;
+            }
+
+            // Obtener las coordenadas de la primera coincidencia
+            const { lat, lon, display_name } = data[0];
+
+            // Mover el mapa a las coordenadas encontradas
+            map.setView([lat, lon], 10);
+
+            // Eliminar marcador previo si existe
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            // Agregar marcador en la ubicación encontrada
+            marker = L.marker([lat, lon]).addTo(map)
+                .bindPopup(display_name)
+                .openPopup();
+        })
+        .catch(error => console.error('Error al buscar la ubicación:', error));
+}
+
+document.getElementById('search-field').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+        searchLocation();
+    }
 });
