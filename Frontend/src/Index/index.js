@@ -4,83 +4,62 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19
 }).addTo(map);
 
-
-// Agregar funcionalidad al botón de acercar (zoom in)
 document.getElementById("zoom-in").addEventListener("click", function () {
-    map.zoomIn();  // Acerca el mapa
+    map.zoomIn();
 });
 
-// Agregar funcionalidad al botón de alejar (zoom out)
 document.getElementById("zoom-out").addEventListener("click", function () {
-    map.zoomOut();  // Aleja el mapa
+    map.zoomOut();
 });
 
-// Agregar mapa base
-var carto_light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '©OpenStreetMap, ©CartoDB', subdomains: 'abcd', maxZoom: 24 });
-
-// Agregar plugin MiniMap
-
-
-//agrega escala para el minMapa
 new L.control.scale({ imperial: false }).addTo(map);
 
+const overlay = document.getElementById('new-sighting-overlay');
+const formPanel = document.getElementById('sighting-form');
+const registerButton = document.querySelector('.register-button');
+const cancelButton = document.getElementById('cancel-button');
+const saveButton = document.getElementById('save-button');
 
+// Ensure overlay and formPanel are hidden initially
+overlay.style.display = 'none';
+formPanel.style.display = 'none';
 
-
-
-
-
-//agregar coordenadas marcador
-
-// Función para agregar marcadores según las opciones en el select
-
-
-// Llamar a la función para mostrar todos los marcadores
-
-
-//Creamos un marcador
-/*function agregarMarcadores() {
-    var select = document.getElementById("select-location");
-    for (var i = 0; i < select.options.length; i++) {
-        var option = select.options[i];
-        if (option.value !== "-1") { // Ignorar la opción de "Seleccione un lugar"
-            var coords = option.value.split(",");
-            var lat = parseFloat(coords[0]);
-            var lng = parseFloat(coords[1]);
-
-            // Agregar marcador al mapa
-            L.marker([lat, lng]).addTo(map).bindPopup(option.text);
-        }
-    }
-}*/
-
-// Llamar a la función para agregar todos los marcadores
-//agregarMarcadores();
-
-// agregamos todos los marcadores del HTML
-
-map.on('click', function (e) {
-    // Obtener latitud y longitud del punto clickeado
-    var lat = e.latlng.lat;
-    var lng = e.latlng.lng;
-
-
-
-    // Mostrar latitud y longitud en la consola
-    console.log("Latitud: " + lat + ", Longitud: " + lng);
-
-    // Opcional: mostrar un marcador con un popup
-    const marker = L.marker([lat, lng]).addTo(map)
-        .bindPopup("Latitud: " + lat.toFixed(4) + "<br>Longitud: " + lng.toFixed(4))
-        .openPopup();
-
-    marker.on('dblclick', function () {
-        map.removeLayer(marker); // Elimina el marcador del mapa
-    });
+registerButton.addEventListener('click', () => {
+    overlay.style.display = 'flex';
+    formPanel.style.display = 'none'; // Ensure form panel is hidden when overlay is shown
 });
 
+map.on('click', function (e) {
+    if (overlay.style.display === 'flex') {
+        overlay.style.display = 'none';
+        formPanel.style.display = 'block';
+        
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+        const timestamp = new Date().toLocaleString();
 
-// Función para buscar ubicaciones
+        document.getElementById('longitude').value = lng;
+        document.getElementById('latitude').value = lat;
+        document.getElementById('timestamp').value = timestamp;
+
+        // Generate a unique ID for the sighting
+        const sightingId = `#AV-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        document.getElementById('sighting-id').textContent = sightingId;
+    }
+});
+
+cancelButton.addEventListener('click', () => {
+    formPanel.style.display = 'none';
+    // Reset the form fields here if needed
+});
+
+document.getElementById('sighting-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    // Here you would typically send the form data to a server
+    console.log('Form submitted');
+    formPanel.style.display = 'none';
+});
+
 function searchLocation() {
     const query = document.getElementById('search-field').value;
 
@@ -99,19 +78,10 @@ function searchLocation() {
                 return;
             }
 
-            // Obtener las coordenadas de la primera coincidencia
             const { lat, lon, display_name } = data[0];
-
-            // Mover el mapa a las coordenadas encontradas
             map.setView([lat, lon], 10);
 
-            // Eliminar marcador previo si existe
-            if (marker) {
-                map.removeLayer(marker);
-            }
-
-            // Agregar marcador en la ubicación encontrada
-            marker = L.marker([lat, lon]).addTo(map)
+            L.marker([lat, lon]).addTo(map)
                 .bindPopup(display_name)
                 .openPopup();
         })
@@ -124,25 +94,76 @@ document.getElementById('search-field').addEventListener('keydown', function (ev
     }
 });
 
+const closeFormButton = document.getElementById('close-form');
 
+function closeForm() {
+    formPanel.style.display = 'none';
+}
 
-const registerButton = document.querySelector('.register-button');
-const modal = document.getElementById('register-modal');
-const closeModalButton = document.getElementById('close-modal');
+function formatCoordinates(value) {
+    return Number(value).toFixed(7);
+}
 
-// Función para mostrar el modal
-registerButton.addEventListener('click', () => {
-    modal.style.display = 'flex';
-});
+closeFormButton.addEventListener('click', closeForm);
+cancelButton.addEventListener('click', closeForm);
 
-// Función para ocultar el modal
-closeModalButton.addEventListener('click', () => {
-    modal.style.display = 'none';
-});
+map.on('click', function (e) {
+    if (overlay.style.display === 'flex') {
+        overlay.style.display = 'none';
+        formPanel.style.display = 'block';
+        
+        const lat = formatCoordinates(e.latlng.lat);
+        const lng = formatCoordinates(e.latlng.lng);
+        const timestamp = new Date().toLocaleString('es-ES', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
-// Cerrar el modal al hacer clic fuera de él
-window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.style.display = 'none';
+        // Update coordinates in the form header
+        const coordinates = formPanel.querySelector('.coordinates');
+        coordinates.innerHTML = `
+            <div><label>Longitud:</label><span>${lng}</span></div>
+            <div><label>Latitud:</label><span>${lat}</span></div>
+        `;
+
+        // Update timestamp
+        const timestampElement = formPanel.querySelector('.timestamp');
+        timestampElement.textContent = timestamp;
     }
 });
+
+// Prevent form submission if required fields are empty
+document.getElementById('sighting-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Check if all required fields are filled
+    const requiredFields = this.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            isValid = false;
+            field.classList.add('invalid');
+        } else {
+            field.classList.remove('invalid');
+        }
+    });
+
+    if (isValid) {
+        console.log('Form submitted successfully');
+        formPanel.style.display = 'none';
+    }
+});
+
+// Remove invalid class on input
+document.querySelectorAll('.form-group input, .form-group textarea').forEach(input => {
+    input.addEventListener('input', function() {
+        if (this.value.trim()) {
+            this.classList.remove('invalid');
+        }
+    });
+});
+
