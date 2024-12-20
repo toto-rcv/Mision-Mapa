@@ -12,39 +12,24 @@ const formPanel = document.getElementById('sighting-form');
 const closeFormButton = document.getElementById('close-form');
 const cancelButton = document.getElementById('cancel-button');
 
-// Animation handling functions
 function showOverlay() {
     const overlay = document.getElementById('new-sighting-overlay');
     overlay.style.display = 'flex';
-    // Force reflow
-    overlay.offsetHeight;
-    overlay.classList.add('visible');
 }
 
 function hideOverlay() {
     const overlay = document.getElementById('new-sighting-overlay');
-    overlay.classList.remove('visible');
-    overlay.addEventListener('transitionend', function handler() {
-        overlay.style.display = 'none';
-        overlay.removeEventListener('transitionend', handler);
-    });
+    overlay.style.display = 'none';
 }
 
 function showForm() {
     const formPanel = document.getElementById('sighting-form');
     formPanel.style.display = 'block';
-    // Force reflow
-    formPanel.offsetHeight;
-    formPanel.classList.add('visible');
 }
 
 function hideForm() {
     const formPanel = document.getElementById('sighting-form');
-    formPanel.classList.remove('visible');
-    formPanel.addEventListener('transitionend', function handler() {
-        formPanel.style.display = 'none';
-        formPanel.removeEventListener('transitionend', handler);
-    });
+    formPanel.style.display = 'none';
 }
 
 function closeForm() {
@@ -62,7 +47,7 @@ cancelButton.addEventListener('click', closeForm);
 
 // Handle map clicks
 map.on('click', function (e) {
-    if (document.getElementById('new-sighting-overlay').classList.contains('visible')) {
+    if (document.getElementById('new-sighting-overlay').style.display === 'flex') {
         hideOverlay();
         const lat = formatCoordinates(e.latlng.lat);
         const lng = formatCoordinates(e.latlng.lng);

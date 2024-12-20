@@ -481,9 +481,13 @@ form button:hover {
 /* Form Panel Styles */
 .form-panel {
     position: absolute;
-    top: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
     right: 1rem;
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
     background-color: rgba(38, 37, 42, 0.95);
     color: white;
     padding: 1.5rem;
@@ -863,19 +867,29 @@ form button:hover {
         right: 0;
         bottom: 56px;
         width: 100%;
+        max-width: none;
         border-radius: 0;
-        transform: translateX(100%);
+        transform: translateY(100%);
         transition: transform 0.3s ease-in-out;
     }
 
     .form-panel.visible {
-        transform: translateX(0);
+        transform: translateY(0);
     }
 
     /* Form adjustments for mobile */
     .form-row {
         flex-direction: column;
         gap: 0.5rem;
+    }
+
+    .form-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
     }
 
     .form-buttons {
@@ -896,6 +910,22 @@ form button:hover {
         min-width: 0;
     }
 
+    /* Adjust overlay for mobile */
+    .overlay {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        bottom: 56px;
+        width: 100%;
+        transform: translateY(100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .overlay.visible {
+        transform: translateY(0);
+    }
+
     /* Map controls */
     .map-controls {
         left: auto;
@@ -909,3 +939,17 @@ form button:hover {
     }
 }
 
+/* Additional breakpoint for very large screens */
+@media (min-width: 1600px) {
+    .form-panel {
+        max-width: 500px;
+    }
+}
+
+/* Ensure the form doesn't get too small on very small screens */
+@media (max-width: 1280px) and (min-height: 720px) {
+    .form-panel {
+        width: 90%;
+        max-width: 450px;
+    }
+}
