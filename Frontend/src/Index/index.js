@@ -1,117 +1,69 @@
-let map = L.map("map", { doubleClickZoom: false, zoomControl: false }).setView([-34.6195398, -58.3913895], 4);
+// Initialize the map
+const map = L.map('map').setView([-34.6037, -58.3816], 12);
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-document.getElementById("zoom-in").addEventListener("click", function () {
-    map.zoomIn();
-});
-
-document.getElementById("zoom-out").addEventListener("click", function () {
-    map.zoomOut();
-});
-
-new L.control.scale({ imperial: false }).addTo(map);
-
+// Initialize UI elements
+const registerButton = document.getElementById('register-button');
 const overlay = document.getElementById('new-sighting-overlay');
 const formPanel = document.getElementById('sighting-form');
-const registerButton = document.querySelector('.register-button');
+const closeFormButton = document.getElementById('close-form');
 const cancelButton = document.getElementById('cancel-button');
-const saveButton = document.getElementById('save-button');
 
-// Ensure overlay and formPanel are hidden initially
-overlay.style.display = 'none';
-formPanel.style.display = 'none';
-
-registerButton.addEventListener('click', () => {
+// Animation handling functions
+function showOverlay() {
+    const overlay = document.getElementById('new-sighting-overlay');
     overlay.style.display = 'flex';
-    formPanel.style.display = 'none'; // Ensure form panel is hidden when overlay is shown
-});
-
-map.on('click', function (e) {
-    if (overlay.style.display === 'flex') {
-        overlay.style.display = 'none';
-        formPanel.style.display = 'block';
-        
-        const lat = e.latlng.lat.toFixed(6);
-        const lng = e.latlng.lng.toFixed(6);
-        const timestamp = new Date().toLocaleString();
-
-        document.getElementById('longitude').value = lng;
-        document.getElementById('latitude').value = lat;
-        document.getElementById('timestamp').value = timestamp;
-
-        // Generate a unique ID for the sighting
-        const sightingId = `#AV-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
-        document.getElementById('sighting-id').textContent = sightingId;
-    }
-});
-
-cancelButton.addEventListener('click', () => {
-    formPanel.style.display = 'none';
-    // Reset the form fields here if needed
-});
-
-document.getElementById('sighting-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    // Here you would typically send the form data to a server
-    console.log('Form submitted');
-    formPanel.style.display = 'none';
-});
-
-function searchLocation() {
-    const query = document.getElementById('search-field').value;
-
-    if (!query) {
-        alert('Por favor, ingresa una ubicación para buscar.');
-        return;
-    }
-
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}`;
-
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            if (data.length === 0) {
-                alert('No se encontraron resultados.');
-                return;
-            }
-
-            const { lat, lon, display_name } = data[0];
-            map.setView([lat, lon], 10);
-
-            L.marker([lat, lon]).addTo(map)
-                .bindPopup(display_name)
-                .openPopup();
-        })
-        .catch(error => console.error('Error al buscar la ubicación:', error));
+    // Force reflow
+    overlay.offsetHeight;
+    overlay.classList.add('visible');
 }
 
-document.getElementById('search-field').addEventListener('keydown', function (event) {
-    if (event.key === 'Enter') {
-        searchLocation();
-    }
-});
+function hideOverlay() {
+    const overlay = document.getElementById('new-sighting-overlay');
+    overlay.classList.remove('visible');
+    overlay.addEventListener('transitionend', function handler() {
+        overlay.style.display = 'none';
+        overlay.removeEventListener('transitionend', handler);
+    });
+}
 
-const closeFormButton = document.getElementById('close-form');
+function showForm() {
+    const formPanel = document.getElementById('sighting-form');
+    formPanel.style.display = 'block';
+    // Force reflow
+    formPanel.offsetHeight;
+    formPanel.classList.add('visible');
+}
+
+function hideForm() {
+    const formPanel = document.getElementById('sighting-form');
+    formPanel.classList.remove('visible');
+    formPanel.addEventListener('transitionend', function handler() {
+        formPanel.style.display = 'none';
+        formPanel.removeEventListener('transitionend', handler);
+    });
+}
 
 function closeForm() {
-    formPanel.style.display = 'none';
+    hideForm();
 }
 
 function formatCoordinates(value) {
     return Number(value).toFixed(7);
 }
 
+// Event Listeners
+registerButton.addEventListener('click', showOverlay);
 closeFormButton.addEventListener('click', closeForm);
 cancelButton.addEventListener('click', closeForm);
 
+// Handle map clicks
 map.on('click', function (e) {
-    if (overlay.style.display === 'flex') {
-        overlay.style.display = 'none';
-        formPanel.style.display = 'block';
-        
+    if (document.getElementById('new-sighting-overlay').classList.contains('visible')) {
+        hideOverlay();
         const lat = formatCoordinates(e.latlng.lat);
         const lng = formatCoordinates(e.latlng.lng);
         const timestamp = new Date().toLocaleString('es-ES', {
@@ -122,20 +74,22 @@ map.on('click', function (e) {
             minute: '2-digit'
         });
 
-        // Update coordinates in the form header
-        const coordinates = formPanel.querySelector('.coordinates');
+        // Update coordinates in the form
+        const coordinates = document.querySelector('.coordinates');
         coordinates.innerHTML = `
             <div><label>Longitud:</label><span>${lng}</span></div>
             <div><label>Latitud:</label><span>${lat}</span></div>
         `;
 
         // Update timestamp
-        const timestampElement = formPanel.querySelector('.timestamp');
+        const timestampElement = document.querySelector('.timestamp');
         timestampElement.textContent = timestamp;
+
+        showForm();
     }
 });
 
-// Prevent form submission if required fields are empty
+// Form validation and submission
 document.getElementById('sighting-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -154,7 +108,7 @@ document.getElementById('sighting-form').addEventListener('submit', function(e) 
 
     if (isValid) {
         console.log('Form submitted successfully');
-        formPanel.style.display = 'none';
+        hideForm();
     }
 });
 
@@ -167,3 +121,37 @@ document.querySelectorAll('.form-group input, .form-group textarea').forEach(inp
     });
 });
 
+// Enable touch gestures for map
+if (L.Browser.touch) {
+    map.dragging.enable();
+    map.touchZoom.enable();
+    map.doubleClickZoom.enable();
+    map.scrollWheelZoom.enable();
+    map.boxZoom.enable();
+    map.keyboard.enable();
+    if (map.tap) map.tap.enable();
+}
+
+// Bottom navigation handling
+const navItems = document.querySelectorAll('.sidebar-item');
+navItems.forEach(item => {
+    item.addEventListener('click', function() {
+        navItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// Search functionality
+const searchInput = document.querySelector('.search-input');
+searchInput.addEventListener('input', function(e) {
+    // Add search functionality here
+    console.log('Searching for:', e.target.value);
+});
+
+// Initialize map controls
+const zoomInButton = document.querySelector('#zoom-in');
+const zoomOutButton = document.querySelector('#zoom-out');
+
+
+zoomInButton.addEventListener('click', () => map.zoomIn());
+zoomOutButton.addEventListener('click', () => map.zoomOut());
