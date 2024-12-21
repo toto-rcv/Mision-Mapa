@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#26252A" />
     <title>Mapa de Avistamientos</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
@@ -58,161 +59,159 @@
         </aside>
 
         <div class="map-container">
-    <div class="search-container">
-        <input type="text" class="search-input" placeholder="Buscar ubicación..." id="search-field">
-        <button class="filter-button">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
-        </button>
-    </div>
-    <div id="map"></div>
-    <div class="map-controls">
-        <button class="control-button" id="zoom-in">+</button>
-        <button class="control-button" id="zoom-out">-</button>
-    </div>
-    <button class="register-button" id="register-button">
-        <span class="register-icon">
-            <i class="fa-solid fa-thumbtack"></i>
-        </span>
-        Registrar
-    </button>
-    
-    <!-- Moved inside map-container -->
-    <div class="overlay" id="new-sighting-overlay">
-        <h2>Nuevo avistamiento</h2>
-        <p>Haga clic en el mapa para empezar</p>
-    </div>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Buscar ubicación..." id="search-field">
+                <button class="filter-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                    </svg>
+                </button>
+            </div>
+            <div id="map"></div>
+            <div class="map-controls">
+                <button class="control-button" id="zoom-in">+</button>
+                <button class="control-button" id="zoom-out">-</button>
+            </div>
+            <button class="register-button" id="register-button">
+                <span class="register-icon">
+                    <i class="fa-solid fa-thumbtack"></i>
+                </span>
+                Registrar
+            </button>
 
-    <div class="form-panel" id="sighting-form">
-        <div class="form-header">
-            <button class="close-button" id="close-form" aria-label="Cerrar formulario">×</button>
-            <h2 class="form-title">Nuevo avistamiento</h2>
-            <div class="form-subtitle">
-                <div class="id-date-group">
-                    <span class="sighting-id">#AV-0001</span>
-                    <span class="timestamp">2024-19-12 9:09AM</span>
+
+            <div class="form-panel" id="sighting-form">
+                <div class="form-header">
+                    <button class="close-button" id="close-form" aria-label="Cerrar formulario">×</button>
+                    <h2 class="form-title">Nuevo avistamiento</h2>
+                    <div class="form-subtitle">
+                        <div class="id-date-group">
+                            <span class="sighting-id">#AV-0001</span>
+                            <span class="timestamp">2024-19-12 9:09AM</span>
+                        </div>
+                        <div class="coordinates">
+                            <div><label>Longitud:</label><span>32.7981101</span></div>
+                            <div><label>Latitud:</label><span>-54.6501234</span></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="coordinates">
-                    <div><label>Longitud:</label><span>32.7981101</span></div>
-                    <div><label>Latitud:</label><span>-54.6501234</span></div>
-                </div>
+
+                <form class="form-content">
+                    <div class="form-group">
+                        <label for="location">Ubicación</label>
+                        <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            placeholder="Ingrese la ubicación del avistamiento"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="estimated-height">Altura estimada</label>
+                                <input
+                                    type="number"
+                                    id="estimated-height"
+                                    name="estimated-height"
+                                    placeholder="Metros sobre el nivel del mar"
+                                    required
+                                >
+                            </div>
+                        </div>
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="heading">Rumbo</label>
+                                <input
+                                    type="text"
+                                    id="heading"
+                                    name="heading"
+                                    placeholder="Dirección de vuelo"
+                                    required
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="aircraft-type">Tipo de aeronave</label>
+                                <input
+                                    type="text"
+                                    id="aircraft-type"
+                                    name="aircraft-type"
+                                    placeholder="Ej: Comercial, Privado, Militar"
+                                    required
+                                >
+                            </div>
+                        </div>
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="engine-type">Tipo de motor</label>
+                                <input
+                                    type="text"
+                                    id="engine-type"
+                                    name="engine-type"
+                                    placeholder="Ej: Turbofan, Pistón, Turbohélice"
+                                    required
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="engine-count">Cantidad de Motores</label>
+                                <input
+                                    type="number"
+                                    id="engine-count"
+                                    name="engine-count"
+                                    placeholder="Número de motores"
+                                    min="1"
+                                    required
+                                >
+                            </div>
+                        </div>
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="color">Color</label>
+                                <input
+                                    type="text"
+                                    id="color"
+                                    name="color"
+                                    placeholder="Color principal de la aeronave"
+                                    required
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="observations">Observaciones</label>
+                        <textarea
+                            id="observations"
+                            name="observations"
+                            rows="4"
+                            placeholder="Detalles adicionales del avistamiento"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-cancel" id="cancel-button">Cancelar</button>
+                        <button type="submit" class="btn btn-save" id="save-button">Guardar avistamiento</button>
+                    </div>
+                </form>
+            </div>
+            <div class="overlay" id="new-sighting-overlay">
+                <h2>Nuevo avistamiento</h2>
+                <p>Haga clic en el mapa para empezar</p>
             </div>
         </div>
-    
-        <form class="form-content">
-            <div class="form-group">
-                <label for="location">Ubicación</label>
-                <input 
-                    type="text" 
-                    id="location" 
-                    name="location" 
-                    placeholder="Ingrese la ubicación del avistamiento"
-                    required
-                >
-            </div>
-    
-            <div class="form-row">
-                <div class="form-column">
-                    <div class="form-group">
-                        <label for="estimated-height">Altura estimada</label>
-                        <input 
-                            type="number" 
-                            id="estimated-height" 
-                            name="estimated-height" 
-                            placeholder="Metros sobre el nivel del mar"
-                            required
-                        >
-                    </div>
-                </div>
-                <div class="form-column">
-                    <div class="form-group">
-                        <label for="heading">Rumbo</label>
-                        <input 
-                            type="text" 
-                            id="heading" 
-                            name="heading" 
-                            placeholder="Dirección de vuelo"
-                            required
-                        >
-                    </div>
-                </div>
-            </div>
-    
-            <div class="form-row">
-                <div class="form-column">
-                    <div class="form-group">
-                        <label for="aircraft-type">Tipo de aeronave</label>
-                        <input 
-                            type="text" 
-                            id="aircraft-type" 
-                            name="aircraft-type" 
-                            placeholder="Ej: Comercial, Privado, Militar"
-                            required
-                        >
-                    </div>
-                </div>
-                <div class="form-column">
-                    <div class="form-group">
-                        <label for="engine-type">Tipo de motor</label>
-                        <input 
-                            type="text" 
-                            id="engine-type" 
-                            name="engine-type" 
-                            placeholder="Ej: Turbofan, Pistón, Turbohélice"
-                            required
-                        >
-                    </div>
-                </div>
-            </div>
-    
-            <div class="form-row">
-                <div class="form-column">
-                    <div class="form-group">
-                        <label for="engine-count">Cantidad de Motores</label>
-                        <input 
-                            type="number" 
-                            id="engine-count" 
-                            name="engine-count" 
-                            placeholder="Número de motores"
-                            min="1"
-                            required
-                        >
-                    </div>
-                </div>
-                <div class="form-column">
-                    <div class="form-group">
-                        <label for="color">Color</label>
-                        <input 
-                            type="text" 
-                            id="color" 
-                            name="color" 
-                            placeholder="Color principal de la aeronave"
-                            required
-                        >
-                    </div>
-                </div>
-            </div>
-    
-            <div class="form-group">
-                <label for="observations">Observaciones</label>
-                <textarea 
-                    id="observations" 
-                    name="observations" 
-                    rows="4" 
-                    placeholder="Detalles adicionales del avistamiento"
-                    required
-                ></textarea>
-            </div>
-    
-            <div class="form-buttons">
-                <button type="button" class="btn btn-cancel" id="cancel-button">Cancelar</button>
-                <button type="submit" class="btn btn-save" id="save-button">Guardar avistamiento</button>
-            </div>
-        </form>
-    </div>
-    
-</div>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

@@ -953,3 +953,100 @@ form button:hover {
         max-width: 450px;
     }
 }
+
+/* Additional breakpoint for very large screens */
+@media (min-width: 1600px) {
+    .form-panel {
+        max-width: 500px;
+    }
+}
+
+/* Ensure the form doesn't get too small on very small screens */
+@media (max-width: 1280px) and (min-height: 720px) {
+    .form-panel {
+        width: 90%;
+        max-width: 450px;
+    }
+}
+
+
+
+@media (max-width: 768px) {
+  /* Header styles */
+  .header {
+    padding: 0.5rem;
+    height: 60px;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .markers-count {
+    display: none;
+  }
+
+  .profile-info {
+    display: none;
+  }
+
+  /* Map container styles */
+  .map-container {
+    height: calc(100vh - 120px); /* Adjust for header and bottom nav */
+  }
+
+  /* Search container styles */
+  .search-container {
+    width: 100%;
+    padding: 0.5rem;
+    top: 60px;
+  }
+
+  .search-input {
+    width: calc(100% - 40px);
+  }
+
+  /* Register button styles */
+  .register-button {
+    bottom: 70px;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Sidebar styles (bottom navigation for mobile) */
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0;
+  }
+
+  .sidebar-item {
+    flex: 1;
+    padding: 0.5rem;
+  }
+
+  /* Form panel styles */
+  .form-panel {
+    width: 100%;
+    max-height: 80vh;
+    bottom: 60px;
+    top: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .form-panel.visible {
+    transform: translateY(0);
+  }
+
+  /* Map controls */
+  .map-controls {
+    bottom: 70px;
+    left: 1rem;
+  }
+}
