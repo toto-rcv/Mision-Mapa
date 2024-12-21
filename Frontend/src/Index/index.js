@@ -1,5 +1,5 @@
 // Initialize the map
-const map = L.map('map').setView([-34.6037, -58.3816], 12);
+const map = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
@@ -15,7 +15,8 @@ const cancelButton = document.getElementById('cancel-button');
 let greyMarker = null;
 let isOverlayActive = false;
 let isFormActive = false;
-
+let lat = null;
+let lng = null;
 function showOverlay() {
     const overlay = document.getElementById('new-sighting-overlay');
     overlay.style.display = 'flex';
@@ -62,8 +63,8 @@ cancelButton.addEventListener('click', closeForm);
 // Handle map clicks
 map.on('click', function (e) {
     if (isOverlayActive || isFormActive) {
-        const lat = formatCoordinates(e.latlng.lat);
-        const lng = formatCoordinates(e.latlng.lng);
+        lat = formatCoordinates(e.latlng.lat);
+        lng = formatCoordinates(e.latlng.lng);
         const timestamp = new Date().toLocaleString('es-ES', {
             year: 'numeric',
             month: '2-digit',
@@ -101,10 +102,10 @@ async function reverseGeocode(lat, lng) {
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`);
         const data = await response.json();
         console.log('Nominatim reverse geocoding result:', data);
-        
+
         // You can extract specific address components if needed
         const address = data.display_name;
-        
+
         // Optionally, update the location input in the form
         const locationInput = document.getElementById('location');
         if (locationInput) {
@@ -116,13 +117,13 @@ async function reverseGeocode(lat, lng) {
 }
 
 // Form validation and submission
-document.getElementById('sighting-form').addEventListener('submit', function(e) {
+document.getElementById('sighting-form').addEventListener('submit', async function (e) {
     e.preventDefault();
-    
+
     // Check if all required fields are filled
     const requiredFields = this.querySelectorAll('[required]');
     let isValid = true;
-    
+
     requiredFields.forEach(field => {
         if (!field.value.trim()) {
             isValid = false;
@@ -133,14 +134,48 @@ document.getElementById('sighting-form').addEventListener('submit', function(e) 
     });
 
     if (isValid) {
-        console.log('Form submitted successfully');
-        hideForm();
+        // Captura los datos del formulario
+        const formData = {
+            usuario_id: "30.000.000", // Reemplaza con el ID del usuario actual
+            fecha_avistamiento: new Date().toISOString(),
+            ubicacion: document.getElementById('location').value,
+            latitud:lat,
+            longitud: lng,
+            altitud_estimada: parseFloat(document.getElementById('estimated-height').value),
+            rumbo: document.getElementById('heading').value,
+            tipo_aeronave: document.getElementById('aircraft-type').value,
+            tipo_motor: document.getElementById('engine-type').value,
+            cantidad_motores: parseInt(document.getElementById('engine-count').value),
+            color: document.getElementById('color').value,
+            observaciones: document.getElementById('observations').value
+        };
+
+        try {
+            // Envía los datos al backend con fetch
+            const response = await fetch('/api/sightings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                console.log('Form submitted successfully');
+                hideForm();
+            } else {
+                const error = await response.json();
+                console.error('Error:', error.message);
+            }
+        } catch (err) {
+            console.error('Error al conectar con el servidor:', err);
+        }
     }
 });
 
 // Remove invalid class on input
 document.querySelectorAll('.form-group input, .form-group textarea').forEach(input => {
-    input.addEventListener('input', function() {
+    input.addEventListener('input', function () {
         if (this.value.trim()) {
             this.classList.remove('invalid');
         }
@@ -161,7 +196,7 @@ if (L.Browser.touch) {
 // Bottom navigation handling
 const navItems = document.querySelectorAll('.sidebar-item');
 navItems.forEach(item => {
-    item.addEventListener('click', function() {
+    item.addEventListener('click', function () {
         navItems.forEach(i => i.classList.remove('active'));
         this.classList.add('active');
     });
@@ -169,7 +204,7 @@ navItems.forEach(item => {
 
 // Search functionality
 const searchInput = document.querySelector('.search-input');
-searchInput.addEventListener('input', function(e) {
+searchInput.addEventListener('input', function (e) {
     // Add search functionality here
     console.log('Searching for:', e.target.value);
 });
@@ -182,12 +217,12 @@ zoomInButton.addEventListener('click', () => map.zoomIn());
 zoomOutButton.addEventListener('click', () => map.zoomOut());
 
 function handleMobileFormVisibility() {
-  const formPanel = document.getElementById('sighting-form');
-  if (formPanel.classList.contains('visible')) {
-    formPanel.classList.remove('visible');
-  } else {
-    formPanel.classList.add('visible');
-  }
+    const formPanel = document.getElementById('sighting-form');
+    if (formPanel.classList.contains('visible')) {
+        formPanel.classList.remove('visible');
+    } else {
+        formPanel.classList.add('visible');
+    }
 }
 
 function initOverlayListeners() {
@@ -288,7 +323,7 @@ if (window.innerWidth <= 768) {
 }
 
 // Add resize listener to handle orientation changes
-window.addEventListener('resize', function() {
+window.addEventListener('resize', function () {
     if (window.innerWidth <= 768) {
         initMobileListeners();
     } else {
@@ -320,7 +355,7 @@ function updateGreyMarker(latlng) {
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
         });
-        greyMarker = L.marker(latlng, {icon: greyIcon}).addTo(map);
+        greyMarker = L.marker(latlng, { icon: greyIcon }).addTo(map);
     }
 }
 
@@ -333,4 +368,3 @@ function updateCoordinates(latlng) {
         <div><label>Latitud:</label><span>${lat}</span></div>
     `;
 }
-
