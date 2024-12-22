@@ -8,7 +8,6 @@ exports.register = async (req, res) => {
   try {
     const { dni, email, password, firstName, lastName, militaryRank } = req.body;
 
-    console.log(req.body)
     // Validación de correo y DNI únicos
     const existingUser = await User.findOne({ where: { email } });
     const existingDNI = await User.findOne({ where: { dni } });
@@ -83,10 +82,7 @@ exports.refreshAccessToken = async (req, res) => {
   
   const dni = user.id
   const userR = await User.findOne({ where: { dni } });
-  if (!userR) return res.status(401).json({ message: "Flaco es aca" });
-
-  console.log(req.user)
-
+  if (!userR) return res.status(401).json({ message: "Credenciales incorrenctas" });
 
   // Generar un nuevo Access Token
   const newAccessToken = generateAccessToken({ dni: userR.dni, email: userR.email, userRank: userR.userRank });
