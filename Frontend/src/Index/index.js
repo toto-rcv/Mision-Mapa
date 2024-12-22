@@ -115,30 +115,32 @@ async function reverseGeocode(lat, lng) {
         console.error('Error performing reverse geocoding:', error);
     }
 }
-
-// Form validation and submission
-document.getElementById('sighting-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    // Check if all required fields are filled
-    const requiredFields = this.querySelectorAll('[required]');
+function validateForm() {
+    const form = document.getElementById('sighting-form');
+    const inputs = form.querySelectorAll('input, select, textarea');
     let isValid = true;
 
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
+    inputs.forEach(input => {
+        if (input.hasAttribute('required') && !input.value.trim()) {
+            input.classList.add('invalid');
             isValid = false;
-            field.classList.add('invalid');
         } else {
-            field.classList.remove('invalid');
+            input.classList.remove('invalid');
         }
     });
 
+    return isValid;
+}
+// Form validation and submission
+document.getElementById('sighting-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const isValid = validateForm();
     if (isValid) {
         // Captura los datos del formulario
         const formData = {
             fecha_avistamiento: new Date().toISOString(),
             ubicacion: document.getElementById('location').value,
-            latitud:lat,
+            latitud: lat,
             longitud: lng,
             altitud_estimada: parseFloat(document.getElementById('estimated-height').value),
             rumbo: document.getElementById('heading').value,
@@ -174,8 +176,9 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
     }
 });
 
-// Remove invalid class on input
-document.querySelectorAll('.form-group input, .form-group textarea').forEach(input => {
+
+
+document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(input => {
     input.addEventListener('input', function () {
         if (this.value.trim()) {
             this.classList.remove('invalid');
