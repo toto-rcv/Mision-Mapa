@@ -136,7 +136,6 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
     if (isValid) {
         // Captura los datos del formulario
         const formData = {
-            usuario_id: "30.000.000", // Reemplaza con el ID del usuario actual
             fecha_avistamiento: new Date().toISOString(),
             ubicacion: document.getElementById('location').value,
             latitud:lat,
@@ -152,10 +151,12 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
 
         try {
             // Envía los datos al backend con fetch
+            const accessToken = localStorage.getItem('accessToken');
             const response = await fetch('/api/sightings', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}` // Agrega el token al encabezado
                 },
                 body: JSON.stringify(formData)
             });
