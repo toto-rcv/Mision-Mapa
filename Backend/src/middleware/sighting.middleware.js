@@ -26,8 +26,8 @@ const validateCreateSighting = [
         .isString().withMessage("El campo 'tipo_motor' debe ser un texto")
         .isLength({ min: 0, max: 30 }).withMessage("El campo 'tipo_motor' debe tener un max de 30 letras"),
     body("cantidad_motores")
-        .isInt({ min: 0, max: 4 }).withMessage("El campo 'cantidad_motores' debe ser un número entero")
-        .optional(),
+        .optional()
+        .isInt({ min: 0, max: 4 }).withMessage("El campo 'cantidad_motores' debe ser un número entero"),
     body("color")
         .optional()
         .isString().withMessage("El campo 'color' debe ser un texto"),

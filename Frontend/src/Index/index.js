@@ -11,12 +11,65 @@ const overlay = document.getElementById('new-sighting-overlay');
 const formPanel = document.getElementById('sighting-form');
 const closeFormButton = document.getElementById('close-form');
 const cancelButton = document.getElementById('cancel-button');
+const inputs = formPanel.querySelectorAll('input, select, textarea');
 
 let greyMarker = null;
 let isOverlayActive = false;
 let isFormActive = false;
 let lat = null;
 let lng = null;
+
+
+function validateField(input) {
+    if (!input.required) {
+        return;
+    }
+    if (input.validity.valid) {
+        input.classList.remove('invalid');
+    } else {
+        input.classList.add('invalid');
+    }
+  }
+
+function validateHeight(input) {
+    const height = parseInt(input.value, 10);
+    if (isNaN(height) || height < 0 || height > 15000) {
+        input.setCustomValidity('La altura debe estar entre 0 y 15000 metros');
+    } else {
+        input.setCustomValidity('');
+    }
+    validateField(input);
+}
+
+function validateObservations(input) {
+    const length = input.value.length;
+    charCount.textContent = length;
+    if (length > 250) {
+      input.setCustomValidity('Las observaciones no deben exceder los 250 caracteres');
+      input.classList.add('invalid');
+    } else {
+      input.setCustomValidity('');
+      input.classList.remove('invalid');
+    }
+  }
+
+function validateOnBlur(input, validationFunction) {
+    input.addEventListener('blur', () => {
+        validationFunction(input);
+    });
+}
+
+inputs.forEach(input => {
+    if (input.id === 'estimated-height') {
+        validateOnBlur(input, validateHeight);
+    } else if (input.id === 'observations') {
+        validateOnBlur(input, validateObservations);
+        input.addEventListener('input', () => validateObservations(input));
+    } else {
+        validateOnBlur(input, validateField);
+    }
+});
+
 function showOverlay() {
     const overlay = document.getElementById('new-sighting-overlay');
     overlay.style.display = 'flex';
@@ -115,18 +168,21 @@ async function reverseGeocode(lat, lng) {
         console.error('Error performing reverse geocoding:', error);
     }
 }
+
 function validateForm() {
     const form = document.getElementById('sighting-form');
     const inputs = form.querySelectorAll('input, select, textarea');
     let isValid = true;
 
     inputs.forEach(input => {
-        if (input.hasAttribute('required') && !input.value.trim()) {
-            input.classList.add('invalid');
-            isValid = false;
-        } else {
-            input.classList.remove('invalid');
-        }
+      if (input.id === 'estimated-height') {
+        validateHeight(input);
+      } else if (input.required || input.value.trim() !== '') {
+        validateField(input);
+      }
+      if (input.required && !input.validity.valid) {
+        isValid = false;
+      }
     });
 
     return isValid;
@@ -134,8 +190,12 @@ function validateForm() {
 // Form validation and submission
 document.getElementById('sighting-form').addEventListener('submit', async function (e) {
     e.preventDefault();
+
     const isValid = validateForm();
+
     if (isValid) {
+        const form = document.getElementById('sighting-form');
+
         // Captura los datos del formulario
         const formData = {
             fecha_avistamiento: new Date().toISOString(),
@@ -145,11 +205,22 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
             altitud_estimada: parseFloat(document.getElementById('estimated-height').value),
             rumbo: document.getElementById('heading').value,
             tipo_aeronave: document.getElementById('aircraft-type').value,
-            tipo_motor: document.getElementById('engine-type').value,
-            cantidad_motores: parseInt(document.getElementById('engine-count').value),
-            color: document.getElementById('color').value,
             observaciones: document.getElementById('observations').value
         };
+
+        // Campos opcionales con validaciones adicionales
+        const optionalFields = [
+            { id: 'engine-type', key: 'tipo_motor' },
+            { id: 'engine-count', key: 'cantidad_motores', parse: parseInt },
+            { id: 'color', key: 'color' },
+        ];
+        
+        optionalFields.forEach(({ id, key, parse }) => {
+            const value = document.getElementById(id).value;
+            if (value) {
+            formData[key] = parse ? parse(value) : value;
+            }
+        });
 
         try {
             // Envía los datos al backend con fetch

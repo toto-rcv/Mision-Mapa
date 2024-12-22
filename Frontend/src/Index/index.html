@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="Mapa interactivo para registrar y visualizar avistamientos de aeronaves">
     <meta name="theme-color" content="#26252A" />
     <title>Mapa de Avistamientos</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -14,13 +15,13 @@
 
 <body>
     <header class="header">
-        <img class="logo" src="/static/img/logo.jpg" alt="">
+        <img class="logo" src="/static/img/logo.jpg" alt="Logo de la aplicación de avistamientos">
         <div class="title-container">
             <h1 class="title">Mapa de Avistamientos</h1>
             <span class="markers-count">3 marcadores</span>
         </div>
         <div class="profile">
-            <div class="profile-avatar">S</div>
+            <div class="profile-avatar" aria-hidden="true">S</div>
             <div class="profile-info">
                 <span class="profile-name">Simon</span>
                 <span class="profile-role">POA</span>
@@ -68,13 +69,13 @@
                     </svg>
                 </button>
             </div>
-            <div id="map"></div>
+            <div id="map" aria-label="Mapa interactivo de avistamientos"></div>
             <div class="map-controls">
-                <button class="control-button" id="zoom-in">+</button>
-                <button class="control-button" id="zoom-out">-</button>
+                <button class="control-button" id="zoom-in" aria-label="Acercar mapa">+</button>
+                <button class="control-button" id="zoom-out" aria-label="Alejar mapa">-</button>
             </div>
             <button class="register-button" id="register-button">
-                <span class="register-icon">
+                <span class="register-icon" aria-hidden="true">
                     <i class="fa-solid fa-thumbtack"></i>
                 </span>
                 Registrar
@@ -100,38 +101,36 @@
                 <form class="form-content">
                     <div class="form-group">
                         <label for="location">Ubicación</label>
-                        <input
-                            type="text"
-                            id="location"
-                            name="location"
-                            placeholder="Ingrese la ubicación del avistamiento"
-                            required
-                        >
+                        <input type="text" id="location" name="location"
+                            placeholder="Ingrese la ubicación del avistamiento" required>
+                        <div class="invalid-feedback">Ingrese una ubicación.</div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-column">
                             <div class="form-group">
                                 <label for="estimated-height">Altura estimada</label>
-                                <input
-                                    type="number"
-                                    id="estimated-height"
-                                    name="estimated-height"
-                                    placeholder="Metros sobre el nivel del mar"
-                                    required
-                                >
+                                <input type="number" id="estimated-height" name="estimated-height"
+                                    placeholder="Metros sobre el nivel del mar" required min="0"
+                                    max="15000">
+                                <div class="invalid-feedback">Debe estar entre 0 y 15000 mts.</div>
                             </div>
                         </div>
                         <div class="form-column">
                             <div class="form-group">
                                 <label for="heading">Rumbo</label>
-                                <input
-                                    type="text"
-                                    id="heading"
-                                    name="heading"
-                                    placeholder="Dirección de vuelo"
-                                    required
-                                >
+                                <select id="heading" name="heading" required class="form-select">
+                                    <option value="" disabled selected>Seleccione dirección</option>
+                                    <option value="N">Norte (N)</option>
+                                    <option value="NE">Noreste (NE)</option>
+                                    <option value="E">Este (E)</option>
+                                    <option value="SE">Sureste (SE)</option>
+                                    <option value="S">Sur (S)</option>
+                                    <option value="SW">Suroeste (SW)</option>
+                                    <option value="W">Oeste (W)</option>
+                                    <option value="NW">Noroeste (NW)</option>
+                                </select>
+                                <div class="invalid-feedback">Seleccione una dirección.</div>
                             </div>
                         </div>
                     </div>
@@ -140,25 +139,16 @@
                         <div class="form-column">
                             <div class="form-group">
                                 <label for="aircraft-type">Tipo de aeronave</label>
-                                <input
-                                    type="text"
-                                    id="aircraft-type"
-                                    name="aircraft-type"
-                                    placeholder="Ej: Comercial, Privado, Militar"
-                                    required
-                                >
+                                <input type="text" id="aircraft-type" name="aircraft-type"
+                                    placeholder="Ej: Comercial, Privado, Militar" required>
+                                <div class="invalid-feedback">Ingrese el tipo de aeronave.</div>
                             </div>
                         </div>
                         <div class="form-column">
                             <div class="form-group">
                                 <label for="engine-type">Tipo de motor</label>
-                                <input
-                                    type="text"
-                                    id="engine-type"
-                                    name="engine-type"
-                                    placeholder="Ej: Turbofan, Pistón, Turbohélice"
-                                    required
-                                >
+                                <input type="text" id="engine-type" name="engine-type"
+                                    placeholder="Ej: Turbofan, Pistón, Turbohélice">
                             </div>
                         </div>
                     </div>
@@ -167,39 +157,28 @@
                         <div class="form-column">
                             <div class="form-group">
                                 <label for="engine-count">Cantidad de Motores</label>
-                                <input
-                                    type="number"
-                                    id="engine-count"
-                                    name="engine-count"
-                                    placeholder="Número de motores"
-                                    min="1"
-                                    required
-                                >
+                                <select id="engine-count" name="engine-count" class="form-select">
+                                    <option value="" disabled selected>Seleccione cantidad</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-column">
                             <div class="form-group">
                                 <label for="color">Color</label>
-                                <input
-                                    type="text"
-                                    id="color"
-                                    name="color"
-                                    placeholder="Color principal de la aeronave"
-                                    required
-                                >
+                                <input type="text" id="color" name="color" placeholder="Color principal de la aeronave">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="observations">Observaciones</label>
-                        <textarea
-                            id="observations"
-                            name="observations"
-                            rows="4"
-                            placeholder="Detalles adicionales del avistamiento"
-                            required
-                        ></textarea>
+                        <textarea id="observations" name="observations" rows="4"
+                            placeholder="Detalles adicionales del avistamiento" required maxlength="250"></textarea>
+                        <div class="invalid-feedback">Ingrese sus observaciones.</div>
                     </div>
 
                     <div class="form-buttons">
@@ -217,7 +196,10 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="index.js"></script>
+    <noscript>
+        <p>Esta página requiere JavaScript para funcionar correctamente. Por favor, habilite JavaScript en su navegador.
+        </p>
+    </noscript>
 </body>
 
 </html>
-
