@@ -79,7 +79,7 @@ exports.verifyToken = (req, res) => {
 // Generar nuevo access token usando refresh token
 exports.refreshAccessToken = async (req, res) => {
   const user = req.user; // Datos decodificados del Refresh Token
-  
+
   const dni = user.id
   const userR = await User.findOne({ where: { dni } });
   if (!userR) return res.status(401).json({ message: "Credenciales incorrenctas" });
@@ -91,3 +91,17 @@ exports.refreshAccessToken = async (req, res) => {
     accessToken: newAccessToken,
   });
 };
+
+
+exports.getProfile = async (req, res) => {
+  try {
+    const user = req.user;
+    const userR = await User.findOne({ where: { dni: user.id } });
+
+    res.status(200).json({ user: userR });
+  } catch (error) {
+    console.error("Error en el controlador:", error.message);
+
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+}

@@ -64,7 +64,7 @@ async function refreshAccessToken() {
         console.error("No se pudo renovar el Access Token:", error.message);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-       //redirectToLogin();
+        //redirectToLogin();
     }
 }
 
@@ -75,3 +75,5 @@ function redirectToLogin() {
 }
 
 document.addEventListener("DOMContentLoaded", verifyAccessToken);
+
+

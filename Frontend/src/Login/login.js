@@ -1,3 +1,4 @@
+import { getUserProfile } from '../utils/profile.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("loginForm");
@@ -45,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const { accessToken, refreshToken } = result
                 localStorage.setItem("accessToken", accessToken)
                 localStorage.setItem("refreshToken", refreshToken)
-
+                await getUserProfile();
                 window.location.href = "/"
 
             } else {
@@ -57,4 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
             alert('Error al conectar con el servidor.');
         }
     })
+
+
 });
+
+

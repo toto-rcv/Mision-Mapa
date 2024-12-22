@@ -87,10 +87,14 @@ module.exports = (sequelize, DataTypes) => {
         Sighting.belongsTo(models.User, {
             foreignKey: "usuario_id",
             as: "usuario",
+            allowNull: false,
+            targetKey:"dni",
         });
         Sighting.belongsTo(models.User, {
             foreignKey: "validado_por",
             as: "validador",
+            allowNull: true,
+            targetKey:"dni",
         });
     };
 

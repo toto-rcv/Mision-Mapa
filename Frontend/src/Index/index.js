@@ -1,9 +1,14 @@
+import { loadUserProfile } from '../utils/profile.js';
+loadUserProfile();
 // Initialize the map
+
 const map = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
+
+map.on('load', loadMarkers());
 
 // Initialize UI elements
 const registerButton = document.getElementById('register-button');
@@ -29,7 +34,7 @@ function validateField(input) {
     } else {
         input.classList.add('invalid');
     }
-  }
+}
 
 function validateHeight(input) {
     const height = parseInt(input.value, 10);
@@ -43,15 +48,14 @@ function validateHeight(input) {
 
 function validateObservations(input) {
     const length = input.value.length;
-    charCount.textContent = length;
     if (length > 250) {
-      input.setCustomValidity('Las observaciones no deben exceder los 250 caracteres');
-      input.classList.add('invalid');
+        input.setCustomValidity('Las observaciones no deben exceder los 250 caracteres');
+        input.classList.add('invalid');
     } else {
-      input.setCustomValidity('');
-      input.classList.remove('invalid');
+        input.setCustomValidity('');
+        input.classList.remove('invalid');
     }
-  }
+}
 
 function validateOnBlur(input, validationFunction) {
     input.addEventListener('blur', () => {
@@ -149,6 +153,8 @@ map.on('click', function (e) {
     }
 });
 
+
+
 // Add this new function for reverse geocoding
 async function reverseGeocode(lat, lng) {
     try {
@@ -169,20 +175,22 @@ async function reverseGeocode(lat, lng) {
     }
 }
 
+
+
 function validateForm() {
     const form = document.getElementById('sighting-form');
     const inputs = form.querySelectorAll('input, select, textarea');
     let isValid = true;
 
     inputs.forEach(input => {
-      if (input.id === 'estimated-height') {
-        validateHeight(input);
-      } else if (input.required || input.value.trim() !== '') {
-        validateField(input);
-      }
-      if (input.required && !input.validity.valid) {
-        isValid = false;
-      }
+        if (input.id === 'estimated-height') {
+            validateHeight(input);
+        } else if (input.required || input.value.trim() !== '') {
+            validateField(input);
+        }
+        if (input.required && !input.validity.valid) {
+            isValid = false;
+        }
     });
 
     return isValid;
@@ -214,11 +222,11 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
             { id: 'engine-count', key: 'cantidad_motores', parse: parseInt },
             { id: 'color', key: 'color' },
         ];
-        
+
         optionalFields.forEach(({ id, key, parse }) => {
             const value = document.getElementById(id).value;
             if (value) {
-            formData[key] = parse ? parse(value) : value;
+                formData[key] = parse ? parse(value) : value;
             }
         });
 
@@ -235,7 +243,7 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
             });
 
             if (response.ok) {
-                console.log('Form submitted successfully');
+                L.marker([formData["latitud"],formData["longitud"]]).addTo(map);
                 hideForm();
             } else {
                 const error = await response.json();
@@ -244,6 +252,7 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
         } catch (err) {
             console.error('Error al conectar con el servidor:', err);
         }
+
     }
 });
 
@@ -443,3 +452,37 @@ function updateCoordinates(latlng) {
         <div><label>Latitud:</label><span>${lat}</span></div>
     `;
 }
+
+
+async function loadMarkers() {
+    try {
+        // Obtén el token de localStorage
+        const accessToken = localStorage.getItem('accessToken');
+
+        // Realiza una solicitud GET para obtener los datos de los avistamientos
+        const response = await fetch('/api/sightings', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}` // Agrega el token al encabezado
+            }
+        });
+
+        if (response.ok) {
+            const sightings = await response.json();
+
+            // Itera sobre los datos y agrega marcadores al mapa
+            sightings.forEach(sighting => {
+                const { latitud, longitud } = sighting;
+                L.marker([latitud, longitud]).addTo(map);
+            });
+        } else {
+            const error = await response.json();
+            console.error('Error:', error.message);
+        }
+    } catch (err) {
+        console.error('Error al conectar con el servidor:', err);
+    }
+}
+
+
