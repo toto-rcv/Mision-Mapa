@@ -6,7 +6,7 @@
     --background-color: #26252A;
     --form-background-color: rgba(38, 37, 42, 0.95);
     --text-color: #ffffff;
-    --text-muted: #8A8A8A;
+    --text-muted: #ababab;
     --input-background: rgba(255, 255, 255, 0.1);
     --input-border: rgba(255, 255, 255, 0.1);
     --input-placeholder: #999;
@@ -87,7 +87,7 @@ i {
 .profile {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 10px;
     cursor: pointer;
     margin-left: auto;
     margin-right: 20px;
@@ -96,7 +96,8 @@ i {
 .profile-info {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    gap: 2px;
 }
 
 .profile-name {
@@ -111,12 +112,13 @@ i {
 .profile-avatar {
     width: 30px;
     height: 30px;
-    background-color: #666;
+    background-color: #00C2D1;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-color);
+    padding: 1rem;
 }
 
 /* Main Content Styles */

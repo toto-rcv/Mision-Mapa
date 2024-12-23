@@ -1,4 +1,4 @@
-import { loadUserProfile } from '../utils/profile.js';
+import { loadUserProfile } from '/utils/profile.js';
 loadUserProfile();
 // Initialize the map
 

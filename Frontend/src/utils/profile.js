@@ -1,4 +1,4 @@
-async function getUserProfile() {
+export async function getUserProfile() {
     const accessToken = localStorage.getItem("accessToken");
     const headers = {
         "Content-Type": "application/json",
@@ -23,24 +23,19 @@ async function getUserProfile() {
     }
 }
 
-function loadUserProfile() {
-    const user = JSON.parse(localStorage.getItem('user'));
+export function loadUserProfile() {
+    const { user } = JSON.parse(localStorage.getItem('user'));
 
-    if (user) {
-        const profileAvatar = document.querySelector('.profile-avatar');
-        const profileName = document.querySelector('.profile-name');
-        const profileRole = document.querySelector('.profile-role');
-
-        // Actualiza los elementos del perfil con los datos del usuario
-        profileAvatar.textContent = user.firstName.charAt(0).toUpperCase(); // Inicial del nombre
-        profileName.textContent = user.firstName;
-        profileRole.textContent = user.userRank;
-    } else {
+    if (!user) {
         console.error('No se encontraron datos de usuario en el localStorage.');
     }
+
+    const profileAvatar = document.querySelector('.profile-avatar');
+    const profileName = document.querySelector('.profile-name');
+    const profileRole = document.querySelector('.profile-role');
+
+    // Actualiza los elementos del perfil con los datos del usuario
+    profileAvatar.textContent = user.firstName.charAt(0).toUpperCase() + user.lastName.charAt(0).toUpperCase(); // Inicial del nombre
+    profileName.textContent = `${user.firstName} ${user.lastName}`;
+    profileRole.textContent = `Rol: ${user.userRank}`;
 }
-
-
-
-
-export { getUserProfile, loadUserProfile };
