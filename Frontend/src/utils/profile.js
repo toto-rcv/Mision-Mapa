@@ -5,7 +5,7 @@ export async function getUserProfile() {
         "Authorization": `Bearer ${accessToken}`
     };
     try {
-        const response = await fetch("http://localhost:8070/api/auth/profile", {
+        const response = await fetch("/api/auth/profile", {
             method: "GET",
             headers: headers
         });

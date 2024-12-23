@@ -1,17 +1,15 @@
-async function verifyAccessToken() {
+export async function verifyAccessToken() {
     let accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
 
     if (!accessToken) {
-        // Si no hay Access Token, redirigir al login
-        console.error("No hay Access Token presente.");
         redirectToLogin();
-        return;
+        return false;
     }
 
     try {
         // Intentar validar el Access Token en el servidor
-        const response = await fetch("http://localhost:8070/api/verify/verify-token", {
+        const response = await fetch("/api/verify/verify-token", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -20,9 +18,7 @@ async function verifyAccessToken() {
         });
 
         if (response.ok) {
-            const data = await response.json();
-            console.log("Access Token válido:", data);
-            return; // Salir si el Access Token es válido
+            return true; // El Access Token es válido
         }
 
         // Si el Access Token es inválido o expirado, intentar renovarlo
@@ -38,13 +34,15 @@ async function verifyAccessToken() {
         console.error("Error al verificar el Access Token:", error);
         redirectToLogin();
     }
+
+    return false; // El Access Token no es válido
 }
 
 async function refreshAccessToken() {
     const refreshToken = localStorage.getItem("refreshToken");
 
     try {
-        const response = await fetch("http://localhost:8070/api/auth/refresh-token", {
+        const response = await fetch("/api/auth/refresh-token", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ refreshToken: refreshToken }),
@@ -55,25 +53,21 @@ async function refreshAccessToken() {
         }
 
         const data = await response.json();
-        console.log("Nuevo Access Token recibido:", data.accessToken);
-
         // Guardar el nuevo Access Token en localStorage
         localStorage.setItem("accessToken", data.accessToken);
-        console.log("Nuevo Access Token obtenido!")
     } catch (error) {
         console.error("No se pudo renovar el Access Token:", error.message);
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        //redirectToLogin();
+        redirectToLogin();
     }
 }
 
 function redirectToLogin() {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
     window.location.href = "/login";
 }
 
-document.addEventListener("DOMContentLoaded", verifyAccessToken);
-
-
+if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+    document.addEventListener("DOMContentLoaded", verifyAccessToken);
+}

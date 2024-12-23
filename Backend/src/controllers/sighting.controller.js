@@ -14,7 +14,7 @@ const createSighting = async (req, res) => {
 };
 
 const getAllSightings = async (req, res) => {
-    console.error(req.user);
+
     try {
         const userRole = req.role; // Obtenemos el rol del middleware
         let sightings;
@@ -37,9 +37,6 @@ const getAllSightings = async (req, res) => {
                     where: { usuario_id: req.user.id }
                 });
                 break;
-
-
-
 
             default:
                 return res.status(403).json({ message: "Rol de usuario no autorizado para esta acción" });

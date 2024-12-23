@@ -1,6 +1,15 @@
-import { getUserProfile } from '../utils/profile.js';
+import { getUserProfile } from '/utils/profile.js';
+import { verifyAccessToken } from '/utils/auth.js';
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (accessToken) {
+        if (await verifyAccessToken());
+        window.location.href = "/";
+    }
+
     const loginForm = document.getElementById("loginForm");
     const passwordInput = document.getElementById('password');
     const togglePasswordButton = document.getElementById('togglePassword');
@@ -32,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             // Enviar los datos al backend con fetch
-            const response = await fetch('http://localhost:8070/api/auth/login', {
+            const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
