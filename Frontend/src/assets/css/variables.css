@@ -1,0 +1,18 @@
+/* variables.css */
+
+:root {
+    --primary-color: #00bcd4;
+    --secondary-color: #f0f0f0;
+    --background-color: #26252A;
+    --form-background-color: rgba(38, 37, 42, 0.95);
+    --text-color: #ffffff;
+    --text-muted: #ababab;
+    --input-background: rgba(255, 255, 255, 0.1);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --input-placeholder: #999;
+    --button-text: #000000;
+    --focus-color: #4d90fe;
+    --error-color: #ff4136;
+    --link-color: #64D2FF;
+    --search-background: rgba(0, 0, 0, 0.75);
+}
