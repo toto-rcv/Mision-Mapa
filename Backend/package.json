@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon -L src/server.js"
+    "dev": "nodemon -L src/server.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +23,7 @@
     "sequelize": "^6.37.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "sequelize-cli": "^6.6.2"
   }
 }
