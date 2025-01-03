@@ -1,5 +1,6 @@
 import { loadUserProfile } from '/utils/profile.js';
 loadUserProfile();
+import { customFetch } from '/utils/auth.js';
 // Initialize the map
 
 const map = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
@@ -232,12 +233,11 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
 
         try {
             // Envía los datos al backend con fetch
-            const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch('/api/sightings', {
+          
+           let response = await customFetch('/api/sightings', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}` // Agrega el token al encabezado
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(formData)
             });
