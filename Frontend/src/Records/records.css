@@ -1,0 +1,24 @@
+.sightings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+}
+
+.sightings-table th, .sightings-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+.sightings-table th {
+    background-color: #f4f4f4;
+}
+
+.sightings-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.sightings-table tr:hover {
+    background-color: #f1f1f1;
+}
