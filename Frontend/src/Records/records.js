@@ -52,8 +52,8 @@ function displaySightings(sightings) {
             <td>${sighting.id}</td>
             <td>${sighting.latitud}</td>
             <td>${sighting.longitud}</td>
-            <td>${sighting.descripcion}</td>
-            <td>${new Date(sighting.fecha).toLocaleString()}</td>
+            <td>${sighting.observaciones}</td>
+            <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
             <td>${sighting.altitud_estimada}</td>
             <td>${sighting.rumbo}</td>
             <td>${sighting.tipo_aeronave}</td>
@@ -67,3 +67,14 @@ function displaySightings(sightings) {
 
     mapContainer.appendChild(table);
 }
+
+function formatDate(date) {
+    return new Intl.DateTimeFormat('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(date);
+  }
