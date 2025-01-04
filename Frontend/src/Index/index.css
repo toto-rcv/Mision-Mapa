@@ -164,16 +164,16 @@ i {
 }
 
 .sidebar-icon svg {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     fill: var(--text-muted);
 }
 
 .sidebar-text {
     font-size: 12px;
-
     text-align: center;
     color: var(--text-muted);
+    padding: 0px 7px;
 }
 
 .sidebar-item:hover .sidebar-icon,
@@ -1141,4 +1141,6 @@ textarea {
   textarea::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.5);
   }
+  
+
   

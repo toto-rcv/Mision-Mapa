@@ -1,8 +1,8 @@
 import { loadUserProfile } from '/utils/profile.js';
 loadUserProfile();
 import { customFetch } from '/utils/auth.js';
-// Initialize the map
 
+// Initialize the map
 const map = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -24,7 +24,6 @@ let isOverlayActive = false;
 let isFormActive = false;
 let lat = null;
 let lng = null;
-
 
 function validateField(input) {
     if (!input.required) {
@@ -154,8 +153,6 @@ map.on('click', function (e) {
     }
 });
 
-
-
 // Add this new function for reverse geocoding
 async function reverseGeocode(lat, lng) {
     try {
@@ -176,8 +173,6 @@ async function reverseGeocode(lat, lng) {
     }
 }
 
-
-
 function validateForm() {
     const form = document.getElementById('sighting-form');
     const inputs = form.querySelectorAll('input, select, textarea');
@@ -196,6 +191,7 @@ function validateForm() {
 
     return isValid;
 }
+
 // Form validation and submission
 document.getElementById('sighting-form').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -233,8 +229,8 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
 
         try {
             // Envía los datos al backend con fetch
-          
-           let response = await customFetch('/api/sightings', {
+
+            let response = await customFetch('/api/sightings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -243,8 +239,9 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
             });
 
             if (response.ok) {
-                L.marker([formData["latitud"],formData["longitud"]]).addTo(map);
+                L.marker([formData["latitud"], formData["longitud"]]).addTo(map);
                 hideForm();
+                updateMarkersCount();
             } else {
                 const error = await response.json();
                 console.error('Error:', error.message);
@@ -255,8 +252,6 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
 
     }
 });
-
-
 
 document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(input => {
     input.addEventListener('input', function () {
@@ -453,7 +448,6 @@ function updateCoordinates(latlng) {
     `;
 }
 
-
 async function loadMarkers() {
     try {
         // Obtén el token de localStorage
@@ -476,6 +470,9 @@ async function loadMarkers() {
                 const { latitud, longitud } = sighting;
                 L.marker([latitud, longitud]).addTo(map);
             });
+
+            // Actualizar el número de marcadores
+            updateMarkersCount(sightings.length);
         } else {
             const error = await response.json();
             console.error('Error:', error.message);
@@ -485,4 +482,7 @@ async function loadMarkers() {
     }
 }
 
-
+function updateMarkersCount(count) {
+    const markersCountSpan = document.querySelector('.markers-count');
+    markersCountSpan.textContent = `${count} marcadores`;
+}
