@@ -344,17 +344,10 @@ input[type="number"] {
   display: none;
 }
 
-
-
-
-
-
-
-
 .submit-btn {
   width: 100%;
   padding: 14px;
-  background-color: var(--primary-color);
+  background-color: var(--link-color);
   color: var(--button-text);
   border: none;
   border-radius: 6px;
