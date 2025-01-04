@@ -2,8 +2,9 @@
 #map {
     width: 100%;
     max-height: 100%;
-    overflow-y: auto; /* Permite hacer scroll */
-    
+    overflow-y: auto;
+    /* Permite hacer scroll */
+
     padding: 1px;
     border-radius: 8px;
     background-color: #26252a;
@@ -61,3 +62,14 @@
     border-radius: 8px;
     padding: 6px 4px;
 }
+
+.description-cell {
+    white-space: normal;
+    /* Permite el ajuste de línea */
+    word-wrap: break-word;
+    /* Ajusta las palabras largas */
+    max-width: 200px;
+    /* Ajusta el ancho máximo según sea necesario */
+}
+
+/* ...existing code... */
