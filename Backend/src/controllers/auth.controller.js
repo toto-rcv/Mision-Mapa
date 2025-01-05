@@ -96,9 +96,19 @@ exports.refreshAccessToken = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     const user = req.user;
-    const userR = await User.findOne({ where: { dni: user.id } });
+    const userR = await User.findOne({ where: { dni: user.id }, attributes: ["dni", "firstName", "lastName", "militaryRank", "userRank"] });
 
-    res.status(200).json({ user: userR });
+    if (!userR) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    const permissions = {
+      deleteSightings: userR.userRank === 'DETECCION' || userR.userRank === 'JEFE DE DETECCION'
+    };
+
+
+
+    res.status(200).json({ user: userR, permissions:permissions } );
   } catch (error) {
     console.error("Error en el controlador:", error.message);
 

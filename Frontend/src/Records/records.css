@@ -1,75 +1,117 @@
 /* Estilos para el contenedor del mapa */
+
 #map {
     width: 100%;
     max-height: 100%;
     overflow-y: auto;
     /* Permite hacer scroll */
-
-    padding: 1px;
+    padding: 1%;
     border-radius: 8px;
-    background-color: #26252a;
+    background-color: #121212;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Tabla estilizada */
 .sightings-table {
-    width: 100%;
     border-collapse: collapse;
-    font-size: 16px;
-    font-family: 'Arial', sans-serif;
+    font-size: 14px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     border-radius: 8px;
     margin-bottom: 20px;
+    background-color: #1e1e24;
+    color: white;
+    table-layout: auto;
 }
 
+
+
+
 /* Cabecera de la tabla */
-.sightings-table th {
-    background-color: #00bcd4;
-    color: white;
-    padding: 12px 15px;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+.sightings-table thead th {
+    background-color: #1D4C54;
+    padding: 12px 10px;
+    white-space: nowrap;
+    border-bottom: 1px solid #3d3d3d;
+    font-weight: 400;
+    text-align: left;
+
 }
 
 /* Estilos para las celdas */
 .sightings-table td {
-    padding: 12px 15px;
-    border: 1px solid #3d3d3d;
-    color: #333;
-    text-align: center;
+    padding: 10px 8px;
+    border-bottom: 1px solid #3d3d3d;
+    text-align: left;
+    white-space: nowrap;
+
+
 }
+
+.sightings-table th,
+.sightings-table td {
+    padding: 10px; /* Ajusta el valor según la separación deseada */
+    text-align: left;
+}
+
+
+
 
 /* Filas alternadas de la tabla */
-.sightings-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+.sightings-table tbody tr:nth-child(even) {
+    background-color: #24242b;
 }
 
-.sightings-table tr:nth-child(odd) {
-    background-color: #ffffff;
+.sightings-table tbody tr:nth-child(odd) {
+    background-color: #1e1e24;
 }
 
 /* Efecto de hover para filas */
-.sightings-table tr:hover {
-    background-color: #f1f1f1;
+.sightings-table tbody tr:hover {
+    background-color: #2e2e38;
     cursor: pointer;
 }
 
-.sidebar-item.active {
-    background-color: var(--primary-color);
-    border-radius: 8px;
-    padding: 6px 4px;
-}
-
-.description-cell {
+tbody td:nth-child(3){
     white-space: normal;
-    /* Permite el ajuste de línea */
-    word-wrap: break-word;
-    /* Ajusta las palabras largas */
-    max-width: 200px;
-    /* Ajusta el ancho máximo según sea necesario */
+
 }
 
-/* ...existing code... */
+
+
+.sightings-table td:first-child {
+    font-weight: bold;
+    color: #00BCD4;
+}
+
+.delete-cell {
+    text-align: center;
+}
+
+.delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #ff1a1a;
+}
+
+.delete-btn:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+}
+
+td.ubicacion-cell {
+    max-width: 300px;
+    white-space: nowrap;
+}
+
+.columna_inexistente {
+    
+width: 100%;
+}

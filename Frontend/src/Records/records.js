@@ -2,6 +2,8 @@ import { loadUserProfile } from '/utils/profile.js';
 loadUserProfile();
 import { customFetch } from '../utils/auth.js';
 
+import { toProperCase } from '../utils/utils.js';
+
 document.addEventListener('DOMContentLoaded', loadSightings);
 
 async function loadSightings() {
@@ -22,6 +24,44 @@ async function loadSightings() {
     }
 }
 
+
+
+// Función para verificar permisos y deshabilitar botones de eliminación si es necesario
+function checkPermissionsAndDisableDeleteButtons() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.permissions && user.permissions.deleteSightings === false) {
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.style.backgroundColor = 'gray';
+            button.style.cursor = 'not-allowed';
+            button.disabled = true;
+        });
+    }
+}
+
+// Función para eliminar un avistamiento
+async function deleteSighting(id) {
+    try {
+        const response = await fetch(`/api/sightings/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('Error:', error.message);
+            return false
+        }
+    } catch (err) {
+        console.error('Error al conectar con el servidor:', err);
+        return false
+    }
+    return true
+}
+
+// Función para mostrar los avistamientos en la tabla
 function displaySightings(sightings) {
     const mapContainer = document.getElementById('map');
     mapContainer.innerHTML = ''; // Clear any existing content
@@ -32,17 +72,18 @@ function displaySightings(sightings) {
     const thead = document.createElement('thead');
     thead.innerHTML = `
             <tr>
-                <th>ID</th>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Ubicacion</th>
+                <th>Creado por</th>
                 <th>Latitud</th>
                 <th>Longitud</th>
-                <th>Descripción</th>
-                <th>Fecha</th>
-                <th>Altitud Estimada</th>
                 <th>Rumbo</th>
+                <th>Altitud Est.</th>
                 <th>Tipo de Aeronave</th>
-                <th>Tipo de Motor</th>
-                <th>Cantidad de Motores</th>
                 <th>Color</th>
+                <th class="columna_inexistente"></th>
+                <th>Acciones</th>
             </tr>
         `;
     table.appendChild(thead);
@@ -52,35 +93,57 @@ function displaySightings(sightings) {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${sighting.id}</td>
+            <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+            <td class= "ubicacion-cell">${sighting.ubicacion}</td>
+            <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
             <td>${sighting.latitud}</td>
             <td>${sighting.longitud}</td>
-            <td class="description-cell">${sighting.observaciones}</td>
-            <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
-            <td>${sighting.altitud_estimada}</td>
             <td>${sighting.rumbo}</td>
+            <td>${sighting.altitud_estimada}</td>
             <td>${sighting.tipo_aeronave}</td>
-            <td>${sighting.tipo_motor}</td>
-            <td>${sighting.cantidad_motores}</td>
             <td>${sighting.color}</td>
+            <td class="columna_inexistente"></td>
+            <td class="delete-cell"><button class="delete-btn" data-id="${sighting.id}">X</button></td>
         `;
         tbody.appendChild(row);
     });
     table.appendChild(tbody);
-
     mapContainer.appendChild(table);
 
-    updateMarkersCount(sightings.length);
+    // Verificar permisos y deshabilitar botones de eliminación si es necesario
+    checkPermissionsAndDisableDeleteButtons();
+
+    // Agregar manejadores de eventos para los botones de eliminación
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        if (!button.disabled) {
+            button.addEventListener('click', async (event) => {
+                const id = event.target.getAttribute('data-id');
+                const deleted = await deleteSighting(id);
+                if (deleted) {
+                    // Actualizar la tabla
+
+                    event.target.closest('tr').remove();
+                    updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
+                }
+            });
+        }
+    });
 }
 
 function formatDate(date) {
-    return new Intl.DateTimeFormat('es-ES', {
+    const formattedDate = new Intl.DateTimeFormat('es-ES', {
         day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
+        month: 'short',
+        year: '2-digit',
+    }).format(date).replace('.', '');
+
+    const formattedTime = new Intl.DateTimeFormat('es-ES', {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false
     }).format(date);
+
+    return `${formattedDate}<br>${formattedTime}`;
 }
 
 function updateMarkersCount(count) {

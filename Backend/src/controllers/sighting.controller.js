@@ -24,17 +24,24 @@ const getAllSightings = async (req, res) => {
             case "DETECCION":
                 // Los usuarios con rol "Mayor" ven todos los registros
                 sightings = await Sighting.findAll({
+                    where: { fue_eliminado: false },
                     include: [
-                        { model: User, as: "usuario" },
-                        { model: User, as: "validador" },
+                        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
+                        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
                     ],
+                    attributes: { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] },
                 });
                 break;
 
             case "POA":
                 // Los usuarios con rol "POA" solo ven sus propios registros
                 sightings = await Sighting.findAll({
-                    where: { usuario_id: req.user.id }
+                    where: { usuario_id: req.user.id, fue_eliminado: false },
+                    include: [
+                        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
+
+                    ],
+                    attributes: { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] },
                 });
                 break;
 
@@ -49,5 +56,25 @@ const getAllSightings = async (req, res) => {
     }
 };
 
+const deleteSighting = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const sighting = await Sighting.findByPk(id);
+        if (!sighting) {
+            return res.status(404).json({ message: "Avistamiento no encontrado" });
+        }
 
-module.exports = { createSighting, getAllSightings };
+        // Actualizar las propiedades fue_eliminado y eliminado_por
+        sighting.fue_eliminado = true;
+        sighting.eliminado_por = req.user.id;
+        await sighting.save();
+
+        res.status(200).json({ message: "Avistamiento marcado como eliminado exitosamente" });
+    } catch (error) {
+        console.error("Error al marcar avistamiento como eliminado:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
+
+module.exports = { createSighting, getAllSightings, deleteSighting };

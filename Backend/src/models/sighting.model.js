@@ -70,10 +70,18 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: true,
         },
-        creado_en: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
+        fue_eliminado: {
+            type: DataTypes.BOOLEAN,
             allowNull: false,
+            defaultValue: false,
+        },
+        eliminado_por: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            references: {
+                model: "Users", // Nombre de la tabla Users en la base de datos
+                key: "dni",
+            }
         },
     }, {
         timestamps: false, // Desactiva los timestamps automáticos
@@ -88,13 +96,19 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: "usuario_id",
             as: "usuario",
             allowNull: false,
-            targetKey:"dni",
+            targetKey: "dni",
         });
         Sighting.belongsTo(models.User, {
             foreignKey: "validado_por",
             as: "validador",
             allowNull: true,
-            targetKey:"dni",
+            targetKey: "dni",
+        });
+        Sighting.belongsTo(models.User, {
+            foreignKey: "eliminado_por",
+            as: "eliminador",
+            allowNull: true,
+            targetKey: "dni",
         });
     };
 
