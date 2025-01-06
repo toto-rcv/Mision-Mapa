@@ -11,53 +11,36 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Tabla estilizada */
+
 .sightings-table {
     border-collapse: collapse;
     font-size: 14px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
     border-radius: 8px;
     margin-bottom: 20px;
     background-color: #1e1e24;
     color: white;
     table-layout: auto;
+    width: 100%;
 }
 
-
-
-
-/* Cabecera de la tabla */
 .sightings-table thead th {
     background-color: #1D4C54;
-    padding: 12px 10px;
+    padding: 12px 25px;
     white-space: nowrap;
     border-bottom: 1px solid #3d3d3d;
     font-weight: 400;
     text-align: left;
-
 }
 
-/* Estilos para las celdas */
 .sightings-table td {
-    padding: 10px 8px;
+    padding: 10px 25px;
     border-bottom: 1px solid #3d3d3d;
     text-align: left;
     white-space: nowrap;
-
-
+    
 }
 
-.sightings-table th,
-.sightings-table td {
-    padding: 10px; /* Ajusta el valor según la separación deseada */
-    text-align: left;
-}
-
-
-
-
-/* Filas alternadas de la tabla */
 .sightings-table tbody tr:nth-child(even) {
     background-color: #24242b;
 }
@@ -66,28 +49,39 @@
     background-color: #1e1e24;
 }
 
-/* Efecto de hover para filas */
+
+
+
 .sightings-table tbody tr:hover {
     background-color: #2e2e38;
     cursor: pointer;
 }
-
-tbody td:nth-child(3){
-    white-space: normal;
-
-}
-
-
 
 .sightings-table td:first-child {
     font-weight: bold;
     color: #00BCD4;
 }
 
-.delete-cell {
-    text-align: center;
+.ubicacion-cell {
+    max-width: 350px;
+    min-width: 350px;
+    width: 350px;
+    white-space: normal !important;
 }
 
+.sightings-table td.actions-cell {
+    width: 250px;
+    min-width: 250px;
+}
+
+td.actions-cell>button {
+    margin-right: 10px;
+}
+
+td.actions-cell>button:last-child  {
+
+    margin-right: 0px;
+}
 .delete-btn {
     background-color: #ff4d4d;
     color: white;
@@ -95,6 +89,7 @@ tbody td:nth-child(3){
     border-radius: 4px;
     padding: 5px 10px;
     cursor: pointer;
+    
 }
 
 .delete-btn:hover {
@@ -106,12 +101,21 @@ tbody td:nth-child(3){
     cursor: not-allowed;
 }
 
-td.ubicacion-cell {
-    max-width: 300px;
-    white-space: nowrap;
+.columna_inexistente {
+    width: 100%;
 }
 
-.columna_inexistente {
-    
-width: 100%;
+.view-details-btn {
+    background-color: transparent;
+    color: #00BCD4;
+    border: 1px solid #00BCD4;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.view-details-btn:hover {
+    background-color: rgba(0, 188, 212, 0.1);
 }

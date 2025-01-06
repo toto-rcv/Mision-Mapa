@@ -74,7 +74,7 @@ function displaySightings(sightings) {
             <tr>
                 <th>#</th>
                 <th>Fecha</th>
-                <th>Ubicacion</th>
+                <th class="ubicacion-cell">Ubicacion</th>
                 <th>Creado por</th>
                 <th>Latitud</th>
                 <th>Longitud</th>
@@ -103,7 +103,10 @@ function displaySightings(sightings) {
             <td>${sighting.tipo_aeronave}</td>
             <td>${sighting.color}</td>
             <td class="columna_inexistente"></td>
-            <td class="delete-cell"><button class="delete-btn" data-id="${sighting.id}">X</button></td>
+            <td class="actions-cell"> 
+                <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button> 
+                <button class="delete-btn" data-id="${sighting.id}">X</button>
+                </td>
         `;
         tbody.appendChild(row);
     });
