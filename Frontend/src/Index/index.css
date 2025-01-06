@@ -50,8 +50,8 @@ body {
     justify-content: flex-start;
     align-items: center;
     border-bottom: 1px solid #333;
-    gap: 2.6rem;
-    /* Update 1 */
+    gap: 2.5rem;
+    padding-left: 20px;
 }
 
 i {
