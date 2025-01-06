@@ -119,3 +119,26 @@ td.actions-cell>button:last-child  {
 .view-details-btn:hover {
     background-color: rgba(0, 188, 212, 0.1);
 }
+
+.modal{
+    border-radius: 10px;
+
+}
+
+h2{
+    text-align: center;
+}
+
+
+.close-button{
+    color: black;
+}
+
+.close-button:hover {
+    color: red; /* Color al pasar el mouse */
+  }
+
+.modal-text{
+    width: 100%;
+
+}
