@@ -1,119 +1,111 @@
 /* Estilos para el contenedor del mapa */
-
 #map {
-    width: 100%;
-    max-height: 100%;
-    overflow-y: auto;
-    /* Permite hacer scroll */
-    padding: 1%;
-    border-radius: 8px;
-    background-color: #121212;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  /* Permite hacer scroll */
+  padding: 1%;
+  border-radius: 8px;
+  background-color: #121212;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-
 .sightings-table {
-    border-collapse: collapse;
-    font-size: 14px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    margin-bottom: 20px;
-    background-color: #1e1e24;
-    color: white;
-    table-layout: auto;
-    width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background-color: #1e1e24;
+  color: white;
+  table-layout: auto;
+  width: 100%;
 }
 
 .sightings-table thead th {
-    background-color: #1D4C54;
-    padding: 12px 25px;
-    white-space: nowrap;
-    border-bottom: 1px solid #3d3d3d;
-    font-weight: 400;
-    text-align: left;
+  background-color: #1d4c54;
+  padding: 12px 25px;
+  white-space: nowrap;
+  border-bottom: 1px solid #3d3d3d;
+  font-weight: 400;
+  text-align: left;
 }
 
 .sightings-table td {
-    padding: 10px 25px;
-    border-bottom: 1px solid #3d3d3d;
-    text-align: left;
-    white-space: nowrap;
-    
+  padding: 10px 25px;
+  border-bottom: 1px solid #3d3d3d;
+  text-align: left;
+  white-space: nowrap;
 }
 
 .sightings-table tbody tr:nth-child(even) {
-    background-color: #24242b;
+  background-color: #24242b;
 }
 
 .sightings-table tbody tr:nth-child(odd) {
-    background-color: #1e1e24;
+  background-color: #1e1e24;
 }
 
-
-
-
 .sightings-table tbody tr:hover {
-    background-color: #2e2e38;
-    cursor: pointer;
+  background-color: #2e2e38;
+  cursor: pointer;
 }
 
 .sightings-table td:first-child {
-    font-weight: bold;
-    color: #00BCD4;
+  font-weight: bold;
+  color: #00bcd4;
 }
 
 .ubicacion-cell {
-    max-width: 350px;
-    min-width: 350px;
-    width: 350px;
-    white-space: normal !important;
+  max-width: 350px;
+  min-width: 350px;
+  width: 350px;
+  white-space: normal !important;
 }
 
 .sightings-table td.actions-cell {
-    width: 250px;
-    min-width: 250px;
+  width: 250px;
+  min-width: 250px;
 }
 
-td.actions-cell>button {
-    margin-right: 10px;
+td.actions-cell > button {
+  margin-right: 10px;
 }
 
-td.actions-cell>button:last-child  {
-
-    margin-right: 0px;
+td.actions-cell > button:last-child {
+  margin-right: 0px;
 }
 .delete-btn {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
 .delete-btn:hover {
-    background-color: #ff1a1a;
+  background-color: #ff1a1a;
 }
 
 .delete-btn:disabled {
-    background-color: gray;
-    cursor: not-allowed;
+  background-color: gray;
+  cursor: not-allowed;
 }
 
 .columna_inexistente {
-    width: 100%;
+  width: 100%;
 }
 
 .view-details-btn {
-    background-color: transparent;
-    color: #00BCD4;
-    border: 1px solid #00BCD4;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
+  background-color: transparent;
+  color: #00bcd4;
+  border: 1px solid #00bcd4;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
 .view-details-btn:hover {
