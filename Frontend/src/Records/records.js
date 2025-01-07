@@ -66,6 +66,14 @@ function displaySightings(sightings) {
     const mapContainer = document.getElementById('map');
     mapContainer.innerHTML = ''; // Clear any existing content
 
+    // Crear y agregar el input de búsqueda
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.id = 'search';
+    searchInput.placeholder = 'Buscar Avistamientos';
+    searchInput.classList.add('search-input');
+    mapContainer.appendChild(searchInput);
+
     const table = document.createElement('table');
     table.classList.add('sightings-table');
 
@@ -89,59 +97,73 @@ function displaySightings(sightings) {
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
-    sightings.forEach(sighting => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${sighting.id}</td>
-            <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
-            <td class= "ubicacion-cell">${sighting.ubicacion}</td>
-            <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
-            <td>${sighting.latitud}</td>
-            <td>${sighting.longitud}</td>
-            <td>${sighting.rumbo}</td>
-            <td>${sighting.altitud_estimada}</td>
-            <td>${sighting.tipo_aeronave}</td>
-            <td>${sighting.color}</td>
-            <td class="columna_inexistente"></td>
-            <td class="actions-cell">
-                <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
-                <button class="delete-btn" data-id="${sighting.id}">X</button>
-            </td>
-        `;
- 
-        tbody.appendChild(row);
-    });
     table.appendChild(tbody);
     mapContainer.appendChild(table);
 
-    // Agregar manejadores de eventos para los botones de observaciones
-    document.querySelectorAll('.view-details-btn').forEach(button => {
-        button.addEventListener('click', (event) => {
-            const id = event.target.getAttribute('data-id');
-            const sighting = sightings.find(s => s.id === parseInt(id));
-            showObservationsModal(sighting);
+    function renderTable(filteredSightings) {
+        tbody.innerHTML = ''; // Clear existing rows
+        filteredSightings.forEach(sighting => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${sighting.id}</td>
+                <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+                <td class="ubicacion-cell">${sighting.ubicacion}</td>
+                <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
+                <td>${sighting.latitud}</td>
+                <td>${sighting.longitud}</td>
+                <td>${sighting.rumbo}</td>
+                <td>${sighting.altitud_estimada}</td>
+                <td>${sighting.tipo_aeronave}</td>
+                <td>${sighting.color}</td>
+                <td class="columna_inexistente"></td>
+                <td class="actions-cell">
+                    <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
+                    <button class="delete-btn" data-id="${sighting.id}">X</button>
+                </td>
+            `;
+            tbody.appendChild(row);
         });
-    });
-    // Verificar permisos y deshabilitar botones de eliminación si es necesario
-    checkPermissionsAndDisableDeleteButtons();
 
-    // Agregar manejadores de eventos para los botones de eliminación
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        if (!button.disabled) {
-            button.addEventListener('click', async (event) => {
+        // Agregar manejadores de eventos para los botones de observaciones
+        document.querySelectorAll('.view-details-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
                 const id = event.target.getAttribute('data-id');
-                const deleted = await deleteSighting(id);
-                if (deleted) {
-                    // Actualizar la tabla
-
-                    event.target.closest('tr').remove();
-                    updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
-                }
+                const sighting = filteredSightings.find(s => s.id === parseInt(id));
+                showObservationsModal(sighting);
             });
-        }
+        });
+
+        // Agregar manejadores de eventos para los botones de eliminación
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            if (!button.disabled) {
+                button.addEventListener('click', async (event) => {
+                    const id = event.target.getAttribute('data-id');
+                    const deleted = await deleteSighting(id);
+                    if (deleted) {
+                        // Actualizar la tabla
+                        event.target.closest('tr').remove();
+                        updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
+                    }
+                });
+            }
+        });
+    }
+
+    // Inicialmente renderizar todos los avistamientos
+    renderTable(sightings);
+
+    // Agregar evento input para filtrar los avistamientos
+    searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredSightings = sightings.filter(sighting => {
+            const ubicacionMatch = sighting.ubicacion && sighting.ubicacion.toLowerCase().includes(searchTerm);
+            const creadoPorMatch = sighting.usuario &&
+                (`${sighting.usuario.firstName} ${sighting.usuario.lastName}`).toLowerCase().includes(searchTerm);
+            return ubicacionMatch || creadoPorMatch;
+        });
+        renderTable(filteredSightings);
     });
 }
-
 function formatDate(date) {
     const formattedDate = new Intl.DateTimeFormat('es-ES', {
         day: '2-digit',

@@ -4,9 +4,9 @@
   max-height: 100%;
   overflow-y: auto;
   /* Permite hacer scroll */
-  padding: 1%;
+  margin: 1%;
   border-radius: 8px;
-  background-color: #121212;
+  background-color: #26252a;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -177,3 +177,20 @@ h2 {
   background-color: #2e2e38;
   cursor: not-allowed;
 }
+
+.search-input {
+  display: block;
+  margin: 10px 21px;
+  padding: 10px;
+  width: 40%; /* Ajusta el ancho según sea necesario */
+  border: 1px solid #00BCD4;
+  border-radius: 4px;
+  background-color: #1e1e24;
+  color: white;
+  font-size: 1rem;
+}
+
+.map-container {
+  background: black;
+}
+

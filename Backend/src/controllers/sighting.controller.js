@@ -14,12 +14,11 @@ const createSighting = async (req, res) => {
 };
 
 const getAllSightings = async (req, res) => {
-
     try {
         const userRole = req.role; // Obtenemos el rol del middleware
-        const {search} = req.body; 
+        const { search } = req.body; 
         let sightings;
-        let whereClause = search ?  {ubicacion: { [Op.like]: `%${search}%` }} : {}; // Si hay búsqueda
+        let whereClause = search ? { ubicacion: { [Op.like]: `%${search}%` } } : {}; // Si hay búsqueda
         
         switch (userRole) {
             case "JEFE DE DETECCION":
@@ -41,19 +40,19 @@ const getAllSightings = async (req, res) => {
                     where: { ...whereClause, usuario_id: req.user.id, fue_eliminado: false },
                     include: [
                         { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
-
+                        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
                     ],
                     attributes: { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] },
                 });
                 break;
 
             default:
-                return res.status(403).json({ message: "Rol de usuario no autorizado para esta acción" });
+                return res.status(403).json({ message: "No tienes permiso para ver estos registros" });
         }
 
         res.status(200).json(sightings);
     } catch (error) {
-        console.error("Error al obtener avistamientos:", error.message);
+        console.error("Error al obtener los avistamientos:", error);
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
