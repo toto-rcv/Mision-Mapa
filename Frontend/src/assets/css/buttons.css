@@ -1,0 +1,20 @@
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+  
+  .submit-btn:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  .submit-btn:active {
+    transform: translateY(1px);
+  }

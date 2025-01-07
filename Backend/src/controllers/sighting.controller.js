@@ -1,4 +1,4 @@
-
+const {Op} = require('sequelize');
 const db = require("../models");
 const Sighting = db.Sighting;
 const User = db.User;
@@ -17,14 +17,16 @@ const getAllSightings = async (req, res) => {
 
     try {
         const userRole = req.role; // Obtenemos el rol del middleware
+        const {search} = req.body; 
         let sightings;
-
+        let whereClause = search ?  {ubicacion: { [Op.like]: `%${search}%` }} : {}; // Si hay búsqueda
+        
         switch (userRole) {
             case "JEFE DE DETECCION":
             case "DETECCION":
                 // Los usuarios con rol "Mayor" ven todos los registros
                 sightings = await Sighting.findAll({
-                    where: { fue_eliminado: false },
+                    where: { ...whereClause, fue_eliminado: false },
                     include: [
                         { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
                         { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
@@ -36,7 +38,7 @@ const getAllSightings = async (req, res) => {
             case "POA":
                 // Los usuarios con rol "POA" solo ven sus propios registros
                 sightings = await Sighting.findAll({
-                    where: { usuario_id: req.user.id, fue_eliminado: false },
+                    where: { ...whereClause, usuario_id: req.user.id, fue_eliminado: false },
                     include: [
                         { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
 
@@ -75,6 +77,8 @@ const deleteSighting = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
+
 
 
 module.exports = { createSighting, getAllSightings, deleteSighting };

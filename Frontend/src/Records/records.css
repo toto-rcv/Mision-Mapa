@@ -1,5 +1,4 @@
 /* Estilos para el contenedor del mapa */
-
 #map {
     width: 100%;
     max-height: 100%;
@@ -10,7 +9,6 @@
     background-color: #121212;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-
 
 .sightings-table {
     border-collapse: collapse;
@@ -25,7 +23,7 @@
 }
 
 .sightings-table thead th {
-    background-color: #1c7b8b;
+    background-color: #1d4c54;
     padding: 12px 25px;
     white-space: nowrap;
     border-bottom: 1px solid #3d3d3d;
@@ -38,7 +36,6 @@
     border-bottom: 1px solid #3d3d3d;
     text-align: left;
     white-space: nowrap;
-    
 }
 
 .sightings-table tbody tr:nth-child(even) {
@@ -49,9 +46,6 @@
     background-color: #1e1e24;
 }
 
-
-
-
 .sightings-table tbody tr:hover {
     background-color: #2e2e38;
     cursor: pointer;
@@ -59,7 +53,7 @@
 
 .sightings-table td:first-child {
     font-weight: bold;
-    color: #00BCD4;
+    color: #00bcd4;
 }
 
 .ubicacion-cell {
@@ -78,10 +72,10 @@ td.actions-cell>button {
     margin-right: 10px;
 }
 
-td.actions-cell>button:last-child  {
-
+td.actions-cell>button:last-child {
     margin-right: 0px;
 }
+
 .delete-btn {
     background-color: #ff4d4d;
     color: white;
@@ -89,7 +83,6 @@ td.actions-cell>button:last-child  {
     border-radius: 4px;
     padding: 5px 10px;
     cursor: pointer;
-    
 }
 
 .delete-btn:hover {
@@ -107,8 +100,8 @@ td.actions-cell>button:last-child  {
 
 .view-details-btn {
     background-color: transparent;
-    color: #00BCD4;
-    border: 1px solid #00BCD4;
+    color: #00bcd4;
+    border: 1px solid #00bcd4;
     border-radius: 4px;
     padding: 5px 10px;
     cursor: pointer;
@@ -119,3 +112,30 @@ td.actions-cell>button:last-child  {
 .view-details-btn:hover {
     background-color: rgba(0, 188, 212, 0.1);
 }
+
+.modal {
+    border-radius: 10px;
+    background: rgba(38, 37, 42, 0.95);
+    color: white;
+}
+
+h2 {
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+.close-button {
+    color: white;
+}
+
+.close-button:hover {
+    color: red;
+    /* Color al pasar el mouse */
+}
+
+.modal-text {
+    width: 100%;
+
+}
+

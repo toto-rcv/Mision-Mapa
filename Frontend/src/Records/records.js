@@ -103,16 +103,25 @@ function displaySightings(sightings) {
             <td>${sighting.tipo_aeronave}</td>
             <td>${sighting.color}</td>
             <td class="columna_inexistente"></td>
-            <td class="actions-cell"> 
-                <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button> 
+            <td class="actions-cell">
+                <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
                 <button class="delete-btn" data-id="${sighting.id}">X</button>
-                </td>
+            </td>
         `;
+ 
         tbody.appendChild(row);
     });
     table.appendChild(tbody);
     mapContainer.appendChild(table);
 
+    // Agregar manejadores de eventos para los botones de observaciones
+    document.querySelectorAll('.view-details-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const id = event.target.getAttribute('data-id');
+            const sighting = sightings.find(s => s.id === parseInt(id));
+            showObservationsModal(sighting);
+        });
+    });
     // Verificar permisos y deshabilitar botones de eliminación si es necesario
     checkPermissionsAndDisableDeleteButtons();
 
@@ -152,4 +161,26 @@ function formatDate(date) {
 function updateMarkersCount(count) {
     const markersCountSpan = document.querySelector('.markers-count');
     markersCountSpan.textContent = `${count} marcadores`;
+}
+
+
+function showObservationsModal(sighting) {
+    const modal = document.getElementById('observations-modal');
+    document.getElementById('modal-observaciones').textContent = sighting.observaciones || 'N/A';
+    document.getElementById('modal-tipo-motor').textContent = sighting.tipo_motor || 'N/A';
+    document.getElementById('modal-cantidad-motores').textContent = sighting.cantidad_motores || 'N/A';
+
+    modal.style.display = 'block';
+
+    // Cerrar el modal cuando se hace clic en el botón de cerrar
+    document.getElementById('close-observations-modal').onclick = function () {
+        modal.style.display = 'none';
+    };
+
+    // Cerrar el modal cuando se hace clic fuera del contenido del modal
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    };
 }
