@@ -166,9 +166,9 @@ function updateMarkersCount(count) {
 
 function showObservationsModal(sighting) {
     const modal = document.getElementById('observations-modal');
-    document.getElementById('modal-observaciones').textContent = sighting.observaciones || 'N/A';
-    document.getElementById('modal-tipo-motor').textContent = sighting.tipo_motor || 'N/A';
-    document.getElementById('modal-cantidad-motores').textContent = sighting.cantidad_motores || 'N/A';
+    document.getElementById('modal-observaciones').value = sighting.observaciones || 'N/A';
+    document.getElementById('modal-tipo-motor').value = sighting.tipo_motor || 'N/A';
+    document.getElementById('modal-cantidad-motores').value = sighting.cantidad_motores || 'N/A';
 
     modal.style.display = 'block';
 
