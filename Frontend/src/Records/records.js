@@ -61,6 +61,8 @@ async function deleteSighting(id) {
     return true
 }
 
+
+
 // Función para mostrar los avistamientos en la tabla
 // Función para mostrar los avistamientos en la tabla
 function displaySightings(sightings) {
@@ -102,7 +104,7 @@ function displaySightings(sightings) {
     mapContainer.appendChild(table);
 
     let currentPage = 1;
-    const sightingsPerPage = 11;
+    const sightingsPerPage = 9;
 
     function renderTable(filteredSightings) {
         const totalPages = Math.ceil(filteredSightings.length / sightingsPerPage);
@@ -136,38 +138,34 @@ function displaySightings(sightings) {
             row.querySelector('.view-details-btn').addEventListener('click', () => {
                 showObservationsModal(sighting);
             });
+
         });
 
-        // Update pagination controls
-        const paginationControls = document.querySelector('.pagination-controls');
-        if (!paginationControls) {
-            const newPaginationControls = document.createElement('div');
-            newPaginationControls.classList.add('pagination-controls');
-            newPaginationControls.innerHTML = `
-                <button class="prev-page">&laquo; Anterior</button>
-                <span class="page-info">Página ${currentPage} de ${totalPages}</span>
-                <button class="next-page">Siguiente &raquo;</button>
-            `;
-            mapContainer.appendChild(newPaginationControls);
+        // Add pagination controls
+        const paginationControls = document.createElement('div');
+        paginationControls.classList.add('pagination-controls');
+        paginationControls.innerHTML = `
+            <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Anterior</button>
+            <span>Página ${currentPage} de ${totalPages}</span>
+            <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente &raquo;</button>
+        `;
+        mapContainer.appendChild(paginationControls);
 
-            newPaginationControls.querySelector('.prev-page').addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderTable(filteredSightings);
-                }
-            });
+        // Add event listeners for pagination buttons
+        document.querySelector('.prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable(filteredSightings);
+            }
+        });
 
-            newPaginationControls.querySelector('.next-page').addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderTable(filteredSightings);
-                }
-            });
-        } else {
-            paginationControls.querySelector('.page-info').textContent = `Página ${currentPage} de ${totalPages}`;
-            paginationControls.querySelector('.prev-page').disabled = currentPage === 1;
-            paginationControls.querySelector('.next-page').disabled = currentPage === totalPages;
-        }
+        document.querySelector('.next-page').addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable(filteredSightings);
+            }
+        });
+
     }
 
     // Inicialmente renderizar todos los avistamientos
@@ -184,7 +182,29 @@ function displaySightings(sightings) {
         });
         renderTable(filteredSightings);
     });
+
+
+
+    checkPermissionsAndDisableDeleteButtons();
+
+    // Agregar manejadores de eventos para los botones de eliminación
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        if (!button.disabled) {
+            button.addEventListener('click', async (event) => {
+                const id = event.target.getAttribute('data-id');
+                const deleted = await deleteSighting(id);
+                if (deleted) {
+                    // Actualizar la tabla
+
+                    event.target.closest('tr').remove();
+                    updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
+                }
+            });
+        }
+    });
 }
+
+
 function formatDate(date) {
     const formattedDate = new Intl.DateTimeFormat('es-ES', {
         day: '2-digit',

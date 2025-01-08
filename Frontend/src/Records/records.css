@@ -207,6 +207,7 @@ h2 {
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s ease;
+  margin-right: 22%;
 }
 
 .prev-page {
@@ -218,10 +219,13 @@ h2 {
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s ease;
+  margin-left: 25%;
 }
 
 .pagination-controls {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  padding-right: 15%;
+
 }
