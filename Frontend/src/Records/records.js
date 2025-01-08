@@ -66,7 +66,7 @@ async function deleteSighting(id) {
 // Función para mostrar los avistamientos en la tabla
 // Función para mostrar los avistamientos en la tabla
 function displaySightings(sightings) {
-    const mapContainer = document.getElementById('map');
+    const mapContainer = document.getElementById('registro');
     mapContainer.innerHTML = ''; // Clear any existing content
 
     // Crear y agregar el input de búsqueda
@@ -104,7 +104,7 @@ function displaySightings(sightings) {
     mapContainer.appendChild(table);
 
     let currentPage = 1;
-    const sightingsPerPage = 9;
+    const sightingsPerPage = 10;
 
     function renderTable(filteredSightings) {
         const totalPages = Math.ceil(filteredSightings.length / sightingsPerPage);
@@ -139,9 +139,28 @@ function displaySightings(sightings) {
                 showObservationsModal(sighting);
             });
 
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                if (!button.disabled) {
+                    button.addEventListener('click', async (event) => {
+                        const id = event.target.getAttribute('data-id');
+                        const deleted = await deleteSighting(id);
+                        if (deleted) {
+                            // Actualizar la tabla
+
+                            event.target.closest('tr').remove();
+                            updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
+                        }
+                    });
+                }
+            });
         });
 
         // Add pagination controls
+        const existingPaginationControls = document.querySelector('.pagination-controls');
+        if (existingPaginationControls) {
+            existingPaginationControls.remove();
+        }
+
         const paginationControls = document.createElement('div');
         paginationControls.classList.add('pagination-controls');
         paginationControls.innerHTML = `
@@ -166,6 +185,7 @@ function displaySightings(sightings) {
             }
         });
 
+
     }
 
     // Inicialmente renderizar todos los avistamientos
@@ -187,21 +207,7 @@ function displaySightings(sightings) {
 
     checkPermissionsAndDisableDeleteButtons();
 
-    // Agregar manejadores de eventos para los botones de eliminación
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        if (!button.disabled) {
-            button.addEventListener('click', async (event) => {
-                const id = event.target.getAttribute('data-id');
-                const deleted = await deleteSighting(id);
-                if (deleted) {
-                    // Actualizar la tabla
 
-                    event.target.closest('tr').remove();
-                    updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
-                }
-            });
-        }
-    });
 }
 
 

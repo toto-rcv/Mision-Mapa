@@ -1,13 +1,9 @@
 /* Estilos para el contenedor del mapa */
-#map {
-  width: 100%;
-  max-height: 100%;
-  overflow-y: auto;
-  /* Permite hacer scroll */
-  margin: 1%;
+#registro { 
   border-radius: 8px;
   background-color: #26252a;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
 }
 
 .sightings-table {
@@ -181,7 +177,6 @@ h2 {
 }
 
 .search-input {
-  display: block;
   margin: 10px 21px;
   padding: 10px;
   width: 40%;
@@ -193,9 +188,12 @@ h2 {
   font-size: 1rem;
 }
 
-.map-container {
-  background: black;
-
+.register-container {
+  background: #1A1A1C;
+  padding: 1rem;
+  flex: 1;
+  display: flex
+;
 }
 
 .next-page {
