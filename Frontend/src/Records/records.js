@@ -62,6 +62,7 @@ async function deleteSighting(id) {
 }
 
 // Función para mostrar los avistamientos en la tabla
+// Función para mostrar los avistamientos en la tabla
 function displaySightings(sightings) {
     const mapContainer = document.getElementById('map');
     mapContainer.innerHTML = ''; // Clear any existing content
@@ -79,21 +80,21 @@ function displaySightings(sightings) {
 
     const thead = document.createElement('thead');
     thead.innerHTML = `
-            <tr>
-                <th>#</th>
-                <th>Fecha</th>
-                <th class="ubicacion-cell">Ubicacion</th>
-                <th>Creado por</th>
-                <th>Latitud</th>
-                <th>Longitud</th>
-                <th>Rumbo</th>
-                <th>Altitud Est.</th>
-                <th>Tipo de Aeronave</th>
-                <th>Color</th>
-                <th class="columna_inexistente"></th>
-                <th>Acciones</th>
-            </tr>
-        `;
+        <tr>
+            <th>#</th>
+            <th>Fecha</th>
+            <th class="ubicacion-cell">Ubicacion</th>
+            <th>Creado por</th>
+            <th>Latitud</th>
+            <th>Longitud</th>
+            <th>Rumbo</th>
+            <th>Altitud Est.</th>
+            <th>Tipo de Aeronave</th>
+            <th>Color</th>
+            <th class="columna_inexistente"></th>
+            <th>Acciones</th>
+        </tr>
+    `;
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
@@ -113,49 +114,60 @@ function displaySightings(sightings) {
         sightingsToDisplay.forEach(sighting => {
             const row = document.createElement('tr');
             row.innerHTML = `
-            <td>${sighting.id}</td>
-            <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
-            <td class="ubicacion-cell">${sighting.ubicacion}</td>
-            <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
-            <td>${sighting.latitud}</td>
-            <td>${sighting.longitud}</td>
-            <td>${sighting.rumbo}</td>
-            <td>${sighting.altitud_estimada}</td>
-            <td>${sighting.tipo_aeronave}</td>
-            <td>${sighting.color}</td>
-            <td class="columna_inexistente"></td>
-            <td class="actions-cell">
-                <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
-                <button class="delete-btn" data-id="${sighting.id}">X</button>
-            </td>
-        `;
+                <td>${sighting.id}</td>
+                <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+                <td class="ubicacion-cell">${sighting.ubicacion}</td>
+                <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
+                <td>${sighting.latitud}</td>
+                <td>${sighting.longitud}</td>
+                <td>${sighting.rumbo}</td>
+                <td>${sighting.altitud_estimada}</td>
+                <td>${sighting.tipo_aeronave}</td>
+                <td>${sighting.color}</td>
+                <td class="columna_inexistente"></td>
+                <td class="actions-cell">
+                    <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
+                    <button class="delete-btn" data-id="${sighting.id}">X</button>
+                </td>
+            `;
             tbody.appendChild(row);
+
+            // Add event listener for "Ver detalles" button
+            row.querySelector('.view-details-btn').addEventListener('click', () => {
+                showObservationsModal(sighting);
+            });
         });
 
-        // control de paginas
-        const paginationControls = document.createElement('div');
-        paginationControls.classList.add('pagination-controls');
-        paginationControls.innerHTML = `
-        <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Anterior</button>
-        <span>Página ${currentPage} de ${totalPages}</span>
-        <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente &raquo;</button>
-    `;
-        mapContainer.appendChild(paginationControls);
+        // Update pagination controls
+        const paginationControls = document.querySelector('.pagination-controls');
+        if (!paginationControls) {
+            const newPaginationControls = document.createElement('div');
+            newPaginationControls.classList.add('pagination-controls');
+            newPaginationControls.innerHTML = `
+                <button class="prev-page">&laquo; Anterior</button>
+                <span class="page-info">Página ${currentPage} de ${totalPages}</span>
+                <button class="next-page">Siguiente &raquo;</button>
+            `;
+            mapContainer.appendChild(newPaginationControls);
 
+            newPaginationControls.querySelector('.prev-page').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable(filteredSightings);
+                }
+            });
 
-        document.querySelector('.prev-page').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable(filteredSightings);
-            }
-        });
-
-        document.querySelector('.next-page').addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderTable(filteredSightings);
-            }
-        });
+            newPaginationControls.querySelector('.next-page').addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable(filteredSightings);
+                }
+            });
+        } else {
+            paginationControls.querySelector('.page-info').textContent = `Página ${currentPage} de ${totalPages}`;
+            paginationControls.querySelector('.prev-page').disabled = currentPage === 1;
+            paginationControls.querySelector('.next-page').disabled = currentPage === totalPages;
+        }
     }
 
     // Inicialmente renderizar todos los avistamientos
