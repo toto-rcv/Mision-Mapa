@@ -102,7 +102,7 @@ function displaySightings(sightings) {
     mapContainer.appendChild(table);
 
     let currentPage = 1;
-    const sightingsPerPage = 9;
+    const sightingsPerPage = 11;
 
     function renderTable(filteredSightings) {
         const totalPages = Math.ceil(filteredSightings.length / sightingsPerPage);
