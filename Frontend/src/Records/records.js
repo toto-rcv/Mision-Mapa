@@ -100,51 +100,60 @@ function displaySightings(sightings) {
     table.appendChild(tbody);
     mapContainer.appendChild(table);
 
+    let currentPage = 1;
+    const sightingsPerPage = 9;
+
     function renderTable(filteredSightings) {
+        const totalPages = Math.ceil(filteredSightings.length / sightingsPerPage);
+        const start = (currentPage - 1) * sightingsPerPage;
+        const end = start + sightingsPerPage;
+        const sightingsToDisplay = filteredSightings.slice(start, end);
+
         tbody.innerHTML = ''; // Clear existing rows
-        filteredSightings.forEach(sighting => {
+        sightingsToDisplay.forEach(sighting => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${sighting.id}</td>
-                <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
-                <td class="ubicacion-cell">${sighting.ubicacion}</td>
-                <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
-                <td>${sighting.latitud}</td>
-                <td>${sighting.longitud}</td>
-                <td>${sighting.rumbo}</td>
-                <td>${sighting.altitud_estimada}</td>
-                <td>${sighting.tipo_aeronave}</td>
-                <td>${sighting.color}</td>
-                <td class="columna_inexistente"></td>
-                <td class="actions-cell">
-                    <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
-                    <button class="delete-btn" data-id="${sighting.id}">X</button>
-                </td>
-            `;
+            <td>${sighting.id}</td>
+            <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+            <td class="ubicacion-cell">${sighting.ubicacion}</td>
+            <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
+            <td>${sighting.latitud}</td>
+            <td>${sighting.longitud}</td>
+            <td>${sighting.rumbo}</td>
+            <td>${sighting.altitud_estimada}</td>
+            <td>${sighting.tipo_aeronave}</td>
+            <td>${sighting.color}</td>
+            <td class="columna_inexistente"></td>
+            <td class="actions-cell">
+                <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
+                <button class="delete-btn" data-id="${sighting.id}">X</button>
+            </td>
+        `;
             tbody.appendChild(row);
         });
 
-        // Agregar manejadores de eventos para los botones de observaciones
-        document.querySelectorAll('.view-details-btn').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const id = event.target.getAttribute('data-id');
-                const sighting = filteredSightings.find(s => s.id === parseInt(id));
-                showObservationsModal(sighting);
-            });
+        // control de paginas
+        const paginationControls = document.createElement('div');
+        paginationControls.classList.add('pagination-controls');
+        paginationControls.innerHTML = `
+        <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Anterior</button>
+        <span>Página ${currentPage} de ${totalPages}</span>
+        <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente &raquo;</button>
+    `;
+        mapContainer.appendChild(paginationControls);
+
+
+        document.querySelector('.prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable(filteredSightings);
+            }
         });
 
-        // Agregar manejadores de eventos para los botones de eliminación
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            if (!button.disabled) {
-                button.addEventListener('click', async (event) => {
-                    const id = event.target.getAttribute('data-id');
-                    const deleted = await deleteSighting(id);
-                    if (deleted) {
-                        // Actualizar la tabla
-                        event.target.closest('tr').remove();
-                        updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
-                    }
-                });
+        document.querySelector('.next-page').addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable(filteredSightings);
             }
         });
     }
