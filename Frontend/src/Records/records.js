@@ -116,7 +116,7 @@ function displaySightings(sightings) {
         sightingsToDisplay.forEach(sighting => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${sighting.id}</td>
+                <td >${sighting.id}</td>
                 <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
                 <td class="ubicacion-cell">${sighting.ubicacion}</td>
                 <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
@@ -206,6 +206,8 @@ function displaySightings(sightings) {
 
 
     checkPermissionsAndDisableDeleteButtons();
+
+
 
 
 }

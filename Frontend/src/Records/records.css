@@ -1,229 +1,352 @@
-/* Estilos para el contenedor del mapa */
-#registro { 
-  border-radius: 8px;
-  background-color: #26252a;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  flex: 1;
-}
-
-.sightings-table {
-  border-collapse: collapse;
-  font-size: 14px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  margin-bottom: 20px;
-  background-color: #1e1e24;
-  color: white;
-  table-layout: auto;
-  width: 100%;
-}
-
-.sightings-table thead th {
-  background-color: #1d4c54;
-  padding: 12px 25px;
-  white-space: nowrap;
-  border-bottom: 1px solid #3d3d3d;
-  font-weight: 400;
-  text-align: left;
-}
-
-.sightings-table td {
-  padding: 10px 25px;
-  border-bottom: 1px solid #3d3d3d;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.sightings-table tbody tr:nth-child(even) {
-  background-color: #24242b;
-}
-
-.sightings-table tbody tr:nth-child(odd) {
-  background-color: #1e1e24;
-}
-
-.sightings-table tbody tr:hover {
-  background-color: #2e2e38;
-  cursor: pointer;
-}
-
-.sightings-table td:first-child {
-  font-weight: bold;
-  color: #00bcd4;
-}
-
-.ubicacion-cell {
-  max-width: 350px;
-  min-width: 350px;
-  width: 350px;
-  white-space: normal !important;
-}
-
-.sightings-table td.actions-cell {
-  width: 250px;
-  min-width: 250px;
-}
-
-td.actions-cell>button {
-  margin-right: 10px;
-}
-
-td.actions-cell>button:last-child {
-  margin-right: 0px;
-}
-
-.delete-btn {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-.delete-btn:hover {
-  background-color: #ff1a1a;
-}
-
-.delete-btn:disabled {
-  background-color: gray;
-  cursor: not-allowed;
-}
-
-.view-details-btn {
-  background-color: transparent;
-  color: #00bcd4;
-  border: 1px solid #00bcd4;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.view-details-btn:hover {
-  background-color: rgba(0, 188, 212, 0.1);
-}
-
-h2 {
-  text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.close-button {
-  background: none;
-  border: none;
-  color: #00BCD4;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.close-button:hover {
-  color: red;
-  /* Color al pasar el mouse */
-}
-
-/* Estilos para el modal */
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #26252A;
-  color: white;
-  border: 1px solid #00BCD4;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  padding: 20px;
-  width: 400px;
-  max-width: 90%;
-  min-width: 300px;
-  display: none;
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -55%);
+  /* Estilos para el contenedor del mapa */
+  #registro {
+    border-radius: 8px;
+    background-color: #26252a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex: 1;
   }
 
-  to {
-    opacity: 1;
+  .sightings-table {
+    border-collapse: collapse;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #1e1e24;
+    color: white;
+    table-layout: auto;
+    width: 100%;
+  }
+
+  .sightings-table thead th {
+    background-color: #1d4c54;
+    padding: 12px 25px;
+    white-space: nowrap;
+    border-bottom: 1px solid #3d3d3d;
+    font-weight: 400;
+    text-align: left;
+  }
+
+  .sightings-table td {
+    padding: 10px 25px;
+    border-bottom: 1px solid #3d3d3d;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .sightings-table tbody tr:nth-child(even) {
+    background-color: #24242b;
+  }
+
+  .sightings-table tbody tr:nth-child(odd) {
+    background-color: #1e1e24;
+  }
+
+  .sightings-table tbody tr:hover {
+    background-color: #2e2e38;
+    cursor: pointer;
+  }
+
+  .sightings-table td:first-child {
+    font-weight: bold;
+    color: #00bcd4;
+  }
+
+  .ubicacion-cell {
+    max-width: 350px;
+    min-width: 350px;
+    width: 350px;
+    white-space: normal !important;
+  }
+
+  .sightings-table td.actions-cell {
+    width: 250px;
+    min-width: 250px;
+  }
+
+  td.actions-cell>button {
+    margin-right: 10px;
+  }
+
+  td.actions-cell>button:last-child {
+    margin-right: 0px;
+  }
+
+  .delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  .delete-btn:hover {
+    background-color: #ff1a1a;
+  }
+
+  .delete-btn:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+  }
+
+  .view-details-btn {
+    background-color: transparent;
+    color: #00bcd4;
+    border: 1px solid #00bcd4;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  .view-details-btn:hover {
+    background-color: rgba(0, 188, 212, 0.1);
+  }
+
+  h2 {
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    color: #00BCD4;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .close-button:hover {
+    color: red;
+    /* Color al pasar el mouse */
+  }
+
+  /* Estilos para el modal */
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
+    background-color: #26252A;
+    color: white;
+    border: 1px solid #00BCD4;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 20px;
+    width: 400px;
+    max-width: 90%;
+    min-width: 300px;
+    display: none;
+    animation: fadeIn 0.3s ease-out;
   }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -55%);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .modal-content {
+    position: relative;
+  }
+
+  .modal-input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #00BCD4;
+    border-radius: 4px;
+    background-color: #1e1e24;
+    color: white;
+    font-size: 1rem;
+    resize: none;
+  }
+
+  .modal-input[readonly] {
+    background-color: #2e2e38;
+    cursor: not-allowed;
+  }
+
+  .search-input {
+    margin: 10px 21px;
+    padding: 10px;
+    width: 40%;
+    /* Ajusta el ancho según sea necesario */
+    border: 1px solid #00BCD4;
+    border-radius: 4px;
+    background-color: #1e1e24;
+    color: white;
+    font-size: 1rem;
+  }
+
+  .register-container {
+    background: #1A1A1C;
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+  }
+
+  .next-page {
+    background-color: transparent;
+    color: #00bcd4;
+    border: 1px solid #00bcd4;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-right: 22%;
+  }
+
+  .prev-page {
+    background-color: transparent;
+    color: #00bcd4;
+    border: 1px solid #00bcd4;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-left: 25%;
+  }
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding-right: 15%;
+
+  }
+
+  @media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .nav {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .main {
+        padding: 10px;
+    }
+
+    .sightings-table thead {
+        display: none; /* Ocultar encabezados de tabla en móviles */
+    }
+
+    .sightings-table tbody tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+        border: 1px solid #3d3d3d;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: #1e1e24;
+    }
+
+    .sightings-table tbody td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 5px 0;
+    }
+
+    .sightings-table tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+        color: #00bcd4;
+    }
+
+    .sightings-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+    }
+
+    .next-page,
+    .prev-page {
+        margin: 10px 0;
+    }
 }
 
-.modal-content {
-  position: relative;
-}
+@media (max-width: 480px) {
+    header {
+        padding: 15px 0;
+    }
 
-.modal-input {
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0;
-  border: 1px solid #00BCD4;
-  border-radius: 4px;
-  background-color: #1e1e24;
-  color: white;
-  font-size: 1rem;
-  resize: none;
-}
+    .logo {
+        font-size: 20px;
+    }
 
-.modal-input[readonly] {
-  background-color: #2e2e38;
-  cursor: not-allowed;
-}
+   
+    .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+    }
 
-.search-input {
-  margin: 10px 21px;
-  padding: 10px;
-  width: 40%;
-  /* Ajusta el ancho según sea necesario */
-  border: 1px solid #00BCD4;
-  border-radius: 4px;
-  background-color: #1e1e24;
-  color: white;
-  font-size: 1rem;
-}
+    .main {
+        padding: 5px;
+        font-size: 14px;
+    }
 
-.register-container {
-  background: #1A1A1C;
-  padding: 1rem;
-  flex: 1;
-  display: flex
-;
-}
+    footer {
+        font-size: 12px;
+        padding: 5px 0;
+    }
 
-.next-page {
-  background-color: transparent;
-  color: #00bcd4;
-  border: 1px solid #00bcd4;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  margin-right: 22%;
-}
+    .sightings-table thead {
+        display: none; /* Ocultar encabezados de tabla en móviles */
+    }
 
-.prev-page {
-  background-color: transparent;
-  color: #00bcd4;
-  border: 1px solid #00bcd4;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  margin-left: 25%;
-}
+    .sightings-table tbody tr {
+     
+    }
 
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  padding-right: 15%;
+    .sightings-table tbody td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 5px 0;
+    }
 
+    .sightings-table tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+        color: #00bcd4;
+    }
+
+    .sightings-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+    }
+
+    .next-page,
+    .prev-page {
+        margin: 10px 0;
+    }
 }
