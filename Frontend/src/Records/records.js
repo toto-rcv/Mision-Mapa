@@ -61,22 +61,23 @@ async function deleteSighting(id) {
     return true
 }
 
-
-
-// Función para mostrar los avistamientos en la tabla
 // Función para mostrar los avistamientos en la tabla
 function displaySightings(sightings) {
-    const mapContainer = document.getElementById('registro');
-    mapContainer.innerHTML = ''; // Clear any existing content
+    const sightingsList = document.getElementById('sightings-list');
+    const sightingsPaginationContainer = document.getElementById('sightings-pagination');
+
+    sightingsList.innerHTML = ''; // Clear any existing content
 
     // Crear y agregar el input de búsqueda
+    /*
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.id = 'search';
     searchInput.placeholder = 'Buscar Avistamientos';
     searchInput.classList.add('search-input');
     mapContainer.appendChild(searchInput);
-
+    */
+    
     const table = document.createElement('table');
     table.classList.add('sightings-table');
 
@@ -101,7 +102,7 @@ function displaySightings(sightings) {
 
     const tbody = document.createElement('tbody');
     table.appendChild(tbody);
-    mapContainer.appendChild(table);
+    sightingsList.appendChild(table);
 
     let currentPage = 1;
     const sightingsPerPage = 10;
@@ -168,7 +169,8 @@ function displaySightings(sightings) {
             <span>Página ${currentPage} de ${totalPages}</span>
             <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente &raquo;</button>
         `;
-        mapContainer.appendChild(paginationControls);
+
+        sightingsPaginationContainer.appendChild(paginationControls);
 
         // Add event listeners for pagination buttons
         document.querySelector('.prev-page').addEventListener('click', () => {

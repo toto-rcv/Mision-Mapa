@@ -4,6 +4,9 @@
     background-color: #26252a;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     flex: 1;
+    padding: 1rem 0rem;
+    display: flex;
+    flex-direction: column;
   }
 
   .sightings-table {
@@ -204,7 +207,6 @@
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s ease;
-    margin-right: 22%;
   }
 
   .prev-page {
@@ -216,17 +218,22 @@
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s ease;
-    margin-left: 25%;
   }
 
   .pagination-controls {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
-    padding-right: 15%;
-
+    justify-content: center;
+    gap: 4rem;
   }
 
+  .filters {
+    margin-bottom: 1rem;
+  }
+
+  .table-container {
+    flex: 1;
+  }
   @media (max-width: 768px) {
     .container {
         flex-direction: column;
@@ -274,15 +281,6 @@
     .sightings-table {
         display: block;
         overflow-x: auto;
-    }
-
-    .pagination-controls {
-        flex-direction: column;
-    }
-
-    .next-page,
-    .prev-page {
-        margin: 10px 0;
     }
 }
 
