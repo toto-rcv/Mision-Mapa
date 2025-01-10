@@ -116,8 +116,8 @@ function displaySightings(sightings) {
         sightingsToDisplay.forEach(sighting => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td >${sighting.id}</td>
-                <td>${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+                <td lable-class"pepe" >${sighting.id}</td>
+                <td data-label="Fecha">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
                 <td class="ubicacion-cell">${sighting.ubicacion}</td>
                 <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
                 <td>${sighting.latitud}</td>
