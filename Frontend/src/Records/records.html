@@ -71,17 +71,16 @@
         </aside>
         
         <div class="register-container">
-
-
-            
-
-                <div id="registro" aria-label="Mapa interactivo de avistamientos">
-                    <!-- Aquí se cargarán los avistamientos -->
-
+            <div id="registro" aria-label="Mapa interactivo de avistamientos">
+                <div class="filters">
+                    <input type="text" id="search" class="search-input" placeholder="Buscar Avistamientos">
                 </div>
-           
+                <div id="sightings-list" class="table-container">
+                    <!-- Aquí se cargarán los avistamientos -->
+                </div>
+                <div id="sightings-pagination" class="pagination"></div>
+            </div>
         </div>
-        
     </main>
 
     <div id="observations-modal" class="modal">
