@@ -77,7 +77,7 @@ function displaySightings(sightings) {
     searchInput.classList.add('search-input');
     mapContainer.appendChild(searchInput);
     */
-    
+
     const table = document.createElement('table');
     table.classList.add('sightings-table');
 
@@ -117,16 +117,16 @@ function displaySightings(sightings) {
         sightingsToDisplay.forEach(sighting => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td lable-class"pepe" >${sighting.id}</td>
+                <td>${sighting.id}</td>
                 <td data-label="Fecha">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
-                <td class="ubicacion-cell">${sighting.ubicacion}</td>
-                <td>${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
-                <td>${sighting.latitud}</td>
-                <td>${sighting.longitud}</td>
-                <td>${sighting.rumbo}</td>
-                <td>${sighting.altitud_estimada}</td>
-                <td>${sighting.tipo_aeronave}</td>
-                <td>${sighting.color}</td>
+                <td data-label="Ubicación" class="ubicacion-cell">${sighting.ubicacion}</td>
+                <td data-label="Nombre y Apellido">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
+                <td data-label="Latitud" class="latitud-cell">${sighting.latitud}</td>
+                <td data-label="Longitud" class="longitud-cell">${sighting.longitud}</td>
+                <td data-label="Rumbo">${sighting.rumbo}</td>
+                <td data-label="Altitud estimada">${sighting.altitud_estimada}</td>
+                <td data-label="Tipo de Aeronave">${sighting.tipo_aeronave}</td>
+                <td data-label="Color">${sighting.color}</td>
                 <td class="columna_inexistente"></td>
                 <td class="actions-cell">
                     <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
@@ -156,6 +156,7 @@ function displaySightings(sightings) {
             });
         });
 
+        adjustColumnsForSmallScreens();
         // Add pagination controls
         const existingPaginationControls = document.querySelector('.pagination-controls');
         if (existingPaginationControls) {
@@ -191,7 +192,11 @@ function displaySightings(sightings) {
     }
 
     // Inicialmente renderizar todos los avistamientos
+    // Inicialmente renderizar todos los avistamientos
     renderTable(sightings);
+
+    // Obtener el campo de búsqueda
+    const searchInput = document.getElementById('search');
 
     // Agregar evento input para filtrar los avistamientos
     searchInput.addEventListener('input', () => {
@@ -206,8 +211,9 @@ function displaySightings(sightings) {
     });
 
 
-
-    checkPermissionsAndDisableDeleteButtons();
+    document.getElementById('deleteButton').addEventListener('click', function () {
+        checkPermissionsAndDisableDeleteButtons();
+    });
 
 
 
@@ -228,7 +234,7 @@ function formatDate(date) {
         hour12: false
     }).format(date);
 
-    return `${formattedDate}<br>${formattedTime}`;
+    return `${formattedDate} - ${formattedTime}`;
 }
 
 function updateMarkersCount(count) {
@@ -257,3 +263,33 @@ function showObservationsModal(sighting) {
         }
     };
 }
+function adjustColumnsForSmallScreens() {
+    const isSmallScreen = window.innerWidth < 768;
+    const tableRows = document.querySelectorAll('.sightings-table tbody tr');
+
+    tableRows.forEach(row => {
+        if (isSmallScreen) {
+            row.classList.add('small-screen');
+        } else {
+            row.classList.remove('small-screen');
+        }
+
+        const cells = row.querySelectorAll('td');
+        cells.forEach((cell, index) => {
+            // Solo Fecha, Ubicacion, Rumbo, Altitud Estimada, Tipo de Aeronave y botones de acciones
+            if (isSmallScreen) {
+                if (index !== 1  && index !== 3 &&  index !== 2 && !cell.classList.contains('actions-cell')) {
+                    cell.style.display = 'none';
+                } else {
+                    cell.style.display = 'flex';
+                }
+            } else {
+                cell.style.display = 'table-cell';
+            }
+        });
+    });
+
+}
+
+window.addEventListener('resize', adjustColumnsForSmallScreens);
+window.addEventListener('load', adjustColumnsForSmallScreens);
