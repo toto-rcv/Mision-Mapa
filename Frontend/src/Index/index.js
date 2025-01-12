@@ -463,7 +463,7 @@ async function loadMarkers() {
         });
 
         if (response.ok) {
-            const sightings = await response.json();
+            const {sightings} = await response.json();
 
             // Itera sobre los datos y agrega marcadores al mapa
             sightings.forEach(sighting => {
