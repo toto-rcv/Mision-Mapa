@@ -140,12 +140,14 @@ h2 {
   align-items: center;
   justify-content: center;
   opacity: 0;
+  border: none;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
   transform: none;
-  z-index: 1000;
+  z-index: 2000;
   width: unset;
   background-color: rgba(0, 0, 0, 0.3);
+  overscroll-behavior: contain;
 }
 
 .modal.active {
@@ -161,7 +163,9 @@ h2 {
   padding: 20px;
   width: 90%;
   max-width: 400px;
-  transition: transform 0.3s ease;
+  transition: transform 0.5s ease;
+  will-change: transform;
+  overscroll-behavior: contain;
 }
 
 .modal-content h2 {
@@ -300,6 +304,7 @@ textarea.modal-input {
     width: 100%;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+    touch-action: pan-y;
   }
 
   .modal:not(.active) .modal-content {
