@@ -211,6 +211,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Inicialmente renderizar todos los avistamientos
+        // renderTable(sightings);
         renderTable(sightings);
 
         // Agregar evento input para filtrar los avistamientos

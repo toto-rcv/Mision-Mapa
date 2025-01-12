@@ -1,10 +1,12 @@
 /* Estilos para el contenedor del mapa */
+
+
+
 #registro {
   border-radius: 8px;
   background-color: #26252a;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   flex: 1;
-  padding: 1rem 0rem;
   display: flex;
   flex-direction: column;
 }
@@ -14,7 +16,6 @@
   font-size: 14px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  margin-bottom: 20px;
   background-color: #1e1e24;
   color: white;
   table-layout: auto;
@@ -219,6 +220,7 @@ textarea.modal-input {
   padding: 1rem;
   flex: 1;
   display: flex;
+  margin-bottom: 70px;
 }
 
 .prev-page,
@@ -233,15 +235,18 @@ textarea.modal-input {
   transition: all 0.3s ease;
 }
 
+.pagination{
+ padding: 1rem;
+}
 .pagination-controls {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 4rem;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .filters {
-  margin-bottom: 1rem;
+  margin: 1rem 0;
 }
 
 .table-container {
@@ -255,6 +260,9 @@ textarea.modal-input {
 
 @media (max-width: 768px) {
 
+  .main-content {
+    margin: 70px 0;
+  }
   .sightings-table thead {
     display: none;
     /* Ocultar encabezados de tabla en móviles */
@@ -307,15 +315,16 @@ textarea.modal-input {
     transform: translateY(100%);
   }
 
-  form{
+  form {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
   }
 
-  .form-group{
+  .form-group {
     width: calc(50% - 0.5rem);
   }
+
   .register-container {
     background: #1A1A1C;
     padding: 1rem;
@@ -323,12 +332,12 @@ textarea.modal-input {
     display: flex;
   }
 
-  .form-group.full-width{
+  .form-group.full-width {
     width: 100%;
-    
+
   }
 
-  .form-group #modal-coordenadas{
+  .form-group #modal-coordenadas {
     text-align: center;
   }
 
