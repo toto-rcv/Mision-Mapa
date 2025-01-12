@@ -239,21 +239,28 @@ function updateMarkersCount(count) {
 
 function showObservationsModal(sighting) {
     const modal = document.getElementById('observations-modal');
+    const closeButton = document.getElementById('close-observations-modal');
+
     document.getElementById('modal-observaciones').value = sighting.observaciones || 'N/A';
     document.getElementById('modal-tipo-motor').value = sighting.tipo_motor || 'N/A';
     document.getElementById('modal-cantidad-motores').value = sighting.cantidad_motores || 'N/A';
 
-    modal.style.display = 'block';
+    modal.offsetHeight;
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    closeButton.focus();
+
 
     // Cerrar el modal cuando se hace clic en el botón de cerrar
-    document.getElementById('close-observations-modal').onclick = function () {
-        modal.style.display = 'none';
+    closeButton.onclick = function () {
+        modal.classList.remove('active');
+
     };
 
     // Cerrar el modal cuando se hace clic fuera del contenido del modal
     window.onclick = function (event) {
         if (event.target == modal) {
-            modal.style.display = 'none';
+            modal.classList.remove('active');
         }
     };
 }

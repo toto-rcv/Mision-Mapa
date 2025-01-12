@@ -83,19 +83,24 @@
         </div>
     </main>
 
-    <div id="observations-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="close-observations-modal">&times;</span>
-            <h2>Detalles</h2>
-            <br>
-            <p><strong>Tipo de Motor :</strong></p>
-            <input type="text" id="modal-tipo-motor" class="modal-input" readonly>
-            <br><br>
-            <p><strong>Cantidad de Motores :</strong></p>
-            <input type="text" id="modal-cantidad-motores" class="modal-input" readonly>
-            <br><br>
-            <p><strong>Observaciones :</strong></p>
-            <textarea id="modal-observaciones" class="modal-input" readonly></textarea>
+    <div id="observations-modal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-labelledby="modal-title">
+            <button class="close-button" id="close-observations-modal" aria-label="Close modal">&times;</button>
+            <h2 id="modal-title">Detalles</h2>
+            <form>
+                <div class="form-group">
+                    <label for="modal-tipo-motor">Tipo de Motor</label>
+                    <input type="text" id="modal-tipo-motor" class="modal-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="modal-cantidad-motores">Cantidad de Motores</label>
+                    <input type="text" id="modal-cantidad-motores" class="modal-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="modal-observaciones">Observaciones</label> 
+                    <textarea id="modal-observaciones" class="modal-input" readonly></textarea>
+                </div>
+            </form>
         </div>
     </div>
 
