@@ -69,8 +69,8 @@
                 </a>
             </div>
         </aside>
-        
-        <div class="register-container" >
+
+        <div class="register-container">
             <div id="registro" aria-label="Mapa interactivo de avistamientos">
                 <div class="filters">
                     <input type="text" id="search" class="search-input" placeholder="Buscar Avistamientos">
@@ -83,19 +83,48 @@
         </div>
     </main>
 
-    <div id="observations-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="close-observations-modal">&times;</span>
-            <h2>Detalles</h2>
-            <br>
-            <p><strong>Tipo de Motor :</strong></p>
-            <input type="text" id="modal-tipo-motor" class="modal-input" readonly>
-            <br><br>
-            <p><strong>Cantidad de Motores :</strong></p>
-            <input type="text" id="modal-cantidad-motores" class="modal-input" readonly>
-            <br><br>
-            <p><strong>Observaciones :</strong></p>
-            <textarea id="modal-observaciones" class="modal-input" readonly></textarea>
+    <div id="observations-modal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-labelledby="modal-title">
+            <button class="close-button" id="close-observations-modal" aria-label="Close modal">&times;</button>
+            <h2 id="modal-title">Detalles</h2>
+            <form>
+
+                <div class="form-group mobile-only full-width">
+
+                    <label for="modal-coordenadas">Coordenadas</label>
+                    <input type="text" id="modal-coordenadas" class="modal-input" readonly>
+                </div>
+                <div class="form-group mobile-only">
+                    <label for="modal-rumbo">Rumbo</label>
+                    <input type="text" id="modal-rumbo" class="modal-input" readonly>
+                </div>
+                <div class="form-group mobile-only">
+                    <label for="modal-altitud">Altitud Estimada</label>
+                    <input type="text" id="modal-altitud" class="modal-input" readonly>
+                </div>
+
+                <div class="form-group mobile-only">
+                    <label for="modal-tipo-aeronave">Tipo de Aeronave</label>
+                    <input type="text" id="modal-tipo-aeronave" class="modal-input" readonly>
+                </div>
+
+                <div class="form-group mobile-only">
+                    <label for="modal-color">Color</label>
+                    <input type="text" id="modal-color" class="modal-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="modal-tipo-motor">Tipo de Motor</label>
+                    <input type="text" id="modal-tipo-motor" class="modal-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="modal-cantidad-motores">Cantidad de Motores</label>
+                    <input type="text" id="modal-cantidad-motores" class="modal-input" readonly>
+                </div>
+                <div class="form-group full-width">
+                    <label for="modal-observaciones">Observaciones</label>
+                    <textarea id="modal-observaciones" class="modal-input" readonly></textarea>
+                </div>
+            </form>
         </div>
     </div>
 
