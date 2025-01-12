@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modal = document.getElementById('observations-modal');
     const closeButton = document.getElementById('close-observations-modal');
     const modalContent = modal.querySelector('.modal-content');
+    const limit = 10;
 
+    let currentSearch = '';
+    let sightingsCurrentPage = 1;
     let touchStartY = 0;
     let touchEndY = 0;
 
@@ -90,11 +93,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Cerrar el modal cuando se hace clic fuera del contenido del modal
     window.addEventListener('hashchange', handleHashChange);
+    const searchInput = document.getElementById('search');
 
+    // Agregar evento input para filtrar los avistamientos
+    searchInput.addEventListener('input', debounce(() => {
+        const search = searchInput.value.trim().toLowerCase();
+        sightingsCurrentPage = 1;
+        currentSearch = search; // Reiniciar la paginación
+        loadAndDisplaySightings();
+        console.log('search', search);
+    }), 300);
     // Función para mostrar los avistamientos en la tabla
     function displaySightings(sightings) {
+        renderTable(sightings);
+
+
+        checkPermissionsAndDisableDeleteButtons();
+    }
+
+    function renderTable(filteredSightings) {
         const sightingsList = document.getElementById('sightings-list');
-        const sightingsPaginationContainer = document.getElementById('sightings-pagination');
 
         sightingsList.innerHTML = ''; // Clear any existing content
 
@@ -103,148 +121,142 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const thead = document.createElement('thead');
         thead.innerHTML = `
-            <tr>
-                <th>#</th>
-                <th>Fecha</th>
-                <th class="ubicacion-cell">Ubicacion</th>
-                <th>Creado por</th>
-                <th>Latitud</th>
-                <th>Longitud</th>
-                <th>Rumbo</th>
-                <th>Altitud Est.</th>
-                <th>Tipo de Aeronave</th>
-                <th>Color</th>
-                <th class="columna_inexistente"></th>
-                <th>Acciones</th>
-            </tr>
-        `;
+        <tr>
+            <th>#</th>
+            <th>Fecha</th>
+            <th class="ubicacion-cell">Ubicacion</th>
+            <th>Creado por</th>
+            <th>Latitud</th>
+            <th>Longitud</th>
+            <th>Rumbo</th>
+            <th>Altitud Est.</th>
+            <th>Tipo de Aeronave</th>
+            <th>Color</th>
+            <th class="columna_inexistente"></th>
+            <th>Acciones</th>
+        </tr>
+    `;
         table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
         table.appendChild(tbody);
         sightingsList.appendChild(table);
 
-        let currentPage = 1;
-        const sightingsPerPage = 10;
+        tbody.innerHTML = ''; // Clear existing rows
+        filteredSightings.forEach(sighting => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+               <td>${sighting.id}</td>
+            <td data-label="Fecha">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+            <td data-label="Ubicación" class="ubicacion-cell">${sighting.ubicacion}</td>
+            <td data-label="Nombre y Apellido">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
+            <td data-label="Latitud" class="latitud-cell">${sighting.latitud}</td>
+            <td data-label="Longitud" class="longitud-cell">${sighting.longitud}</td>
+            <td data-label="Rumbo">${sighting.rumbo}</td>
+            <td data-label="Altitud estimada">${sighting.altitud_estimada}</td>
+            <td data-label="Tipo de Aeronave">${sighting.tipo_aeronave}</td>
+            <td data-label="Color">${sighting.color}</td>
+            <td class="columna_inexistente"></td>
+            <td class="actions-cell">
+                <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
+                <button class="delete-btn" data-id="${sighting.id}">X</button>
+            </td>
+        `;
+            tbody.appendChild(row);
 
-        function renderTable(filteredSightings) {
-            const totalPages = Math.ceil(filteredSightings.length / sightingsPerPage);
-            const start = (currentPage - 1) * sightingsPerPage;
-            const end = start + sightingsPerPage;
-            const sightingsToDisplay = filteredSightings.slice(start, end);
-
-            tbody.innerHTML = ''; // Clear existing rows
-            sightingsToDisplay.forEach(sighting => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                   <td>${sighting.id}</td>
-                <td data-label="Fecha">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
-                <td data-label="Ubicación" class="ubicacion-cell">${sighting.ubicacion}</td>
-                <td data-label="Nombre y Apellido">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
-                <td data-label="Latitud" class="latitud-cell">${sighting.latitud}</td>
-                <td data-label="Longitud" class="longitud-cell">${sighting.longitud}</td>
-                <td data-label="Rumbo">${sighting.rumbo}</td>
-                <td data-label="Altitud estimada">${sighting.altitud_estimada}</td>
-                <td data-label="Tipo de Aeronave">${sighting.tipo_aeronave}</td>
-                <td data-label="Color">${sighting.color}</td>
-                <td class="columna_inexistente"></td>
-                <td class="actions-cell">
-                    <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
-                    <button class="delete-btn" data-id="${sighting.id}">X</button>
-                </td>
-            `;
-                tbody.appendChild(row);
-
-                // Add event listener for "Ver detalles" button
-                row.querySelector('.view-details-btn').addEventListener('click', () => {
-                    showObservationsModal(sighting);
-                });
-
-                document.querySelectorAll('.delete-btn').forEach(button => {
-                    if (!button.disabled) {
-                        button.addEventListener('click', async (event) => {
-                            const id = event.target.getAttribute('data-id');
-                            const deleted = await deleteSighting(id);
-                            if (deleted) {
-                                // Actualizar la tabla
-
-                                event.target.closest('tr').remove();
-                                updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
-                            }
-                        });
-                    }
-                });
+            // Add event listener for "Ver detalles" button
+            row.querySelector('.view-details-btn').addEventListener('click', () => {
+                showObservationsModal(sighting);
             });
 
-            // Add pagination controls
-            const existingPaginationControls = document.querySelector('.pagination-controls');
-            if (existingPaginationControls) {
-                existingPaginationControls.remove();
-            }
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                if (!button.disabled) {
+                    button.addEventListener('click', async (event) => {
+                        const id = event.target.getAttribute('data-id');
+                        const deleted = await deleteSighting(id);
+                        if (deleted) {
+                            // Actualizar la tabla
 
-            const paginationControls = document.createElement('div');
-            paginationControls.classList.add('pagination-controls');
-            paginationControls.innerHTML = `
-                <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Anterior</button>
-                <span>Página ${currentPage} de ${totalPages}</span>
-                <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente &raquo;</button>
-            `;
-
-            sightingsPaginationContainer.appendChild(paginationControls);
-
-            // Add event listeners for pagination buttons
-            document.querySelector('.prev-page').addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderTable(filteredSightings);
+                            event.target.closest('tr').remove();
+                            updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
+                        }
+                    });
                 }
             });
-
-            document.querySelector('.next-page').addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderTable(filteredSightings);
-                }
-            });
-
-            adjustColumnsForSmallScreens();
-        }
-
-        // Inicialmente renderizar todos los avistamientos
-        // renderTable(sightings);
-        renderTable(sightings);
-
-        // Agregar evento input para filtrar los avistamientos
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            const filteredSightings = sightings.filter(sighting => {
-                const ubicacionMatch = sighting.ubicacion && sighting.ubicacion.toLowerCase().includes(searchTerm);
-                const creadoPorMatch = sighting.usuario &&
-                    (`${sighting.usuario.firstName} ${sighting.usuario.lastName}`).toLowerCase().includes(searchTerm);
-                return ubicacionMatch || creadoPorMatch;
-            });
-            renderTable(filteredSightings);
         });
 
-        checkPermissionsAndDisableDeleteButtons();
+        adjustColumnsForSmallScreens();
     }
 
-    const sightings = await loadSightings();
-    if (sightings) {
-       displaySightings(sightings);
+
+
+    function renderPagination(currentPage, totalPages) {
+        // Add pagination controls
+        const sightingsPaginationContainer = document.getElementById('sightings-pagination');
+        const existingPaginationControls = document.querySelector('.pagination-controls');
+
+        if (existingPaginationControls) {
+            existingPaginationControls.remove();
+        }
+
+        const paginationControls = document.createElement('div');
+        paginationControls.classList.add('pagination-controls');
+        paginationControls.innerHTML = `
+          <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Anterior</button>
+          <span>Página ${currentPage} de ${totalPages}</span>
+          <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente &raquo;</button>
+      `;
+
+        sightingsPaginationContainer.appendChild(paginationControls);
+
+        // añade evento de boton para la paginacion
+        paginationControls.querySelector('.prev-page').addEventListener('click', async () => {
+            if (currentPage > 1) {
+                sightingsCurrentPage--;
+                await loadAndDisplaySightings();
+            }
+        });
+
+        paginationControls.querySelector('.next-page').addEventListener('click', async () => {
+            console.log(sightingsCurrentPage, currentPage, totalPages);
+            if (currentPage < totalPages) {
+                sightingsCurrentPage++;
+                await loadAndDisplaySightings();
+            }
+        });
     }
+
+
+    async function loadAndDisplaySightings() {
+        const data = await loadSightings({ page: sightingsCurrentPage, search: currentSearch });
+        if (data) {
+            console.log(data);
+            const { sightings, currentPage, totalPages } = data;
+            displaySightings(sightings);
+            renderPagination(currentPage, totalPages);
+        }
+    }
+
+    await loadAndDisplaySightings();
+
 
 });
 
-async function loadSightings() {
+async function loadSightings({ page, limit = 10, search = '' }) {
+
     try {
-        const response = await customFetch('/api/sightings', {
-            method: 'GET'
+        const url = `/api/sightings?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+        console.log('page', page);
+        const response = await customFetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
         });
 
         if (response.ok) {
-            const sightings = await response.json();
-            return sightings;
+            const { sightings, currentPage, totalPages } = await response.json();
+            return { sightings, currentPage, totalPages };
         } else {
             const error = await response.json();
             console.error('Error:', error.message);
@@ -336,3 +348,13 @@ function adjustColumnsForSmallScreens() {
 
 window.addEventListener('resize', adjustColumnsForSmallScreens);
 
+
+
+// Función de debounce
+const debounce = (fn, delay = 1000) => {
+    let timerId = null;
+    return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+    };
+};
