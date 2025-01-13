@@ -123,16 +123,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         thead.innerHTML = `
         <tr>
             <th>#</th>
-            <th>Fecha</th>
+            <th class="col-ws">Fecha</th>
             <th class="ubicacion-cell">Ubicacion</th>
-            <th>Creado por</th>
-            <th>Latitud</th>
-            <th>Longitud</th>
+            <th class="col-medium-screen">Creado por</th>
+            <th class="col-large-screen">Latitud</th>
+            <th class="col-large-screen">Longitud</th>
             <th>Rumbo</th>
             <th>Altitud Est.</th>
             <th>Tipo de Aeronave</th>
-            <th>Color</th>
-            <th class="columna_inexistente"></th>
+            <th class="col-medium-screen">Color</th>
+
             <th>Acciones</th>
         </tr>
     `;
@@ -147,16 +147,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             const row = document.createElement('tr');
             row.innerHTML = `
                <td>${sighting.id}</td>
-            <td data-label="Fecha">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+            <td data-label="Fecha" class="col-ws">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
             <td data-label="Ubicación" class="ubicacion-cell">${sighting.ubicacion}</td>
-            <td data-label="Nombre y Apellido">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
-            <td data-label="Latitud" class="latitud-cell">${sighting.latitud}</td>
-            <td data-label="Longitud" class="longitud-cell">${sighting.longitud}</td>
+            <td data-label="Nombre y Apellido" class="col-medium-screen">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
+            <td data-label="Latitud" class="latitud-cell col-large-screen">${sighting.latitud}</td>
+            <td data-label="Longitud" class="longitud-cell col-large-screen">${sighting.longitud}</td>
             <td data-label="Rumbo">${sighting.rumbo}</td>
             <td data-label="Altitud estimada">${sighting.altitud_estimada}</td>
             <td data-label="Tipo de Aeronave">${sighting.tipo_aeronave}</td>
-            <td data-label="Color">${sighting.color}</td>
-            <td class="columna_inexistente"></td>
+            <td data-label="Color" class="col-medium-screen">${sighting.color}</td>
+
             <td class="actions-cell">
                 <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
                 <button class="delete-btn" data-id="${sighting.id}">X</button>
@@ -303,19 +303,19 @@ async function deleteSighting(id) {
 }
 
 function formatDate(date) {
-    const formattedDate = new Intl.DateTimeFormat('es-ES', {
-        day: '2-digit',
-        month: 'short',
-        year: '2-digit',
-    }).format(date).replace('.', '');
-
+    const day = date.getDate(); // Día (1-31)
+    const monthIndex = date.getMonth(); // Mes (0-11)
+    const year = date.getFullYear(); // Año (4 dígitos)
+    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    
+    const formattedDate = `${day}/${months[monthIndex]}/${year}`
     const formattedTime = new Intl.DateTimeFormat('es-ES', {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false
     }).format(date);
 
-    return `${formattedDate} - ${formattedTime}`;
+    return `${formattedDate} ${formattedTime}`;
 }
 
 function adjustColumnsForSmallScreens() {
@@ -339,7 +339,7 @@ function adjustColumnsForSmallScreens() {
                     cell.style.display = 'flex';
                 }
             } else {
-                cell.style.display = 'table-cell';
+                //cell.style.display = 'table-cell';
             }
         });
     });

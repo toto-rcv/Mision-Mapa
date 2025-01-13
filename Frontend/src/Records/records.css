@@ -13,16 +13,16 @@
 
 .sightings-table {
   border-collapse: collapse;
-  font-size: 14px;
   border-radius: 8px;
   color: white;
-  table-layout: auto;
+  /*table-layout: fixed;*/
+  overflow: hidden;
   width: 100%;
 }
 
 .sightings-table thead th {
   background-color: #1d4c54;
-  padding: 12px 25px;
+  padding: 1rem 0.5rem;
   white-space: nowrap;
   border-bottom: 1px solid #3d3d3d;
   font-weight: 400;
@@ -30,7 +30,7 @@
 }
 
 .sightings-table td {
-  padding: 10px 25px;
+  padding: 0.5rem;
   border-bottom: 1px solid #3d3d3d;
   text-align: left;
   white-space: nowrap;
@@ -52,6 +52,11 @@
 .sightings-table td:first-child {
   font-weight: bold;
   color: #00bcd4;
+  padding-left: 1rem;
+}
+
+.sightings-table th:first-child {
+  padding-left: 1rem;
 }
 
 .ubicacion-cell {
@@ -209,7 +214,6 @@ textarea.modal-input {
   border-radius: 4px;
   background-color: #1e1e24;
   color: white;
-  font-size: 1rem;
 }
 
 .register-container {
@@ -217,6 +221,7 @@ textarea.modal-input {
   padding: 1rem;
   flex: 1;
   display: flex;
+  font-size: 0.95rem;
 }
 
 .prev-page,
@@ -227,7 +232,6 @@ textarea.modal-input {
   border-radius: 4px;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  font-size: 14px;
   transition: all 0.3s ease;
 }
 
@@ -383,4 +387,32 @@ textarea.modal-input {
     height: unset;
     padding: 1rem;
    }
+}
+
+@media (max-width: 1600px) {
+
+  .register-container {
+    font-size: 0.8rem;
+  }
+  .col-large-screen {
+    display: none;
+  }
+
+}
+
+@media (max-width: 1280px) {
+
+  .col-medium-screen {
+    display: none;
+  }
+
+  .ubicacion-cell {
+    max-width: unset;
+    min-width: unset;
+    width: auto;
+  }
+
+  .sightings-table td.col-ws {
+    white-space: pre-line;
+  }
 }
