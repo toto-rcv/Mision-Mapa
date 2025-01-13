@@ -339,7 +339,7 @@ function adjustColumnsForSmallScreens() {
                     cell.style.display = 'flex';
                 }
             } else {
-                //cell.style.display = 'table-cell';
+                cell.style.display = '';
             }
         });
     });
