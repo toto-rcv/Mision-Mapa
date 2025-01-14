@@ -10,7 +10,6 @@ router.post("/", validateAccessToken, validateRole(["POA", "DETECCION", "JEFE DE
 
 // Recuperar todos los avistamientos
 router.get("/", validateAccessToken, validateRole(["POA", "DETECCION", "JEFE DE DETECCION"]), getAllSightings, getAllMarkers);
-
 // Eliminar un avistamiento
 router.delete("/:id", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), deleteSighting);
 

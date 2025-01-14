@@ -96,42 +96,26 @@ const deleteSighting = async (req, res) => {
 
 const getAllMarkers = async (req, res) => {
     try {
-        let markers;
-        const { role } = req.user;
+        const userRole = req.role; // Obtenemos el rol del middleware
+        const search = req.query.search || ""; // Obtenemos la búsqueda del query
+        let whereClause = search ? { ubicacion: { [Op.like]: `%${search}%` } } : {}; // Si hay búsqueda
 
-        switch (role) {
+        let sightings;
+        switch (userRole) {
             case "JEFE DE DETECCION":
             case "DETECCION":
-                markers = await Sighting.findAll({
-                    where: { fue_eliminado: false },
-                    createdAt: { [Op.gte]: thirtyDaysAgo },
-                    include: [
-                        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
-                        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
-                    ],
-                    attributes: { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] },
+                sightings = await Sighting.findAll({
+                    where: { ...whereClause, fue_eliminado: false },
+                    attributes: ["latitud", "longitud"]
                 });
                 break;
-
-            case "POA":
-                markers = await Sighting.findAll({
-                    where: { usuario_id: req.user.id, fue_eliminado: false },
-                    createdAt: { [Op.gte]: thirtyDaysAgo },
-                    include: [
-                        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
-                        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
-                    ],
-                    attributes: { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] },
-                });
-                break;
-
             default:
                 return res.status(403).json({ message: "No tienes permiso para ver estos registros" });
         }
 
-        res.status(200).json({ markers });
+        res.status(200).json({ sightings });
     } catch (error) {
-        console.error("Error al obtener los marcadores:", error);
+        console.error("Error al obtener marcadores:", error);
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
