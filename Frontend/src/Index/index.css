@@ -316,7 +316,8 @@ form button:hover {
 .overlay {
     position: absolute;
     top: 2rem;
-    right: 1rem; /* Changed from 2rem to 1rem */
+    right: 1rem;
+    /* Changed from 2rem to 1rem */
     width: 400px;
     background-color: var(--form-background-color);
     color: white;
@@ -324,7 +325,8 @@ form button:hover {
     display: none;
     flex-direction: column;
     z-index: 1000;
-    border-radius: 5px; /* Added border radius */
+    border-radius: 5px;
+    /* Added border radius */
 }
 
 .overlay h2 {
@@ -335,7 +337,8 @@ form button:hover {
 
 .overlay p {
     padding: 40px;
-    border-radius: 3px; /* Added border radius */
+    border-radius: 3px;
+    /* Added border radius */
     text-align: center;
     color: rgba(255, 255, 255, 0.7);
     font-size: 14px;
@@ -585,18 +588,20 @@ form button:hover {
 
 /* Mobile-specific styles */
 @media (max-width: 768px) {
+
     /* Header styles */
     .header {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        height: 56px;
+        height: 70px;
         padding: 0.5rem 1rem;
         background-color: rgba(38, 37, 42, 0.95);
         backdrop-filter: blur(10px);
         z-index: 1000;
         gap: 1rem;
+
     }
 
     .title {
@@ -619,28 +624,33 @@ form button:hover {
     }
 
     .search-input {
-        width: 100%;
+        width: calc(100% - 1rem);
         height: 40px;
         padding: 0.5rem 1rem;
     }
 
     /* Map container adjustments */
     .map-container {
-        margin-top: 56px; /* Header bar height */
-        margin-bottom: 56px; /* Bottom navigation height */
+        margin-top: 56px;
+        /* Header bar height */
+        margin-bottom: 56px;
+        /* Bottom navigation height */
+        height: calc(100vh - 120px);
+        /* Adjust for header and bottom nav */
     }
 
     /* FAB button styles */
     .register-button {
         width: 66px;
         height: 66px;
-        padding: 0;
+        padding: 0.5rem 1rem;
         border-radius: 35px;
         right: 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        bottom: 70px;
     }
 
     .register-button span {
@@ -728,16 +738,28 @@ form button:hover {
         color: var(--text-muted);
     }
 
+    .overlay {
+        position: fixed;
+        top: 33px;
+        left: 0;
+        right: 0;
+        bottom: 56px;
+        width: 100%;
+        transform: translateY(100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
     .overlay.visible {
         transform: translateX(0);
     }
 
     .form-panel {
         position: fixed;
-        top: 56px;
+        top: auto;
         left: 0;
         right: 0;
-        bottom: 56px;
+        bottom: 60px;
+        max-height: 80vh;
         width: 100%;
         max-width: none;
         border-radius: 0;
@@ -765,10 +787,6 @@ form button:hover {
     }
 
     .form-buttons {
-        position: fixed;
-        bottom: 56px;
-        left: 0;
-        right: 0;
         padding: 1rem;
         background-color: rgba(38, 37, 42, 0.95);
         backdrop-filter: blur(10px);
@@ -844,61 +862,36 @@ form button:hover {
 
 
 @media (max-width: 768px) {
-  /* Header styles */
-  .header {
-    padding: 0.5rem 1rem;
-    height: 70px;
-  }
 
-  .title {
-    font-size: 1.2rem;
-  }
+    /* Map container styles */
 
-  .markers-count {
-    display: none;
-  }
+    /* Search container styles */
+    .search-container {
+        padding: 0.5rem;
+        top: 80px;
+     }
 
-  /* Map container styles */
-  .map-container {
-    height: calc(100vh - 120px); /* Adjust for header and bottom nav */
-  }
+    /* Form panel styles */
+    .form-panel {
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        max-width: 400px;
+        max-height: 90vh;
+        height: 82vh;
+        border-radius: 12px;
+        margin-left: 5px;
+    }
 
-  /* Search container styles */
-  .search-container {
-    padding: 0.5rem;
-    top: 80px;
-  }
+    .form-panel.visible {
+        transform: translateY(0);
+    }
 
-  .search-input {
-    width: calc(100% - 1rem);
-  }
-
-  /* Register button styles */
-  .register-button {
-    bottom: 70px;
-    right: 1rem;
-    padding: 0.5rem 1rem;
-  }
-
-  /* Form panel styles */
-  .form-panel {
-    width: 100%;
-    max-height: 80vh;
-    bottom: 60px;
-    top: auto;
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .form-panel.visible {
-    transform: translateY(0);
-  }
-
-  /* Map controls */
-  .map-controls {
-    bottom: 70px;
-    left: 1rem;
-  }
+    /* Map controls */
+    .map-controls {
+        bottom: 70px;
+        left: 1rem;
+    }
 }
 
 .form-select {
@@ -948,12 +941,12 @@ form button:hover {
 /* Remove spinners from number input */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 input[type="number"] {
-  appearance: textfield;
+    appearance: textfield;
 }
 
 .invalid-feedback {
@@ -962,33 +955,30 @@ input[type="number"] {
     margin-top: 5px;
     font-size: 11px;
 }
-  
-.invalid + .invalid-feedback {
-display: block;
+
+.invalid+.invalid-feedback {
+    display: block;
 }
 
 textarea {
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.1);
-  }
-  
-  textarea::-webkit-scrollbar {
+}
+
+textarea::-webkit-scrollbar {
     width: 6px;
-  }
-  
-  textarea::-webkit-scrollbar-track {
+}
+
+textarea::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
-  }
-  
-  textarea::-webkit-scrollbar-thumb {
+}
+
+textarea::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 3px;
-  }
-  
-  textarea::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-  }
-  
+}
 
-  
+textarea::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
