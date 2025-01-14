@@ -454,7 +454,7 @@ async function loadMarkers() {
         const accessToken = localStorage.getItem('accessToken');
 
         // Realiza una solicitud GET para obtener los datos de los avistamientos
-        const response = await fetch('/api/sightings', {
+        const response = await fetch('/api/sightings/all', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
