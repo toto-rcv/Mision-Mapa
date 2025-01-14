@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         thead.innerHTML = `
         <tr>
             <th>#</th>
-            <th class="col-ws">Fecha</th>
+               <th class="col-ws fecha-header">Fecha <img src="static/img/angles-up-down.svg"/></th>
             <th class="ubicacion-cell">Ubicacion</th>
             <th class="col-medium-screen">Creado por</th>
             <th class="col-large-screen">Latitud</th>
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             row.innerHTML = `
                <td>${sighting.id}</td>
             <td data-label="Fecha" class="col-ws">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
-            <td data-label="Ubicación" class="ubicacion-cell">${sighting.ubicacion}</td>
+            <td data-label="Ubicación" class="ubicacion-cell" >${sighting.ubicacion}</td>
             <td data-label="Nombre y Apellido" class="col-medium-screen">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
             <td data-label="Latitud" class="latitud-cell col-large-screen">${sighting.latitud}</td>
             <td data-label="Longitud" class="longitud-cell col-large-screen">${sighting.longitud}</td>
@@ -168,24 +168,52 @@ document.addEventListener('DOMContentLoaded', async () => {
             row.querySelector('.view-details-btn').addEventListener('click', () => {
                 showObservationsModal(sighting);
             });
+        });
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            if (!button.disabled) {
+                button.addEventListener('click', async (event) => {
+                    const id = event.target.getAttribute('data-id');
+                    const deleted = await deleteSighting(id);
+                    if (deleted) {
+                        // Actualizar la tabla
 
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                if (!button.disabled) {
-                    button.addEventListener('click', async (event) => {
-                        const id = event.target.getAttribute('data-id');
-                        const deleted = await deleteSighting(id);
-                        if (deleted) {
-                            // Actualizar la tabla
-
-                            event.target.closest('tr').remove();
-                            updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
-                        }
-                    });
-                }
-            });
+                        event.target.closest('tr').remove();
+                        updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
+                    }
+                });
+            }
         });
 
+        table.querySelectorAll('.sightings-table th').forEach(header => {
+            header.addEventListener('click', () => {
+                const currentSort = header.getAttribute('data-sort');
+                const sortIcon = header.querySelector('img');
+                let newSort
+                switch (currentSort) {
+                    case 'asc':
+                        newSort = 'desc';
+                        sortIcon.src = 'static/img/angles-down.svg';
+                        sortIcon.style = "padding : 0";
+                        break;
+                    case 'desc':
+                        newSort = 'none';
+                        sortIcon.src = 'static/img/angles-up-down.svg';
+                        sortIcon.style = "" ;
+                        break;
+                    default:
+                        newSort = 'asc';
+                        sortIcon.src = 'static/img/angles-up.svg';
+                        sortIcon.style = "padding : 0";
+                        
+
+                }
+                header.setAttribute('data-sort', newSort);
+            });
+
+
+        });
         adjustColumnsForSmallScreens();
+
     }
 
 
@@ -307,7 +335,7 @@ function formatDate(date) {
     const monthIndex = date.getMonth(); // Mes (0-11)
     const year = date.getFullYear(); // Año (4 dígitos)
     const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-    
+
     const formattedDate = `${day}/${months[monthIndex]}/${year}`
     const formattedTime = new Intl.DateTimeFormat('es-ES', {
         hour: '2-digit',

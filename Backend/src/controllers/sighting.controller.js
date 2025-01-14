@@ -96,9 +96,10 @@ const deleteSighting = async (req, res) => {
 
 const getAllMarkers = async (req, res) => {
     try {
-        const userRole = req.role; // Obtenemos el rol del middleware
-        const search = req.query.search || ""; // Obtenemos la búsqueda del query
-        let whereClause = search ? { ubicacion: { [Op.like]: `%${search}%` } } : {}; // Si hay búsqueda
+        let markers;
+        const  role  = req.role;
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
         let sightings;
         switch (userRole) {
@@ -113,7 +114,7 @@ const getAllMarkers = async (req, res) => {
                 return res.status(403).json({ message: "No tienes permiso para ver estos registros" });
         }
 
-        res.status(200).json({ sightings });
+        res.status(200).json({ sightings: markers });
     } catch (error) {
         console.error("Error al obtener marcadores:", error);
         res.status(500).json({ message: "Error interno del servidor" });
