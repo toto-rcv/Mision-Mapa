@@ -9,7 +9,8 @@ const validateRole = require("../middleware/role.middleware");
 router.post("/", validateAccessToken, validateRole(["POA", "DETECCION", "JEFE DE DETECCION"]), validateCreateSighting, createSighting);
 
 // Recuperar todos los avistamientos
-router.get("/", validateAccessToken, validateRole(["POA", "DETECCION", "JEFE DE DETECCION"]), getAllSightings, getAllMarkers);
+router.get("/", validateAccessToken, validateRole(["POA", "DETECCION", "JEFE DE DETECCION"]), getAllSightings);
+router.get("/all", validateAccessToken, validateRole(["POA", "DETECCION", "JEFE DE DETECCION"]),getAllMarkers);
 
 // Eliminar un avistamiento
 router.delete("/:id", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), deleteSighting);

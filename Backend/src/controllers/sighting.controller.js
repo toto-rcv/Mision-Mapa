@@ -97,7 +97,9 @@ const deleteSighting = async (req, res) => {
 const getAllMarkers = async (req, res) => {
     try {
         let markers;
-        const { role } = req.user;
+        const  role  = req.role;
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
         switch (role) {
             case "JEFE DE DETECCION":
@@ -129,7 +131,7 @@ const getAllMarkers = async (req, res) => {
                 return res.status(403).json({ message: "No tienes permiso para ver estos registros" });
         }
 
-        res.status(200).json({ markers });
+        res.status(200).json({ sightings: markers });
     } catch (error) {
         console.error("Error al obtener los marcadores:", error);
         res.status(500).json({ message: "Error interno del servidor" });

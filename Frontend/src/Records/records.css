@@ -20,6 +20,12 @@
   width: 100%;
 }
 
+.sightings-table  th img{
+  vertical-align: middle;
+  height: 1.5em;
+  margin-left: 5px;
+  padding: 3px;
+}
 .sightings-table thead th {
   background-color: #1d4c54;
   padding: 1rem 0.5rem;
@@ -70,6 +76,8 @@
   flex-direction: row;
   justify-content: flex-end;
 }
+
+
 
 td.actions-cell>button {
   margin-right: 10px;
