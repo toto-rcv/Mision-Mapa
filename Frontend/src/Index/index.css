@@ -632,10 +632,10 @@ form button:hover {
 
     /* FAB button styles */
     .register-button {
-        width: 56px;
-        height: 56px;
+        width: 66px;
+        height: 66px;
         padding: 0;
-        border-radius: 28px;
+        border-radius: 35px;
         right: 1rem;
         display: flex;
         align-items: center;
@@ -728,18 +728,6 @@ form button:hover {
         color: var(--text-muted);
     }
 
-    /* Form and overlay animations */
-    .overlay {
-        position: fixed;
-        top: 56px;
-        left: 0;
-        right: 0;
-        bottom: 56px;
-        width: 100%;
-        transform: translateX(100%);
-        transition: transform 0.3s ease-in-out;
-    }
-
     .overlay.visible {
         transform: translateX(0);
     }
@@ -797,7 +785,7 @@ form button:hover {
     /* Adjust overlay for mobile */
     .overlay {
         position: fixed;
-        top: 56px;
+        top: auto;
         left: 0;
         right: 0;
         bottom: 56px;

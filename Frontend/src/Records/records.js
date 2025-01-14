@@ -123,14 +123,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         thead.innerHTML = `
         <tr>
             <th>#</th>
-               <th class="col-ws fecha-header">Fecha <img src="static/img/angles-up-down.svg"/></th>
-            <th class="ubicacion-cell">Ubicacion</th>
-            <th class="col-medium-screen">Creado por</th>
-            <th class="col-large-screen">Latitud</th>
-            <th class="col-large-screen">Longitud</th>
-            <th>Rumbo</th>
-            <th>Altitud Est.</th>
-            <th>Tipo de Aeronave</th>
+            <th class="col-ws fecha-header">Fecha <img src="static/img/angles-up-down.svg"/></th>
+            <th class="ubicacion-cell">Ubicacion </th>
+            <th class="col-medium-screen">Creado por </th>
+            <th class="col-large-screen">Latitud </th>
+            <th class="col-large-screen">Longitud </th>
+            <th>Rumbo </th>
+            <th>Altitud Est. </th>
+            <th>Tipo de Aeronave </th>
             <th class="col-medium-screen">Color</th>
 
             <th>Acciones</th>
