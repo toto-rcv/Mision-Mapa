@@ -486,3 +486,44 @@ function updateMarkersCount(count) {
     const markersCountSpan = document.querySelector('.markers-count');
     markersCountSpan.textContent = `${count} marcadores`;
 }
+
+// Función para buscar la ubicación
+async function buscarUbicacion(nombreLugar) {
+    try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(nombreLugar)}&addressdetails=1`);
+        const resultados = await response.json();
+        console.log('Resultados de la búsqueda:', resultados);
+        if (resultados.length > 0) {
+            const { lat, lon, addresstype } = resultados[0]; // Tomar el primer resultado
+            let zoomLevel = 10; // Zoom predeterminado para lugares genéricos
+
+            // Determinar el nivel de zoom según el tipo de lugar
+            if (addresstype === 'city') {
+                zoomLevel = 12; // Zoom más cercano para ciudades
+            } else if (addresstype === "administrative" || addresstype === "country") {
+                zoomLevel = 5; // Zoom para países
+            } else if (addresstype === 'town' || addresstype === 'village') {
+                zoomLevel = 5; // Zoom para pueblos o aldeas
+            }
+            console.log(zoomLevel)
+        
+
+            // Centrar el mapa y ajustar el zoom
+            map.setView([lat, lon], zoomLevel);
+        } else {
+            alert('No se encontraron resultados para tu búsqueda.');
+        }
+    } catch (error) {
+        console.error('Error al buscar la ubicación:', error);
+        alert('Ocurrió un error al buscar la ubicación.');
+    }
+}
+
+// Evento al escribir en el input
+const searchInputMaps = document.getElementById('search-field');
+searchInputMaps.addEventListener('change', (event) => {
+    const nombreLugar = event.target.value;
+    if (nombreLugar.trim()) {
+        buscarUbicacion(nombreLugar);
+    }
+});

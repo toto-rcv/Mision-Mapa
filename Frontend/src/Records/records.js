@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             <th>Acciones</th>
         </tr>
-    `;
+    `;  
         table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
