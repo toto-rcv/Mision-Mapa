@@ -17,3 +17,7 @@
     --link-color: #64D2FF;
     --search-background: rgba(0, 0, 0, 0.75);
 }
+
+.hidden {
+    visibility: hidden !important;
+}

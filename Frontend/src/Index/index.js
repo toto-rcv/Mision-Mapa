@@ -1,6 +1,6 @@
-import { loadUserProfile } from '/utils/profile.js';
-loadUserProfile();
+import { reloadUserProfile } from '/utils/profile.js';
 import { customFetch } from '/utils/auth.js';
+import { showNavItems } from '/static/js/navigation.js';
 
 // Initialize the map
 const map = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
@@ -512,4 +512,12 @@ searchInputMaps.addEventListener('change', (event) => {
     if (nombreLugar.trim()) {
         buscarUbicacion(nombreLugar);
     }
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await reloadUserProfile();
+    const userProfile = JSON.parse(localStorage.getItem("user"));
+    const userPermissions = userProfile.permissions || {};
+
+    showNavItems(userPermissions);
 });

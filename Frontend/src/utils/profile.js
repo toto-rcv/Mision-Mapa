@@ -1,3 +1,5 @@
+import { customFetch } from '/utils/auth.js';
+
 export async function getUserProfile() {
     const accessToken = localStorage.getItem("accessToken");
     const headers = {
@@ -5,7 +7,7 @@ export async function getUserProfile() {
         "Authorization": `Bearer ${accessToken}`
     };
     try {
-        const response = await fetch("/api/auth/profile", {
+        const response = await customFetch("/api/auth/profile", {
             method: "GET",
             headers: headers
         });
@@ -38,4 +40,9 @@ export function loadUserProfile() {
     profileAvatar.textContent = user.firstName.charAt(0).toUpperCase() + user.lastName.charAt(0).toUpperCase(); // Inicial del nombre
     profileName.textContent = `${user.firstName} ${user.lastName}`;
     profileRole.textContent = `Rol: ${user.userRank}`;
+}
+
+export async function reloadUserProfile() {
+    await getUserProfile();
+    loadUserProfile();
 }

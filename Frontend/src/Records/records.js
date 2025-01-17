@@ -1,7 +1,6 @@
-import { loadUserProfile } from '/utils/profile.js';
-loadUserProfile();
+import { reloadUserProfile } from '/utils/profile.js';
 import { customFetch } from '../utils/auth.js';
-
+import { showNavItems } from '/static/js/navigation.js';
 import { toProperCase } from '../utils/utils.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -264,7 +263,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderPagination(currentPage, totalPages);
         }
     }
+    
+    await reloadUserProfile();
+    const userProfile = JSON.parse(localStorage.getItem("user"));
+    const userPermissions = userProfile.permissions || {};
 
+    showNavItems(userPermissions);
     await loadAndDisplaySightings();
 
 
