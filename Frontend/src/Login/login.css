@@ -42,7 +42,7 @@ body {
 }
 
 .form-card {
-  background-color: var(--background-color);
+  background-color: var(--translucent-background-color);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;

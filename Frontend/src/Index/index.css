@@ -114,7 +114,7 @@ i {
 }
 
 .filter-button {
-    padding: 0 1rem;
+    padding: 0.95em;
     background-color: var(--input-background);
     border: 1px solid var(--input-border);
     border-radius: 6px;
@@ -218,9 +218,6 @@ i {
 }
 
 @media (max-width: 480px) {
-    .search-container {
-        width: calc(100% - 2rem);
-    }
 
     .search-input {
         width: 100%;
@@ -352,7 +349,7 @@ form button:hover {
     transform: translateY(-50%);
     right: 1rem;
     width: 100%;
-    max-width: 400px;
+    max-width: max(30%, 500px);
     max-height: 90vh;
     overflow-y: auto;
     background-color: rgba(38, 37, 42, 0.95);
@@ -522,17 +519,19 @@ form button:hover {
     justify-content: flex-end;
     margin-top: 2rem;
     gap: 1rem;
+    flex-wrap: wrap
 }
 
 .btn {
-    padding: 0.875rem 1.5rem;
+    padding: 1.25em 1em;
     border: none;
     border-radius: 8px;
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    min-width: 120px;
+    width: min-content;
+    flex-grow: 1;
 }
 
 .btn-cancel {
@@ -615,18 +614,15 @@ form button:hover {
     /* Search bar styles */
     .search-container {
         position: fixed;
-        top: 56px;
-        left: 50%;
-        transform: translateX(-50%);
         margin: 0.5rem 0;
         background-color: rgba(38, 37, 42, 0.95);
         backdrop-filter: blur(10px);
     }
 
     .search-input {
+        font-size: 0.95rem;
         width: calc(100% - 1rem);
-        height: 40px;
-        padding: 0.5rem 1rem;
+        padding: 0.85em 1em;
     }
 
     /* Map container adjustments */
@@ -832,7 +828,7 @@ form button:hover {
 /* Additional breakpoint for very large screens */
 @media (min-width: 1600px) {
     .form-panel {
-        max-width: 500px;
+
     }
 }
 
@@ -840,14 +836,14 @@ form button:hover {
 @media (max-width: 1280px) and (min-height: 720px) {
     .form-panel {
         width: 90%;
-        max-width: 450px;
+
     }
 }
 
 /* Additional breakpoint for very large screens */
 @media (min-width: 1600px) {
     .form-panel {
-        max-width: 500px;
+
     }
 }
 
@@ -855,7 +851,7 @@ form button:hover {
 @media (max-width: 1280px) and (min-height: 720px) {
     .form-panel {
         width: 90%;
-        max-width: 450px;
+
     }
 }
 
@@ -869,6 +865,7 @@ form button:hover {
     .search-container {
         padding: 0.5rem;
         top: 80px;
+        width: calc(100% - 2rem);
      }
 
     /* Form panel styles */
@@ -876,11 +873,9 @@ form button:hover {
         top: 50%;
         transform: translateY(-50%);
         width: 100%;
-        max-width: 400px;
         max-height: 90vh;
         height: 82vh;
         border-radius: 12px;
-        margin-left: 5px;
     }
 
     .form-panel.visible {
