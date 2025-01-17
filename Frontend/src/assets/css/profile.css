@@ -17,10 +17,11 @@
 
 .profile-name {
     font-weight: bold;
+    font-size: 0.95em
 }
 
 .profile-role {
-    font-size: 0.8rem;
+    font-size: 0.8em;
     color: var(--text-muted);
 }
 

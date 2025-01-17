@@ -26,7 +26,7 @@ const getAllSightings = async (req, res) => {
 
         const whereClause = search ? { ubicacion: { [Op.like]: `%${search}%` } } : {};
 
-        const { sightings, totalRecords } = await fetchSightingsByRole(role, userId, whereClause, { limit, offset });
+        const { sightings, totalRecords } = await fetchSightingsByRole(role, userId, whereClause, { limit, offset, paginated: true });
 
         const totalPages = Math.ceil(totalRecords / limit);
 
