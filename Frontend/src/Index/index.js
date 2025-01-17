@@ -405,20 +405,6 @@ if (window.innerWidth <= 768) {
 window.addEventListener('resize', function () {
     if (window.innerWidth <= 768) {
         initMobileListeners();
-    } else {
-        // Reset to desktop behavior
-        const overlay = document.getElementById('new-sighting-overlay');
-        const formPanel = document.getElementById('sighting-form');
-        overlay.style.display = 'none';
-        overlay.classList.remove('visible');
-        formPanel.style.display = 'none';
-        formPanel.classList.remove('visible');
-        isOverlayActive = false;
-        isFormActive = false;
-        if (greyMarker) {
-            map.removeLayer(greyMarker);
-            greyMarker = null;
-        }
     }
 });
 

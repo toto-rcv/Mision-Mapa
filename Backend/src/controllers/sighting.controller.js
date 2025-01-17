@@ -1,4 +1,6 @@
 const { Op } = require('sequelize');
+const { SightingNotFoundError, InsufficientPermissionsError, SightingAlreadyDeletedError } = require('../errors/customErrors');
+
 const db = require("../models");
 const Sighting = db.Sighting;
 const User = db.User;
@@ -15,72 +17,41 @@ const createSighting = async (req, res) => {
 
 const getAllSightings = async (req, res) => {
     try {
-        const userRole = req.role; // Obtenemos el rol del middleware
-        const search = req.query.search || ""; // Obtenemos la búsqueda del query
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const offset = (page - 1) * limit; // Calculamos el offset
-        // Obtenemos la búsqueda, página y límite del cuerpo de la solicitud
-        let sightings;
-        let whereClause = search ? { ubicacion: { [Op.like]: `%${search}%` } } : {}; // Si hay búsqueda
-        let totalRecords;
+        const role = req.role;
+        const userId = req.user.id;
+        const search = req.query.search || "";
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
+        const offset = (page - 1) * limit;
 
-        switch (userRole) {
-            case "JEFE DE DETECCION":
-            case "DETECCION":
-                // Los usuarios con rol "Mayor" ven todos los registros
-                totalRecords = await Sighting.count({ where: { ...whereClause, fue_eliminado: false } });
-                sightings = await Sighting.findAll({
-                    where: { ...whereClause, fue_eliminado: false },
-                    include: [
-                        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
-                        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
-                    ],
-                    attributes: { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] },
-                    limit,
-                    offset,
-                });
-                break;
+        const whereClause = search ? { ubicacion: { [Op.like]: `%${search}%` } } : {};
 
-            case "POA":
-                // Los usuarios con rol "POA" solo ven sus propios registros
-                totalRecords = await Sighting.count({ where: { ...whereClause, usuario_id: req.user.id, fue_eliminado: false } });
-                sightings = await Sighting.findAll({
-                    where: { ...whereClause, usuario_id: req.user.id, fue_eliminado: false },
-                    include: [
-                        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
-                        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
-                    ],
-                    attributes: { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] },
-                    limit,
-                    offset,
-                });
-                break;
+        const { sightings, totalRecords } = await fetchSightingsByRole(role, userId, whereClause, { limit, offset });
 
-            default:
-                return res.status(403).json({ message: "No tienes permiso para ver estos registros" });
-        }
-        const totalPages = Math.ceil(totalRecords / limit); // Calculamos el total de páginas
+        const totalPages = Math.ceil(totalRecords / limit);
+
         res.status(200).json({
             sightings,
             currentPage: page,
             totalPages,
+            totalRecords,
+            limit,
         });
     } catch (error) {
         console.error("Error al obtener los avistamientos:", error);
-        res.status(500).json({ message: "Error interno del servidor" });
+        if (error instanceof InsufficientPermissionsError) {
+            res.status(403).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: "Error interno del servidor" });
+        }
     }
 };
 
 const deleteSighting = async (req, res) => {
     try {
         const { id } = req.params;
-        const sighting = await Sighting.findByPk(id);
-        if (!sighting) {
-            return res.status(404).json({ message: "Avistamiento no encontrado" });
-        }
+        const sighting = await validateSighting(id);
 
-        // Actualizar las propiedades fue_eliminado y eliminado_por
         sighting.fue_eliminado = true;
         sighting.eliminado_por = req.user.id;
         await sighting.save();
@@ -88,54 +59,85 @@ const deleteSighting = async (req, res) => {
         res.status(200).json({ message: "Avistamiento marcado como eliminado exitosamente" });
     } catch (error) {
         console.error("Error al marcar avistamiento como eliminado:", error);
+        if (error instanceof SightingNotFoundError) {
+            res.status(404).json({ message: error.message });
+            return;
+        }
+        if (error instanceof InsufficientPermissionsError) {
+            res.status(403).json({ message: error.message });
+            return;
+        }
+        if (error instanceof SightingAlreadyDeletedError) {
+            res.status(400).json({ message: error.message });
+            return;
+        }
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
 
-
-
 const getAllMarkers = async (req, res) => {
     try {
-        let markers;
-        const  role  = req.role;
+        const role = req.role;
+        const userId = req.user.id;
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        switch (role) {
-            case "JEFE DE DETECCION":
-            case "DETECCION":
-                markers = await Sighting.findAll({
-                    where: { fue_eliminado: false },
-                    createdAt: { [Op.gte]: thirtyDaysAgo },
-                    include: [
-                        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
-                        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
-                    ],
-                    attributes: { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] },
-                });
-                break;
+        const whereClause = { fecha_avistamiento: { [Op.gte]: thirtyDaysAgo } };
 
-            case "POA":
-                markers = await Sighting.findAll({
-                    where: { usuario_id: req.user.id, fue_eliminado: false },
-                    createdAt: { [Op.gte]: thirtyDaysAgo },
-                    include: [
-                        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
-                        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
-                    ],
-                    attributes: { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] },
-                });
-                break;
+        const { sightings } = await fetchSightingsByRole(role, userId, whereClause);
 
-            default:
-                return res.status(403).json({ message: "No tienes permiso para ver estos registros" });
-        }
-
-        res.status(200).json({ sightings: markers });
+        res.status(200).json({ sightings });
     } catch (error) {
         console.error("Error al obtener los marcadores:", error);
+        if (error instanceof InsufficientPermissionsError) {
+            res.status(403).json({ message: error.message });
+            return;
+        }
         res.status(500).json({ message: "Error interno del servidor" });
     }
+};
+
+const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}) => {
+    const commonInclude = [
+        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
+        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
+    ];
+
+    const commonAttributes = { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] };
+
+    let additionalWhere = { fue_eliminado: false };
+
+    if (role === "POA") {
+        additionalWhere.usuario_id = userId;
+    } else if (!["JEFE DE DETECCION", "DETECCION"].includes(role)) {
+        throw new Error("Insufficient permissions");
+    }
+
+    const where = { ...additionalWhere, ...whereClause };
+
+    const totalRecords = options.paginated
+        ? await Sighting.count({ where })
+        : null;
+
+    const sightings = await Sighting.findAll({
+        where,
+        include: commonInclude,
+        attributes: commonAttributes,
+        ...options,
+    });
+
+    return { sightings, totalRecords };
+};
+
+const validateSighting = async (id) => {
+    const sighting = await Sighting.findByPk(id);
+    if (!sighting) {
+        throw new SightingNotFoundError();
+    }
+    if (sighting.fue_eliminado) {
+        throw new SightingAlreadyDeletedError();
+    }
+    return sighting;
 };
 
 module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting };
