@@ -509,30 +509,13 @@ async function buscarUbicacion(nombreLugar) {
     }
 }
 
-
-// Declaración de la función debounce
-const debounce = (fn, delay = 1000) => { 
-    let timerId = null;
-    return (...args) => {
-        clearTimeout(timerId);
-        timerId = setTimeout(() => fn(...args), delay);
-    };
-};
-
-// Obtenemos el elemento de entrada
+// Evento al escribir en el input
 const searchInputMaps = document.getElementById('search-field');
-
-// Función debounced para buscar la ubicación
-const debouncedBuscarUbicacion = debounce((nombreLugar) => {
+searchInputMaps.addEventListener('change', (event) => {
+    const nombreLugar = event.target.value;
     if (nombreLugar.trim()) {
         buscarUbicacion(nombreLugar);
     }
-}, 300);
-
-// Evento con debounce aplicado
-searchInputMaps.addEventListener('input', (event) => {
-    const nombreLugar = event.target.value;
-    debouncedBuscarUbicacion(nombreLugar);
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -544,3 +527,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
+// Función de debounce
+const debounce = (fn, delay = 1000) => {
+    let timerId = null;
+    return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+    };
+};
