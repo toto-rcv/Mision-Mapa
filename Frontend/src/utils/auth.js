@@ -1,16 +1,22 @@
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+function subscribeTokenRefresh(cb) {
+    refreshSubscribers.push(cb);
+}
+
+function onRefreshed(accessToken) {
+    refreshSubscribers.forEach((cb) => cb(accessToken));
+    refreshSubscribers = [];
+}
 
 export async function verifyAccessToken() {
     let accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
 
-    if (!accessToken) {
-        redirectToLogin();
-        return false;
-    }
-
     try {
         // Intentar validar el Access Token en el servidor
-        const response = await fetch("/api/verify/verify-token", {
+        const response = await customFetch("/api/verify/verify-token", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -22,18 +28,26 @@ export async function verifyAccessToken() {
             return true; // El Access Token es válido
         }
 
-        // Si el Access Token es inválido o expirado, intentar renovarlo
-        console.warn("Access Token expirado. Intentando renovar...");
         if (refreshToken) {
+            if (isRefreshing) {
+                return new Promise((resolve) => {
+                    subscribeTokenRefresh((newAccessToken) => {
+                        resolve(true);
+                    });
+                });
+            }
+            isRefreshing = true;
             await refreshAccessToken(); // Llamar a la función para renovar
-            verifyAccessToken(); // Reintentar la verificación
+            isRefreshing = false;
+            onRefreshed(localStorage.getItem("accessToken"));
+            
+            return verifyAccessToken(); // Reintentar la verificación
         } else {
             console.error("No hay Refresh Token disponible.");
             redirectToLogin();
         }
     } catch (error) {
         console.error("Error al verificar el Access Token:", error);
-        redirectToLogin();
     }
 
     return false; // El Access Token no es válido
@@ -83,11 +97,12 @@ export async function customFetch(url, options = {}) {
         "Authorization": `Bearer ${accessToken}`,
         "Content-Type": "application/json"
     };
-
+   
     let response = await fetch(url, options);
     
     // Si el token es inválido, intenta renovarlo
     if (response.status === 401 || response.status === 403) {
+
         const refreshToken = localStorage.getItem("refreshToken");
 
         if (!refreshToken) {
@@ -96,23 +111,27 @@ export async function customFetch(url, options = {}) {
             return;
         }
 
-        try {
-            const refreshResponse = await fetch("/api/auth/refresh-token", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ refreshToken: refreshToken }),
-            });
-
-            if (!refreshResponse.ok) {
-                throw new Error("Error al renovar el Access Token.");
+        if (!isRefreshing) {
+            isRefreshing = true;
+            try {
+                await refreshAccessToken();
+                onRefreshed(localStorage.getItem("accessToken"));
+            } catch (error) {
+                console.error("Error al renovar el Access Token:", error);
+                redirectToLogin();
+            } finally {
+                isRefreshing = false;
             }
+        } else {
+            await new Promise((resolve) => {
+                subscribeTokenRefresh(() => {
+                    resolve();
+                });
+            });
+        }
 
-            const data = await refreshResponse.json();
-            // Guardar el nuevo Access Token en localStorage
-            localStorage.setItem("accessToken", data.accessToken);
-            accessToken = data.accessToken;
-
-            // Reintentar la solicitud original con el nuevo Access Token
+        try {
+            accessToken = localStorage.getItem("accessToken");
             options.headers["Authorization"] = `Bearer ${accessToken}`;
             response = await fetch(url, options);
         } catch (error) {
@@ -124,6 +143,4 @@ export async function customFetch(url, options = {}) {
 
     return response;
 
-
-    
 }

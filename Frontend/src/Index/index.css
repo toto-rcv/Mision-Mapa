@@ -144,11 +144,11 @@ i {
 
 
 .register-button {
-
     position: absolute;
     bottom: 2rem;
     right: 2rem;
-    padding: 11px 20px;
+    padding: 0.5em;
+    padding-right: 0.75em;
     background-color: #00C2D1;
     color: white;
     border: none;
