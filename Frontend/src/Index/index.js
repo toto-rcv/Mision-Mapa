@@ -285,7 +285,8 @@ navItems.forEach(item => {
 const searchInput = document.querySelector('.search-input');
 searchInput.addEventListener('input', function (e) {
     // Add search functionality here
-    console.log('Searching for:', e.target.value);
+    const nombreLugar = e.target.value;
+    debouncedBuscarUbicacion(nombreLugar);
 });
 
 // Initialize map controls
@@ -509,14 +510,22 @@ async function buscarUbicacion(nombreLugar) {
     }
 }
 
-// Evento al escribir en el input
-const searchInputMaps = document.getElementById('search-field');
-searchInputMaps.addEventListener('change', (event) => {
-    const nombreLugar = event.target.value;
+
+// Declaración de la función debounce
+const debounce = (fn, delay = 1000) => { 
+    let timerId = null;
+    return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+    };
+};
+
+// Función debounced para buscar la ubicación
+const debouncedBuscarUbicacion = debounce((nombreLugar) => {
     if (nombreLugar.trim()) {
         buscarUbicacion(nombreLugar);
     }
-});
+}, 300);
 
 document.addEventListener("DOMContentLoaded", async () => {
     await reloadUserProfile();
@@ -525,13 +534,3 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     showNavItems(userPermissions);
 });
-
-
-// Función de debounce
-const debounce = (fn, delay = 1000) => {
-    let timerId = null;
-    return (...args) => {
-        clearTimeout(timerId);
-        timerId = setTimeout(() => fn(...args), delay);
-    };
-};
