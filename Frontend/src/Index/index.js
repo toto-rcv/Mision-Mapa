@@ -485,11 +485,15 @@ async function buscarUbicacion(nombreLugar) {
 
             // Determinar el nivel de zoom según el tipo de lugar
             if (addresstype === 'city') {
-                zoomLevel = 12; // Zoom más cercano para ciudades
+                zoomLevel = 8; // Zoom más cercano para ciudades
             } else if (addresstype === "administrative" || addresstype === "country") {
                 zoomLevel = 5; // Zoom para países
-            } else if (addresstype === 'town' || addresstype === 'village') {
-                zoomLevel = 5; // Zoom para pueblos o aldeas
+            } else if (addresstype === 'shop' || addresstype === 'village') {
+                zoomLevel = 6; // Zoom para pueblos o aldeas
+            }else if (addresstype === 'town' || addresstype === 'village') {
+                zoomLevel = 12; // Zoom para pueblos o aldeas
+            }else if (addresstype === 'state' || addresstype === 'village') {
+                zoomLevel = 6; // Zoom para pueblos o aldeas
             }
             console.log(zoomLevel)
         
@@ -505,13 +509,30 @@ async function buscarUbicacion(nombreLugar) {
     }
 }
 
-// Evento al escribir en el input
+
+// Declaración de la función debounce
+const debounce = (fn, delay = 1000) => { 
+    let timerId = null;
+    return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+    };
+};
+
+// Obtenemos el elemento de entrada
 const searchInputMaps = document.getElementById('search-field');
-searchInputMaps.addEventListener('change', (event) => {
-    const nombreLugar = event.target.value;
+
+// Función debounced para buscar la ubicación
+const debouncedBuscarUbicacion = debounce((nombreLugar) => {
     if (nombreLugar.trim()) {
         buscarUbicacion(nombreLugar);
     }
+}, 300);
+
+// Evento con debounce aplicado
+searchInputMaps.addEventListener('input', (event) => {
+    const nombreLugar = event.target.value;
+    debouncedBuscarUbicacion(nombreLugar);
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -521,3 +542,5 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     showNavItems(userPermissions);
 });
+
+
