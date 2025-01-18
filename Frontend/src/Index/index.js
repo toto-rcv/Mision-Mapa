@@ -158,7 +158,6 @@ async function reverseGeocode(lat, lng) {
     try {
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`);
         const data = await response.json();
-        console.log('Nominatim reverse geocoding result:', data);
 
         // You can extract specific address components if needed
         const address = data.display_name;
@@ -471,7 +470,7 @@ async function buscarUbicacion(nombreLugar) {
     try {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(nombreLugar)}&addressdetails=1`);
         const resultados = await response.json();
-        console.log('Resultados de la búsqueda:', resultados);
+
         if (resultados.length > 0) {
             const { lat, lon, addresstype } = resultados[0]; // Tomar el primer resultado
             let zoomLevel = 10; // Zoom predeterminado para lugares genéricos
@@ -488,9 +487,7 @@ async function buscarUbicacion(nombreLugar) {
             }else if (addresstype === 'state' || addresstype === 'village') {
                 zoomLevel = 6; // Zoom para pueblos o aldeas
             }
-            console.log(zoomLevel)
         
-
             // Centrar el mapa y ajustar el zoom
             map.setView([lat, lon], zoomLevel);
         } else {
@@ -510,7 +507,7 @@ const debounce = (fn, delay = 1000) => {
 
     return (...args) => {
         const event = args[0];
-        console.log(event.type, event.inputType, lastKey, isBackspaceHeld);
+
         if (event && event.type === 'input' && event.inputType === 'deleteContentBackward') {
             if (lastKey === 'Backspace') {
                 if (!isBackspaceHeld) {
