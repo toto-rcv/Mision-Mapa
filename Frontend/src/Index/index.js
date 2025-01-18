@@ -281,14 +281,6 @@ navItems.forEach(item => {
     });
 });
 
-// Search functionality
-const searchInput = document.querySelector('.search-input');
-searchInput.addEventListener('input', function (e) {
-    // Add search functionality here
-    const nombreLugar = e.target.value;
-    debouncedBuscarUbicacion(nombreLugar);
-});
-
 // Initialize map controls
 const zoomInButton = document.querySelector('#zoom-in');
 const zoomOutButton = document.querySelector('#zoom-out');
@@ -511,17 +503,42 @@ async function buscarUbicacion(nombreLugar) {
 }
 
 
-// Declaración de la función debounce
-const debounce = (fn, delay = 1000) => { 
+const debounce = (fn, delay = 1000) => {
     let timerId = null;
+    let lastKey = null;
+    let isBackspaceHeld = false;
+
     return (...args) => {
+        const event = args[0];
+        console.log(event.type, event.inputType, lastKey, isBackspaceHeld);
+        if (event && event.type === 'input' && event.inputType === 'deleteContentBackward') {
+            if (lastKey === 'Backspace') {
+                if (!isBackspaceHeld) {
+                    isBackspaceHeld = true;
+                    setTimeout(() => {
+                        isBackspaceHeld = false;
+                    }, delay);
+                }
+                return;
+            }
+            lastKey = 'Backspace';
+        } else {
+            lastKey = null;
+        }
+
         clearTimeout(timerId);
-        timerId = setTimeout(() => fn(...args), delay);
+        timerId = setTimeout(() => {
+            if (!isBackspaceHeld) {
+                fn(...args);
+            }
+        }, delay * 2);
     };
 };
 
+
 // Función debounced para buscar la ubicación
-const debouncedBuscarUbicacion = debounce((nombreLugar) => {
+const debouncedBuscarUbicacion = debounce((event) => {
+    const nombreLugar = event.target.value;
     if (nombreLugar.trim()) {
         buscarUbicacion(nombreLugar);
     }
@@ -533,4 +550,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const userPermissions = userProfile.permissions || {};
 
     showNavItems(userPermissions);
+
+    // Search functionality
+    const searchInput = document.querySelector('.search-input');
+    searchInput.addEventListener('input', debouncedBuscarUbicacion);
 });
