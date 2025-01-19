@@ -158,7 +158,6 @@ async function reverseGeocode(lat, lng) {
     try {
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`);
         const data = await response.json();
-        console.log('Nominatim reverse geocoding result:', data);
 
         // You can extract specific address components if needed
         const address = data.display_name;
@@ -279,14 +278,6 @@ navItems.forEach(item => {
         navItems.forEach(i => i.classList.remove('active'));
         this.classList.add('active');
     });
-});
-
-// Search functionality
-const searchInput = document.querySelector('.search-input');
-searchInput.addEventListener('input', function (e) {
-    // Add search functionality here
-    const nombreLugar = e.target.value;
-    debouncedBuscarUbicacion(nombreLugar);
 });
 
 // Initialize map controls
@@ -441,7 +432,7 @@ async function loadMarkers() {
         const accessToken = localStorage.getItem('accessToken');
 
         // Realiza una solicitud GET para obtener los datos de los avistamientos
-        const response = await fetch('/api/sightings/all', {
+        const response = await customFetch('/api/sightings/all', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -479,7 +470,7 @@ async function buscarUbicacion(nombreLugar) {
     try {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(nombreLugar)}&addressdetails=1`);
         const resultados = await response.json();
-        console.log('Resultados de la búsqueda:', resultados);
+
         if (resultados.length > 0) {
             const { lat, lon, addresstype } = resultados[0]; // Tomar el primer resultado
             let zoomLevel = 10; // Zoom predeterminado para lugares genéricos
@@ -496,9 +487,7 @@ async function buscarUbicacion(nombreLugar) {
             }else if (addresstype === 'state' || addresstype === 'village') {
                 zoomLevel = 6; // Zoom para pueblos o aldeas
             }
-            console.log(zoomLevel)
         
-
             // Centrar el mapa y ajustar el zoom
             map.setView([lat, lon], zoomLevel);
         } else {
@@ -511,17 +500,42 @@ async function buscarUbicacion(nombreLugar) {
 }
 
 
-// Declaración de la función debounce
-const debounce = (fn, delay = 1000) => { 
+const debounce = (fn, delay = 1000) => {
     let timerId = null;
+    let lastKey = null;
+    let isBackspaceHeld = false;
+
     return (...args) => {
+        const event = args[0];
+
+        if (event && event.type === 'input' && event.inputType === 'deleteContentBackward') {
+            if (lastKey === 'Backspace') {
+                if (!isBackspaceHeld) {
+                    isBackspaceHeld = true;
+                    setTimeout(() => {
+                        isBackspaceHeld = false;
+                    }, delay);
+                }
+                return;
+            }
+            lastKey = 'Backspace';
+        } else {
+            lastKey = null;
+        }
+
         clearTimeout(timerId);
-        timerId = setTimeout(() => fn(...args), delay);
+        timerId = setTimeout(() => {
+            if (!isBackspaceHeld) {
+                fn(...args);
+            }
+        }, delay * 2);
     };
 };
 
+
 // Función debounced para buscar la ubicación
-const debouncedBuscarUbicacion = debounce((nombreLugar) => {
+const debouncedBuscarUbicacion = debounce((event) => {
+    const nombreLugar = event.target.value;
     if (nombreLugar.trim()) {
         buscarUbicacion(nombreLugar);
     }
@@ -533,4 +547,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const userPermissions = userProfile.permissions || {};
 
     showNavItems(userPermissions);
+<<<<<<< HEAD
 });
+=======
+
+    // Search functionality
+    const searchInput = document.querySelector('.search-input');
+    searchInput.addEventListener('input', debouncedBuscarUbicacion);
+});
+>>>>>>> 0c86d9b0a23d9f6083f3ba4720a30cc9206aaff7

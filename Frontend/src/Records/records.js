@@ -159,6 +159,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td class="actions-cell">
                 <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
                 <button class="delete-btn" data-id="${sighting.id}">X</button>
+                <button class="delete-btn" ">X</button>
+                
             </td>
         `;
             tbody.appendChild(row);
