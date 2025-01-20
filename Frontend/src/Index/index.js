@@ -547,12 +547,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const userPermissions = userProfile.permissions || {};
 
     showNavItems(userPermissions);
-<<<<<<< HEAD
-});
-=======
 
     // Search functionality
     const searchInput = document.querySelector('.search-input');
     searchInput.addEventListener('input', debouncedBuscarUbicacion);
 });
->>>>>>> 0c86d9b0a23d9f6083f3ba4720a30cc9206aaff7

@@ -267,6 +267,13 @@ textarea.modal-input {
 
 }
 
+
+.maps-btn{
+  
+  
+  width: 24px;
+}
+
 @media (max-width: 768px) {
 
   #registro {

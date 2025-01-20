@@ -159,12 +159,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td class="actions-cell">
                 <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
                 <button class="delete-btn" data-id="${sighting.id}">X</button>
-                <button class="delete-btn" ">X</button>
+                <button class="maps-btn" "> <img src="static/img/mapa.svg"/> </button>
                 
             </td>
         `;
             tbody.appendChild(row);
-
             // Add event listener for "Ver detalles" button
             row.querySelector('.view-details-btn').addEventListener('click', () => {
                 showObservationsModal(sighting);
