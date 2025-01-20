@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="index.css" />
     <script src="/utils/auth.js" type="module" defer></script>
     <script src="/utils/profile.js" type="module" defer></script>
+    <script src="/static/js/profile.js" type="module" defer></script>
 </head>
 
 <body>
@@ -25,13 +26,24 @@
             <span class="markers-count">3 marcadores</span>
         </div>
         <div class="profile">
-            <div class="profile-avatar" aria-hidden="true">S</div>
+            <div class="profile-avatar" aria-hidden="true">U</div>
             <div class="profile-info">
-                <span class="profile-name">Simon</span>
-                <span class="profile-role">POA</span>
+                <span class="profile-name">Usuario</span>
+                <span class="profile-role">Básico</span>
+            </div>
+            <button id="profileDropdownBtn" class="profile-dropdown-btn" aria-label="Profile options">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div id="profileDropdownContent" class="profile-dropdown-content">
+                <a href="#" id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar sesión
+                </a>
             </div>
         </div>
     </header>
+
+    <div id="profileDropdownOverlay" class="profile-dropdown-overlay"></div>
 
     <main class="main-content">
         <aside class="sidebar">

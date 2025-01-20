@@ -595,9 +595,9 @@ form button:hover {
         right: 0;
         height: 70px;
         padding: 0.5rem 1rem;
-        background-color: rgba(38, 37, 42, 0.95);
-        backdrop-filter: blur(10px);
-        z-index: 1000;
+        background-color: rgba(38, 37, 42, 1);
+        backdrop-filter: none;
+        z-index: 1005;
         gap: 1rem;
 
     }
@@ -676,7 +676,7 @@ form button:hover {
         justify-content: space-around;
         background-color: var(--background-color);
         backdrop-filter: blur(10px);
-        z-index: 1000;
+        z-index: 999;
     }
 
     .sidebar-item {
