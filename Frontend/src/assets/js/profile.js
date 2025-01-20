@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         // Perform logout actions
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
         // Redirect to login page
         window.location.href = '/login.html';

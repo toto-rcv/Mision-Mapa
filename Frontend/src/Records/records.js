@@ -154,12 +154,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td data-label="Rumbo">${sighting.rumbo}</td>
             <td data-label="Altitud estimada">${sighting.altitud_estimada}</td>
             <td data-label="Tipo de Aeronave">${sighting.tipo_aeronave}</td>
-            <td data-label="Color" class="col-medium-screen">${sighting.color}</td>
+            <td data-label="Color" class="col-medium-screen">${sighting.color}</td> 
 
             <td class="actions-cell">
                 <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
                 <button class="delete-btn" data-id="${sighting.id}">X</button>
-                <button class="maps-btn" "> <img src="static/img/mapa.svg"/> </button>
+                <button class="maps-btn" "> <img src="static/img/map.svg"/ > </button>
                 
             </td>
         `;
