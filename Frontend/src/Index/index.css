@@ -7,12 +7,6 @@
 
 .leaflet-control-attribution.leaflet-control {
     font-size: 0px;
-
-}
-
-.leaflet-control-scale-line {
-    max-width: 62px;
-
 }
 
 body {
@@ -21,40 +15,6 @@ body {
     flex-direction: column;
     background-color: var(--background-color);
     color: var(--text-color);
-}
-
-/* Header Styles */
-.header {
-    background-color: var(--background-color);
-    padding: 1rem;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    border-bottom: 1px solid #333;
-    gap: 2.5rem;
-    padding-left: 20px;
-}
-
-i {
-    align-items: center;
-}
-
-.logo {
-    width: 40px;
-    height: 40px;
-    background-color: #333;
-    border-radius: 8px;
-}
-
-.title-container {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.title {
-    font-size: 1.35rem;
-    font-weight: 500;
 }
 
 .markers-count {
@@ -140,8 +100,13 @@ i {
     height: 100%;
     width: 100%;
     background-color: #2a2a2a;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
 }
-
 
 .register-button {
     position: absolute;
@@ -162,7 +127,6 @@ i {
     gap: 0.5rem;
     z-index: 1000;
 }
-
 
 .register-button span {
     /* Update 4 */
@@ -186,7 +150,6 @@ i {
 
 /* Custom Map Controls */
 .map-controls {
-    /* Update 2 */
     position: absolute;
     left: 1rem;
     bottom: 2rem;
@@ -217,28 +180,6 @@ i {
     background-color: #00acc1;
 }
 
-@media (max-width: 480px) {
-
-    .search-input {
-        width: 100%;
-    }
-
-    .register-button {
-        font-size: 14px;
-        padding: 12px 24px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    * {
-        transition-duration: 0.01ms !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-    }
-}
-
-
 .modal {
     position: absolute;
     top: 19%;
@@ -262,19 +203,6 @@ i {
 .modal-content {
     position: relative;
 }
-
-#map {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
-    /* Permite que el mapa esté debajo del modal */
-}
-
-
-
 
 .close-button {
     display: flex;
@@ -559,6 +487,16 @@ form button:hover {
 
 /* Responsive styles */
 @media (max-width: 480px) {
+
+    .search-input {
+        width: 100%;
+    }
+
+    .register-button {
+        font-size: 14px;
+        padding: 12px 24px;
+    }
+
     .form-panel {
         top: auto;
         right: 0;
@@ -613,6 +551,9 @@ form button:hover {
     /* Search bar styles */
     .search-container {
         position: fixed;
+        padding: 0.5rem;
+        top: 80px;
+        width: calc(100% - 2rem);
         margin: 0.5rem 0;
         background-color: rgba(38, 37, 42, 0.95);
         backdrop-filter: blur(10px);
@@ -662,80 +603,9 @@ form button:hover {
         display: none;
     }
 
-    /* Bottom navigation */
-    .sidebar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 56px;
-        height: 60px;
-        padding: 0;
-        flex-direction: row;
-        justify-content: space-around;
-        background-color: var(--background-color);
-        backdrop-filter: blur(10px);
-        z-index: 999;
-    }
-
-    .sidebar-item {
-        padding: 8px 0;
-        flex: 1;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .sidebar-item {
-        padding: 0;
-        flex: 1;
-        height: 100%;
-    }
-
-    .sidebar-item a {
-        height: 100%;
-        padding: 8px 0;
-        justify-content: center;
-        gap: 4px;
-    }
-
-    .sidebar-icon {
-        width: 24px;
-        height: 24px;
-    }
-
-    .sidebar-item:hover,
-    .sidebar-item.active {
-        background-color: transparent;
-    }
-
-    .sidebar-item:hover .sidebar-icon,
-    .sidebar-item.active .sidebar-icon {
-        background-color: transparent;
-    }
-
-    .sidebar-item:hover .sidebar-icon svg,
-    .sidebar-item.active .sidebar-icon svg {
-        fill: var(--primary-color);
-    }
-
-    .sidebar-item:hover .sidebar-text,
-    .sidebar-item.active .sidebar-text {
-        color: var(--primary-color);
-    }
-
-    .sidebar-text {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-    }
-
     .overlay {
         position: fixed;
-        top: 33px;
+        top: auto;
         left: 0;
         right: 0;
         bottom: 56px;
@@ -760,6 +630,15 @@ form button:hover {
         border-radius: 0;
         transform: translateY(100%);
         transition: transform 0.3s ease-in-out;
+    }
+
+    .form-panel {
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        max-height: 90vh;
+        height: 82vh;
+        border-radius: 12px;
     }
 
     .form-panel.visible {
@@ -793,40 +672,19 @@ form button:hover {
         font-size: 1em;
     }
 
-    /* Adjust overlay for mobile */
-    .overlay {
-        position: fixed;
-        top: auto;
-        left: 0;
-        right: 0;
-        bottom: 56px;
-        width: 100%;
-        transform: translateY(100%);
-        transition: transform 0.3s ease-in-out;
-    }
-
-    .overlay.visible {
-        transform: translateY(0);
-    }
-
     /* Map controls */
     .map-controls {
         left: auto;
         right: 1rem;
-        bottom: 7rem;
+        bottom: 70px;
+        left: 1rem;
     }
 
     .control-button {
         width: 40px;
         height: 40px;
     }
-}
 
-/* Additional breakpoint for very large screens */
-@media (min-width: 1600px) {
-    .form-panel {
-
-    }
 }
 
 /* Ensure the form doesn't get too small on very small screens */
@@ -834,55 +692,6 @@ form button:hover {
     .form-panel {
         width: 90%;
 
-    }
-}
-
-/* Additional breakpoint for very large screens */
-@media (min-width: 1600px) {
-    .form-panel {
-
-    }
-}
-
-/* Ensure the form doesn't get too small on very small screens */
-@media (max-width: 1280px) and (min-height: 720px) {
-    .form-panel {
-        width: 90%;
-
-    }
-}
-
-
-
-@media (max-width: 768px) {
-
-    /* Map container styles */
-
-    /* Search container styles */
-    .search-container {
-        padding: 0.5rem;
-        top: 80px;
-        width: calc(100% - 2rem);
-     }
-
-    /* Form panel styles */
-    .form-panel {
-        top: 50%;
-        transform: translateY(-50%);
-        width: 100%;
-        max-height: 90vh;
-        height: 82vh;
-        border-radius: 12px;
-    }
-
-    .form-panel.visible {
-        transform: translateY(0);
-    }
-
-    /* Map controls */
-    .map-controls {
-        bottom: 70px;
-        left: 1rem;
     }
 }
 
