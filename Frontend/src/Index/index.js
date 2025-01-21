@@ -90,6 +90,7 @@ function showForm() {
     const formPanel = document.getElementById('sighting-form');
     formPanel.style.display = 'block';
     isFormActive = true;
+
 }
 
 function hideForm() {
@@ -100,6 +101,7 @@ function hideForm() {
         map.removeLayer(greyMarker);
         greyMarker = null;
     }
+
 }
 
 function closeForm() {
@@ -147,6 +149,18 @@ map.on('click', function (e) {
         if (isOverlayActive) {
             hideOverlay();
             showForm();
+            const cancelButton = document.getElementById('cancel-button');
+            const saveButton = document.getElementById('save-button');
+            clearForm();
+
+            if (cancelButton) {
+                cancelButton.style.display = 'block';
+            }
+
+            if (saveButton) {
+                saveButton.style.display = 'block';
+            }
+
         }
     }
 });
@@ -194,6 +208,7 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
     e.preventDefault();
 
     const isValid = validateForm();
+
 
     if (isValid) {
         const form = document.getElementById('sighting-form');
@@ -248,6 +263,8 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
         }
 
     }
+
+
 });
 
 document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(input => {
@@ -552,21 +569,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     map.on('load', placeMarkersOnMap(sightings));
 
 
-    // Verificar si el parámetro "sighting" está presente
-    const recordId = urlParams.get('sighting');
-
-
-    // Si el parámetro "query" existe, imprimirlo en consola
-    if (recordId) {
-
-        const sightingRecord = sightings.find(sighting => sighting.id === parseInt(recordId, 10));
-        const { latitud, longitud } = sightingRecord || {};
-        if (latitud !== undefined && longitud !== undefined) {
-            map.setView([latitud, longitud], 12);
-            fillForm(sightingRecord)
+    // Add click event to each marker
+    sightings.forEach(sighting => {
+        const marker = L.marker([sighting.latitud, sighting.longitud]).addTo(map);
+        marker.on('click', () => {
+            map.setView([sighting.latitud, sighting.longitud],6);
+            fillForm(sighting);
             showForm();
-        }
+        });
+    });
+
+
+// Verificar si el parámetro "sighting" está presente
+const recordId = urlParams.get('sighting');
+
+
+// Si el parámetro "query" existe, imprimirlo en consola
+if (recordId) {
+
+    const sightingRecord = sightings.find(sighting => sighting.id === parseInt(recordId, 10));
+    const { latitud, longitud } = sightingRecord || {};
+    if (latitud !== undefined && longitud !== undefined) {
+        map.setView([latitud, longitud], 12);
+        fillForm(sightingRecord)
+        showForm();
+
     }
+}
 
 
 
@@ -581,18 +610,18 @@ function placeMarkersOnMap(sightings) {
 
     // Actualizar el número de marcadores
     updateMarkersCount(sightings.length);
-    
+
 
 
 }
 
 
-function fillForm({id,fecha_avistamiento,ubicacion,latitud,longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor,cantidad_motores,color,observaciones}) {
+function fillForm({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones }) {
 
     // obtener el formulario
     const form = document.querySelector('#sighting-form');
     // Llena el formulario con los datos del avistamiento
-    const idLabel = form.querySelector("span.sighting-id").innerHTML=`AV-${String(id).padStart(5, '0')}` 
+    const idLabel = form.querySelector("span.sighting-id").innerHTML = `AV-${String(id).padStart(5, '0')}`
     form.querySelector("span.timestamp").innerHTML = fecha_avistamiento
     form.querySelector("span#coordinateLog").innerHTML = latitud
     form.querySelector("span#coordinateLat").innerHTML = longitud
@@ -601,9 +630,26 @@ function fillForm({id,fecha_avistamiento,ubicacion,latitud,longitud, altitud_est
     form.querySelector("select#heading").value = rumbo
     form.querySelector("input#aircraft-type").value = tipo_aeronave
     form.querySelector("input#engine-type").value = tipo_motor
-    form.querySelector("select#engine-count").value = cantidad_motores   
+    form.querySelector("select#engine-count").value = cantidad_motores
     form.querySelector("input#color").value = color
     form.querySelector("textarea#observations").value = observaciones
 
-    
+
+    const button_save = document.getElementById('save-button');
+    const button_cancel = document.getElementById('cancel-button');
+    if (button_save) {
+
+        button_save.style.display = 'none';
+    }
+    if (button_cancel) {
+        button_cancel.style.display = 'none';
+
+    }
 };
+
+function clearForm() {
+    const form = document.querySelector('.form-content'); // Selecciona el formulario usando la clase 'form-content'
+    if (form) {
+        form.querySelectorAll('input, select, textarea').forEach(element => element.value = '');
+    }
+}
