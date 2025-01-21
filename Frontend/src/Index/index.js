@@ -9,8 +9,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-map.on('load', loadMarkers());
-
 // Initialize UI elements
 const registerButton = document.getElementById('register-button');
 const overlay = document.getElementById('new-sighting-overlay');
@@ -441,16 +439,9 @@ async function loadMarkers() {
         });
 
         if (response.ok) {
-            const {sightings} = await response.json();
+            const { sightings } = await response.json();
 
-            // Itera sobre los datos y agrega marcadores al mapa
-            sightings.forEach(sighting => {
-                const { latitud, longitud } = sighting;
-                L.marker([latitud, longitud]).addTo(map);
-            });
-
-            // Actualizar el número de marcadores
-            updateMarkersCount(sightings.length);
+            return sightings;
         } else {
             const error = await response.json();
             console.error('Error:', error.message);
@@ -458,6 +449,8 @@ async function loadMarkers() {
     } catch (err) {
         console.error('Error al conectar con el servidor:', err);
     }
+    return null;
+
 }
 
 function updateMarkersCount(count) {
@@ -482,12 +475,12 @@ async function buscarUbicacion(nombreLugar) {
                 zoomLevel = 5; // Zoom para países
             } else if (addresstype === 'shop' || addresstype === 'village') {
                 zoomLevel = 6; // Zoom para pueblos o aldeas
-            }else if (addresstype === 'town' || addresstype === 'village') {
+            } else if (addresstype === 'town' || addresstype === 'village') {
                 zoomLevel = 12; // Zoom para pueblos o aldeas
-            }else if (addresstype === 'state' || addresstype === 'village') {
+            } else if (addresstype === 'state' || addresstype === 'village') {
                 zoomLevel = 6; // Zoom para pueblos o aldeas
             }
-        
+
             // Centrar el mapa y ajustar el zoom
             map.setView([lat, lon], zoomLevel);
         } else {
@@ -545,10 +538,72 @@ document.addEventListener("DOMContentLoaded", async () => {
     await reloadUserProfile();
     const userProfile = JSON.parse(localStorage.getItem("user"));
     const userPermissions = userProfile.permissions || {};
+    const urlParams = new URLSearchParams(window.location.search);
 
     showNavItems(userPermissions);
 
     // Search functionality
     const searchInput = document.querySelector('.search-input');
     searchInput.addEventListener('input', debouncedBuscarUbicacion);
+
+
+    const sightings = await loadMarkers();
+
+    map.on('load', placeMarkersOnMap(sightings));
+
+
+    // Verificar si el parámetro "sighting" está presente
+    const recordId = urlParams.get('sighting');
+
+
+    // Si el parámetro "query" existe, imprimirlo en consola
+    if (recordId) {
+
+        const sightingRecord = sightings.find(sighting => sighting.id === parseInt(recordId, 10));
+        const { latitud, longitud } = sightingRecord || {};
+        if (latitud !== undefined && longitud !== undefined) {
+            map.setView([latitud, longitud], 12);
+            fillForm(sightingRecord)
+            showForm();
+        }
+    }
+
+
+
 });
+
+function placeMarkersOnMap(sightings) {
+    // Itera sobre los datos y agrega marcadores al mapa
+    sightings.forEach(sighting => {
+        const { latitud, longitud } = sighting;
+        L.marker([latitud, longitud]).addTo(map);
+    });
+
+    // Actualizar el número de marcadores
+    updateMarkersCount(sightings.length);
+    
+
+
+}
+
+
+function fillForm({id,fecha_avistamiento,ubicacion,latitud,longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor,cantidad_motores,color,observaciones}) {
+
+    // obtener el formulario
+    const form = document.querySelector('#sighting-form');
+    // Llena el formulario con los datos del avistamiento
+    const idLabel = form.querySelector("span.sighting-id").innerHTML=`AV-${String(id).padStart(5, '0')}` 
+    form.querySelector("span.timestamp").innerHTML = fecha_avistamiento
+    form.querySelector("span#coordinateLog").innerHTML = latitud
+    form.querySelector("span#coordinateLat").innerHTML = longitud
+    form.querySelector("input#location").value = ubicacion
+    form.querySelector("input#estimated-height").value = altitud_estimada
+    form.querySelector("select#heading").value = rumbo
+    form.querySelector("input#aircraft-type").value = tipo_aeronave
+    form.querySelector("input#engine-type").value = tipo_motor
+    form.querySelector("select#engine-count").value = cantidad_motores   
+    form.querySelector("input#color").value = color
+    form.querySelector("textarea#observations").value = observaciones
+
+    
+};

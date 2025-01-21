@@ -269,15 +269,22 @@ textarea.modal-input {
 
 
 .maps-btn {
- 
-  height: 10px;
-
+  background-color: transparent; /* Fondo transparente */
+  border: none; /* Elimina bordes predeterminados del botón */
+  padding: 0; /* Elimina el padding del botón */
+  border-radius: 2px; /* Border radius */
+  
+  
 }
 
-.maps-btn img{
-  width: 10px;
-}
 
+.maps-btn img {
+  height: 20px; /* Altura de la imagen */
+  width: 20px; /* Ancho de la imagen */
+  border-radius: 2px; /* Border radius de la imagen */
+  filter: none; /* Asegúrate de no tener filtros que alteren el color */
+  color: white; /* Cambia el color del SVG */
+}
 @media (max-width: 768px) {
 
   #registro {

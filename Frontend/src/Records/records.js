@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             <th>Acciones</th>
         </tr>
-    `;  
+    `;
         table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
@@ -144,8 +144,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         tbody.innerHTML = ''; // Clear existing rows
         filteredSightings.forEach(sighting => {
             const row = document.createElement('tr');
+            row.setAttribute('data-id', sighting.id);
             row.innerHTML = `
-               <td>${sighting.id}</td>
+            <td>${sighting.id}</td>
             <td data-label="Fecha" class="col-ws">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
             <td data-label="Ubicación" class="ubicacion-cell" >${sighting.ubicacion}</td>
             <td data-label="Nombre y Apellido" class="col-medium-screen">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
@@ -159,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td class="actions-cell">
                 <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
                 <button class="delete-btn" data-id="${sighting.id}">X</button>
-                <button class="maps-btn" "> <img src="static/img/map.svg"/ > </button>
+                <button class="maps-btn"> <img src="static/img/map.svg"/ > </button>
                 
             </td>
         `;
@@ -168,6 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             row.querySelector('.view-details-btn').addEventListener('click', () => {
                 showObservationsModal(sighting);
             });
+
         });
         document.querySelectorAll('.delete-btn').forEach(button => {
             if (!button.disabled) {
@@ -184,6 +186,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
+        document.querySelectorAll('.maps-btn').forEach(mapButton => {
+            mapButton.addEventListener('click', (event) => {
+                // Buscar el <tr> más cercano al botón
+                const row = mapButton.closest('tr');
+                
+                // Obtener el identificador desde el atributo data-id de la fila
+                const recordId = row.getAttribute('data-id');
+                
+                // Redirigir a index.html y enviar el identificador como parámetro
+                window.location.href = `index.html?sighting=${recordId}`;
+            });
+        });
+
         table.querySelectorAll('.sightings-table th').forEach(header => {
             header.addEventListener('click', () => {
                 const currentSort = header.getAttribute('data-sort');
@@ -198,13 +213,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     case 'desc':
                         newSort = 'none';
                         sortIcon.src = 'static/img/angles-up-down.svg';
-                        sortIcon.style = "" ;
+                        sortIcon.style = "";
                         break;
                     default:
                         newSort = 'asc';
                         sortIcon.src = 'static/img/angles-up.svg';
                         sortIcon.style = "padding : 0";
-                        
+
 
                 }
                 header.setAttribute('data-sort', newSort);
@@ -264,7 +279,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderPagination(currentPage, totalPages);
         }
     }
-    
+
     await reloadUserProfile();
     const userProfile = JSON.parse(localStorage.getItem("user"));
     const userPermissions = userProfile.permissions || {};
@@ -274,6 +289,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 });
+
+
 
 async function loadSightings({ page, limit = 10, search = '' }) {
 
@@ -299,6 +316,9 @@ async function loadSightings({ page, limit = 10, search = '' }) {
     }
     return null;
 }
+
+
+
 
 // Función para verificar permisos y deshabilitar botones de eliminación si es necesario
 function checkPermissionsAndDisableDeleteButtons() {
