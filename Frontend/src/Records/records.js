@@ -1,81 +1,93 @@
 import { reloadUserProfile } from '/utils/profile.js';
 import { customFetch } from '../utils/auth.js';
 import { showNavItems } from '/static/js/navigation.js';
-import { toProperCase } from '../utils/utils.js';
+import { toProperCase, debounce, formatDate } from '../utils/utils.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const modal = document.getElementById('observations-modal');
-    const closeButton = document.getElementById('close-observations-modal');
-    const modalContent = modal.querySelector('.modal-content');
-    const limit = 10;
-
+const SightingsApp = (function() {
     let currentSearch = '';
     let sightingsCurrentPage = 1;
     let touchStartY = 0;
     let touchEndY = 0;
 
+    // DOM elements
+    const elements = {
+        modal: document.getElementById('observations-modal'),
+        closeButton: document.getElementById('close-observations-modal'),
+        modalContent: document.querySelector('#observations-modal .modal-content'),
+        searchInput: document.getElementById('search'),
+        sightingsList: document.getElementById('sightings-list'),
+        paginationContainer: document.getElementById('sightings-pagination')
+    };
+
+    // Event listeners
+    function setupEventListeners() {
+        elements.modalContent.addEventListener("touchstart", handleTouchStart, { passive: true })
+        document.addEventListener("touchmove", handleTouchMove, { passive: false })
+        document.addEventListener("touchend", handleTouchEnd)
+        elements.closeButton.addEventListener("click", closeModal)
+        window.addEventListener("hashchange", handleHashChange)
+        elements.searchInput.addEventListener("input", debounce(handleSearch, 300))
+        window.addEventListener("resize", adjustColumnsForSmallScreens)
+    }
+
+    // Touch event handlers
     function handleTouchStart(e) {
-        touchStartY = e.touches[0].clientY;
+        touchStartY = e.touches[0].clientY
     }
 
     function handleTouchMove(e) {
-        if (!modal.classList.contains('active')) return;
-
-        touchEndY = e.touches[0].clientY;
-        const diffY = touchEndY - touchStartY;
+        if (!elements.modal.classList.contains("active")) return
+        touchEndY = e.touches[0].clientY
+        const diffY = touchEndY - touchStartY
         if (diffY > 0) {
-            e.preventDefault();
-            modalContent.style.transform = `translateY(${diffY}px)`;
-            modalContent.style.transition = 'none';
+            e.preventDefault()
+            elements.modalContent.style.transform = `translateY(${diffY}px)`
+            elements.modalContent.style.transition = "none"
         }
     }
 
     function handleTouchEnd() {
-        if (!modal.classList.contains('active')) return;
-
-        const diffY = touchEndY - touchStartY;
-        modalContent.style.transform = '';
-        modalContent.style.transition = '';
-
+        if (!elements.modal.classList.contains("active")) return
+        const diffY = touchEndY - touchStartY
+        elements.modalContent.style.transform = ""
+        elements.modalContent.style.transition = ""
         if (diffY > 100) {
-            closeModal();
+            closeModal()
         } else {
-            modalContent.style.transform = 'translateY(0)';
+            elements.modalContent.style.transform = "translateY(0)"
         }
     }
 
-    modalContent.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd);
+    // Search and pagination
+    function handleSearch() {
+        const search = elements.searchInput.value.trim().toLowerCase()
+        sightingsCurrentPage = 1
+        currentSearch = search
+        loadAndDisplaySightings()
+    }
 
-    function showObservationsModal(sighting) {
+   // Modal functions
+   function showObservationsModal(sighting) {
+        const modalFields = [
+            'observaciones', 'tipo-motor', 'cantidad-motores', 'color', 
+            'rumbo', 'tipo-aeronave', 'altitud'
+        ];
+        modalFields.forEach(field => {
+            document.getElementById(`modal-${field}`).value = sighting[field] || 'N/A';
+        });
+        document.getElementById('modal-coordenadas').value = `[${sighting.latitud},${sighting.longitud}]`;
 
-        document.getElementById('modal-observaciones').value = sighting.observaciones || 'N/A';
-        document.getElementById('modal-tipo-motor').value = sighting.tipo_motor || 'N/A';
-        document.getElementById('modal-cantidad-motores').value = sighting.cantidad_motores || 'N/A';
-        document.getElementById('modal-color').value = sighting.color || 'N/A';
-        document.getElementById('modal-rumbo').value = sighting.rumbo || 'N/A';
-        document.getElementById('modal-coordenadas').value = `[${sighting.latitud},${sighting.longitud}]` || 'N/A';
-        document.getElementById('modal-tipo-aeronave').value = sighting.tipo_aeronave || 'N/A';
-        document.getElementById('modal-altitud').value = sighting.altitud_estimada || 'N/A';
-
-
-
-        modal.offsetHeight;
-        modal.classList.add('active');
-        modal.setAttribute('aria-hidden', 'false');
-        closeButton.focus();
-
+        elements.modal.classList.add('active');
+        elements.modal.setAttribute('aria-hidden', 'false');
+        elements.closeButton.focus();
         window.location.hash = 'modal-open';
-
     }
 
     function closeModal() {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-
-        if (window.location.hash === '#modal-open') {
-            history.back();
+        elements.modal.classList.remove("active")
+        document.body.style.overflow = ""
+        if (window.location.hash === "#modal-open") {
+          history.back()
         }
     }
 
@@ -84,103 +96,127 @@ document.addEventListener('DOMContentLoaded', async () => {
             closeModal();
         }
     }
-    // Cerrar el modal cuando se hace clic en el botón de cerrar
-    closeButton.onclick = function (e) {
-        e.preventDefault();
-        closeModal();
-    };
 
-    // Cerrar el modal cuando se hace clic fuera del contenido del modal
-    window.addEventListener('hashchange', handleHashChange);
-    const searchInput = document.getElementById('search');
+    async function loadAndDisplaySightings() {
+        try {
+            const data = await loadSightings({ page: sightingsCurrentPage, search: currentSearch });
+            if (data) {
+                const { sightings, currentPage, totalPages } = data;
+                // Cache the sightings
+                localStorage.setItem("sightings", JSON.stringify(sightings))
+                displaySightings(sightings);
+                renderPagination(currentPage, totalPages);
+            }
+        } catch (error) {
+            console.error('Error loading sightings:', error);
+            // TODO: Implement user-friendly error handling
+        }
+    }
 
-    // Agregar evento input para filtrar los avistamientos
-    searchInput.addEventListener('input', debounce(() => {
-        const search = searchInput.value.trim().toLowerCase();
-        sightingsCurrentPage = 1;
-        currentSearch = search; // Reiniciar la paginación
-        loadAndDisplaySightings();
-        console.log('search', search);
-    }), 300);
     // Función para mostrar los avistamientos en la tabla
     function displaySightings(sightings) {
         renderTable(sightings);
-
-
+        adjustColumnsForSmallScreens();
         checkPermissionsAndDisableDeleteButtons();
     }
 
-    function renderTable(filteredSightings) {
-        const sightingsList = document.getElementById('sightings-list');
-
-        sightingsList.innerHTML = ''; // Clear any existing content
-
+    function renderTable(sightings) {
         const table = document.createElement('table');
         table.classList.add('sightings-table');
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="col-ws fecha-header">Fecha <img src="static/img/angles-up-down.svg"/></th>
+                    <th class="ubicacion-cell">Ubicacion</th>
+                    <th class="col-medium-screen">Creado por</th>
+                    <th class="col-large-screen">Latitud</th>
+                    <th class="col-large-screen">Longitud</th>
+                    <th>Rumbo</th>
+                    <th>Altitud Est.</th>
+                    <th>Tipo de Aeronave</th>
+                    <th class="col-medium-screen">Color</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        `;
 
-        const thead = document.createElement('thead');
-        thead.innerHTML = `
-        <tr>
-            <th>#</th>
-            <th class="col-ws fecha-header">Fecha <img src="static/img/angles-up-down.svg"/></th>
-            <th class="ubicacion-cell">Ubicacion </th>
-            <th class="col-medium-screen">Creado por </th>
-            <th class="col-large-screen">Latitud </th>
-            <th class="col-large-screen">Longitud </th>
-            <th>Rumbo </th>
-            <th>Altitud Est. </th>
-            <th>Tipo de Aeronave </th>
-            <th class="col-medium-screen">Color</th>
-
-            <th>Acciones</th>
-        </tr>
-    `;
-        table.appendChild(thead);
-
-        const tbody = document.createElement('tbody');
-        table.appendChild(tbody);
-        sightingsList.appendChild(table);
-
-        tbody.innerHTML = ''; // Clear existing rows
-        filteredSightings.forEach(sighting => {
+        const tbody = table.querySelector('tbody');
+        sightings.forEach(sighting => {
             const row = document.createElement('tr');
             row.setAttribute('data-id', sighting.id);
             row.innerHTML = `
-            <td>${sighting.id}</td>
-            <td data-label="Fecha" class="col-ws">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
-            <td data-label="Ubicación" class="ubicacion-cell" >${sighting.ubicacion}</td>
-            <td data-label="Nombre y Apellido" class="col-medium-screen">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
-            <td data-label="Latitud" class="latitud-cell col-large-screen">${sighting.latitud}</td>
-            <td data-label="Longitud" class="longitud-cell col-large-screen">${sighting.longitud}</td>
-            <td data-label="Rumbo">${sighting.rumbo}</td>
-            <td data-label="Altitud estimada">${sighting.altitud_estimada}</td>
-            <td data-label="Tipo de Aeronave">${sighting.tipo_aeronave}</td>
-            <td data-label="Color" class="col-medium-screen">${sighting.color}</td> 
-
-            <td class="actions-cell">
-                <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
-                <button class="delete-btn" data-id="${sighting.id}">X</button>
-                <button class="maps-btn"> <img src="static/img/map.svg"/ > </button>
-                
-            </td>
-        `;
+                <td>${sighting.id}</td>
+                <td data-label="Fecha" class="col-ws">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+                <td data-label="Ubicación" class="ubicacion-cell">${sighting.ubicacion}</td>
+                <td data-label="Nombre y Apellido" class="col-medium-screen">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
+                <td data-label="Latitud" class="latitud-cell col-large-screen">${sighting.latitud}</td>
+                <td data-label="Longitud" class="longitud-cell col-large-screen">${sighting.longitud}</td>
+                <td data-label="Rumbo">${sighting.rumbo}</td>
+                <td data-label="Altitud estimada">${sighting.altitud_estimada}</td>
+                <td data-label="Tipo de Aeronave">${sighting.tipo_aeronave}</td>
+                <td data-label="Color" class="col-medium-screen">${sighting.color}</td>
+                <td class="actions-cell">
+                    <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
+                    <button class="delete-btn" data-id="${sighting.id}">X</button>
+                    <button class="maps-btn"><img src="static/img/map.svg"/></button>
+                </td>
+            `;
             tbody.appendChild(row);
-            // Add event listener for "Ver detalles" button
-            row.querySelector('.view-details-btn').addEventListener('click', () => {
-                showObservationsModal(sighting);
+        });
+
+        elements.sightingsList.innerHTML = '';
+        elements.sightingsList.appendChild(table);
+
+        setupTableEventListeners(table);
+    }
+
+    function renderPagination(currentPage, totalPages) {
+        const paginationControls = document.createElement('div');
+        paginationControls.classList.add('pagination-controls');
+        paginationControls.innerHTML = `
+            <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Anterior</button>
+            <span>Página ${currentPage} de ${totalPages}</span>
+            <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente &raquo;</button>
+        `;
+
+        elements.paginationContainer.innerHTML = '';
+        elements.paginationContainer.appendChild(paginationControls);
+
+        paginationControls.querySelector('.prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                sightingsCurrentPage--;
+                loadAndDisplaySightings();
+            }
+        });
+
+        paginationControls.querySelector('.next-page').addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                sightingsCurrentPage++;
+                loadAndDisplaySightings();
+            }
+        });
+    }
+
+    function setupTableEventListeners(table) {
+        table.querySelectorAll('.view-details-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const sighting = getSightingById(button.getAttribute('data-id'));
+                if (sighting) {
+                    showObservationsModal(sighting);
+                }
             });
 
         });
-        document.querySelectorAll('.delete-btn').forEach(button => {
+
+        table.querySelectorAll('.delete-btn').forEach(button => {
             if (!button.disabled) {
                 button.addEventListener('click', async (event) => {
                     const id = event.target.getAttribute('data-id');
                     const deleted = await deleteSighting(id);
                     if (deleted) {
-                        // Actualizar la tabla
-
                         event.target.closest('tr').remove();
-                        updateMarkersCount(document.querySelectorAll('.sightings-table tbody tr').length);
                     }
                 });
             }
@@ -200,142 +236,123 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         table.querySelectorAll('.sightings-table th').forEach(header => {
-            header.addEventListener('click', () => {
-                const currentSort = header.getAttribute('data-sort');
-                const sortIcon = header.querySelector('img');
-                let newSort
-                switch (currentSort) {
-                    case 'asc':
-                        newSort = 'desc';
-                        sortIcon.src = 'static/img/angles-down.svg';
-                        sortIcon.style = "padding : 0";
-                        break;
-                    case 'desc':
-                        newSort = 'none';
-                        sortIcon.src = 'static/img/angles-up-down.svg';
-                        sortIcon.style = "";
-                        break;
-                    default:
-                        newSort = 'asc';
-                        sortIcon.src = 'static/img/angles-up.svg';
-                        sortIcon.style = "padding : 0";
+            header.addEventListener('click', () => handleSort(header));
+        });
+    }
 
+    function handleSort(header) {
+        const currentSort = header.getAttribute('data-sort');
+        const sortIcon = header.querySelector('img');
+        let newSort;
+        switch (currentSort) {
+            case 'asc':
+                newSort = 'desc';
+                sortIcon.src = 'static/img/angles-down.svg';
+                sortIcon.style.padding = '0';
+                break;
+            case 'desc':
+                newSort = 'none';
+                sortIcon.src = 'static/img/angles-up-down.svg';
+                sortIcon.style = '';
+                break;
+            default:
+                newSort = 'asc';
+                sortIcon.src = 'static/img/angles-up.svg';
+                sortIcon.style.padding = '0';
+        }
+        header.setAttribute('data-sort', newSort);
+        // TODO: Implement actual sorting logic
+    };
 
-                }
-                header.setAttribute('data-sort', newSort);
+    // Utility functions
+    function checkPermissionsAndDisableDeleteButtons() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.permissions && user.permissions.deleteSightings === false) {
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.style.backgroundColor = 'gray';
+                button.style.cursor = 'not-allowed';
+                button.disabled = true;
             });
-
-
-        });
-        adjustColumnsForSmallScreens();
-
-    }
-
-
-
-    function renderPagination(currentPage, totalPages) {
-        // Add pagination controls
-        const sightingsPaginationContainer = document.getElementById('sightings-pagination');
-        const existingPaginationControls = document.querySelector('.pagination-controls');
-
-        if (existingPaginationControls) {
-            existingPaginationControls.remove();
         }
+    };
 
-        const paginationControls = document.createElement('div');
-        paginationControls.classList.add('pagination-controls');
-        paginationControls.innerHTML = `
-          <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Anterior</button>
-          <span>Página ${currentPage} de ${totalPages}</span>
-          <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente &raquo;</button>
-      `;
-
-        sightingsPaginationContainer.appendChild(paginationControls);
-
-        // añade evento de boton para la paginacion
-        paginationControls.querySelector('.prev-page').addEventListener('click', async () => {
-            if (currentPage > 1) {
-                sightingsCurrentPage--;
-                await loadAndDisplaySightings();
-            }
-        });
-
-        paginationControls.querySelector('.next-page').addEventListener('click', async () => {
-            console.log(sightingsCurrentPage, currentPage, totalPages);
-            if (currentPage < totalPages) {
-                sightingsCurrentPage++;
-                await loadAndDisplaySightings();
-            }
-        });
+    function getSightingById(id) {
+        const sightings = JSON.parse(localStorage.getItem("sightings") || "[]")
+        return sightings.find((sighting) => sighting.id === Number.parseInt(id, 10))
     }
 
+    function adjustColumnsForSmallScreens() {
+        const isSmallScreen = window.innerWidth <= 768
+        const tableRows = document.querySelectorAll(".sightings-table tbody tr")
+    
+        tableRows.forEach((row) => {
+          row.classList.toggle("small-screen", isSmallScreen)
+          const cells = row.querySelectorAll("td")
+          cells.forEach((cell, index) => {
+            if (isSmallScreen) {
+              cell.style.display =
+                index === 1 || index === 2 || index === 3 || cell.classList.contains("actions-cell") ? "flex" : "none"
+            } else {
+              cell.style.display = ""
+            }
+          })
+        })
+    }
 
-    async function loadAndDisplaySightings() {
-        const data = await loadSightings({ page: sightingsCurrentPage, search: currentSearch });
-        if (data) {
-            console.log(data);
-            const { sightings, currentPage, totalPages } = data;
-            displaySightings(sightings);
-            renderPagination(currentPage, totalPages);
+    // Función para verificar permisos y deshabilitar botones de eliminación si es necesario
+    function checkPermissionsAndDisableDeleteButtons() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.permissions && user.permissions.deleteSightings === false) {
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.style.backgroundColor = 'gray';
+                button.style.cursor = 'not-allowed';
+                button.disabled = true;
+            });
         }
     }
 
-    await reloadUserProfile();
-    const userProfile = JSON.parse(localStorage.getItem("user"));
-    const userPermissions = userProfile.permissions || {};
+    // Initialization
+    async function init() {
+        setupEventListeners();
+        await reloadUserProfile();
+        const userProfile = JSON.parse(localStorage.getItem("user"));
+        const userPermissions = userProfile.permissions || {};
+        showNavItems(userPermissions);
+        await loadAndDisplaySightings();
+    };
 
-    showNavItems(userPermissions);
-    await loadAndDisplaySightings();
+    // Public API
+    return {
+        init: init
+    };
 
+})();
 
-});
+document.addEventListener('DOMContentLoaded', SightingsApp.init);
 
-
-
+// API calls
 async function loadSightings({ page, limit = 10, search = '' }) {
-
     try {
         const url = `/api/sightings?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
-        console.log('page', page);
         const response = await customFetch(url, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (response.ok) {
-            const { sightings, currentPage, totalPages } = await response.json();
-            return { sightings, currentPage, totalPages };
+            return await response.json();
         } else {
-            const error = await response.json();
-            console.error('Error:', error.message);
+            throw new Error('Failed to load sightings');
         }
     } catch (err) {
         console.error('Error al conectar con el servidor:', err);
-    }
-    return null;
-}
-
-
-
-
-// Función para verificar permisos y deshabilitar botones de eliminación si es necesario
-function checkPermissionsAndDisableDeleteButtons() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.permissions && user.permissions.deleteSightings === false) {
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.style.backgroundColor = 'gray';
-            button.style.cursor = 'not-allowed';
-            button.disabled = true;
-        });
+        throw err;
     }
 }
 
-// Función para eliminar un avistamiento
 async function deleteSighting(id) {
     try {
-        const response = await fetch(`/api/sightings/${id}`, {
+        const response = await customFetch(`/api/sightings/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -345,69 +362,11 @@ async function deleteSighting(id) {
 
         if (!response.ok) {
             const error = await response.json();
-            console.error('Error:', error.message);
-            return false
+            throw new Error(error.message);
         }
+        return true;
     } catch (err) {
-        console.error('Error al conectar con el servidor:', err);
-        return false
+        console.error('Error al eliminar el avistamiento:', err);
+        return false;
     }
-    return true
 }
-
-function formatDate(date) {
-    const day = date.getDate(); // Día (1-31)
-    const monthIndex = date.getMonth(); // Mes (0-11)
-    const year = date.getFullYear(); // Año (4 dígitos)
-    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-
-    const formattedDate = `${day}/${months[monthIndex]}/${year}`
-    const formattedTime = new Intl.DateTimeFormat('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-    }).format(date);
-
-    return `${formattedDate} ${formattedTime}`;
-}
-
-function adjustColumnsForSmallScreens() {
-    const isSmallScreen = window.innerWidth <= 768;
-    const tableRows = document.querySelectorAll('.sightings-table tbody tr');
-
-    tableRows.forEach(row => {
-        if (isSmallScreen) {
-            row.classList.add('small-screen');
-        } else {
-            row.classList.remove('small-screen');
-        }
-
-        const cells = row.querySelectorAll('td');
-        cells.forEach((cell, index) => {
-            // Solo Fecha, Ubicacion, Rumbo, Altitud Estimada, Tipo de Aeronave y botones de acciones
-            if (isSmallScreen) {
-                if (index !== 1 && index !== 3 && index !== 2 && !cell.classList.contains('actions-cell')) {
-                    cell.style.display = 'none';
-                } else {
-                    cell.style.display = 'flex';
-                }
-            } else {
-                cell.style.display = '';
-            }
-        });
-    });
-
-}
-
-window.addEventListener('resize', adjustColumnsForSmallScreens);
-
-
-
-// Función de debounce
-const debounce = (fn, delay = 1000) => {
-    let timerId = null;
-    return (...args) => {
-        clearTimeout(timerId);
-        timerId = setTimeout(() => fn(...args), delay);
-    };
-};
