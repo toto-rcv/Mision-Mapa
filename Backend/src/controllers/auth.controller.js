@@ -33,7 +33,7 @@ exports.register = async (req, res) => {
       militaryRank,
     });
 
-    res.status(201).json({ message: "Usuario registrado exitosamente", user: newUser });
+    res.status(201).json({ message: "Usuario registrado exitosamente", user: {dni, email} });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

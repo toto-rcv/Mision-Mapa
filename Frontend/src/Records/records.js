@@ -299,18 +299,6 @@ const SightingsApp = (function() {
         })
     }
 
-    // Función para verificar permisos y deshabilitar botones de eliminación si es necesario
-    function checkPermissionsAndDisableDeleteButtons() {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user && user.permissions && user.permissions.deleteSightings === false) {
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.style.backgroundColor = 'gray';
-                button.style.cursor = 'not-allowed';
-                button.disabled = true;
-            });
-        }
-    }
-
     // Initialization
     async function init() {
         setupEventListeners();
