@@ -415,6 +415,16 @@ window.addEventListener('resize', function () {
     }
 });
 
+
+var redIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = redIcon;
 function updateGreyMarker(latlng) {
     if (greyMarker) {
         greyMarker.setLatLng(latlng);
@@ -551,6 +561,18 @@ const debouncedBuscarUbicacion = debounce((event) => {
     }
 }, 300);
 
+function changeMarkerToBlue(marker) {
+    const blueIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+    marker.setIcon(blueIcon);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     await reloadUserProfile();
     const userProfile = JSON.parse(localStorage.getItem("user"));
@@ -571,8 +593,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Add click event to each marker
     sightings.forEach(sighting => {
-        const marker = L.marker([sighting.latitud, sighting.longitud]).addTo(map);
+        const marker = L.marker([sighting.latitud, sighting.longitud], { icon: redIcon }).addTo(map);
         marker.on('click', () => {
+            changeMarkerToBlue(marker);
             map.setView([sighting.latitud, sighting.longitud],6);
             fillForm(sighting);
             showForm();
