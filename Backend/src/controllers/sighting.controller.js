@@ -140,4 +140,6 @@ const validateSighting = async (id) => {
     return sighting;
 };
 
-module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting };
+
+
+module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting};

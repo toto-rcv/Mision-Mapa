@@ -1,5 +1,5 @@
 const express = require("express");
-const { createSighting, getAllSightings, deleteSighting, getAllMarkers } = require("../controllers/sighting.controller");
+const { createSighting, getAllSightings, deleteSighting, getAllMarkers, getSightingById } = require("../controllers/sighting.controller");
 const { validateAccessToken } = require("../middleware/auth.middleware");
 const validateCreateSighting = require("../middleware/sighting.middleware");
 const router = express.Router();

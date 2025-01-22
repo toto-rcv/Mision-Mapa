@@ -145,6 +145,7 @@ const SightingsApp = (function() {
         const tbody = table.querySelector('tbody');
         sightings.forEach(sighting => {
             const row = document.createElement('tr');
+            row.setAttribute('data-id', sighting.id);
             row.innerHTML = `
                 <td>${sighting.id}</td>
                 <td data-label="Fecha" class="col-ws">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
@@ -159,6 +160,7 @@ const SightingsApp = (function() {
                 <td class="actions-cell">
                     <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
                     <button class="delete-btn" data-id="${sighting.id}">X</button>
+                    <button class="maps-btn"><img src="static/img/map.svg"/></button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -205,6 +207,7 @@ const SightingsApp = (function() {
                     showObservationsModal(sighting);
                 }
             });
+
         });
 
         table.querySelectorAll('.delete-btn').forEach(button => {
@@ -217,6 +220,19 @@ const SightingsApp = (function() {
                     }
                 });
             }
+        });
+
+        document.querySelectorAll('.maps-btn').forEach(mapButton => {
+            mapButton.addEventListener('click', (event) => {
+                // Buscar el <tr> más cercano al botón
+                const row = mapButton.closest('tr');
+                
+                // Obtener el identificador desde el atributo data-id de la fila
+                const recordId = row.getAttribute('data-id');
+                
+                // Redirigir a index.html y enviar el identificador como parámetro
+                window.location.href = `index.html?sighting=${recordId}`;
+            });
         });
 
         table.querySelectorAll('.sightings-table th').forEach(header => {
