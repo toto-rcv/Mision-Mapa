@@ -130,34 +130,32 @@ const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}
     return { sightings, totalRecords };
 };
 
-const validateSighting = async (id) => {
-    const sighting = await Sighting.findByPk(id);
-    if (!sighting) {
-        throw new SightingNotFoundError();
-    }
-    if (sighting.fue_eliminado) {
-        throw new SightingAlreadyDeletedError();
-    }
-    return sighting;
-};
-const markSightingAsBlue = async (req, res) => {
+const validateSighting = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user.id; // Obtener el ID del usuario que realiza la validación
-        console.log(`Marking sighting with ID ${id} as validated by user ${userId}`);
+        const sighting = await Sighting.findByPk(id);
+        if (!sighting) {
+            throw new SightingNotFoundError();
+        }
 
-        const sighting = await validateSighting(id);
-        console.log(`Sighting found: ${JSON.stringify(sighting)}`);
+        const user = await User.findByPk(req.user.id);
+        if (!user) {
+            throw new Error("User not found");
+        }
 
-        sighting.validado_por = userId; // Establecer el campo validado_por con el ID del usuario
+        sighting.validado_por = user.dni;
+        sighting.validado_en = new Date();
         await sighting.save();
-        console.log(`Sighting with ID ${id} validated by user ${userId}`);
 
-        res.status(200).json({ message: "Avistamiento marcado como validado exitosamente" });
+        res.status(200).json({ message: "Avistamiento validado exitosamente" });
     } catch (error) {
-        console.error("Error al marcar avistamiento como validado:", error);
-        res.status(500).json({ message: "Error interno del servidor" });
+        console.error("Error al validar avistamiento:", error);
+        if (error instanceof SightingNotFoundError) {
+            res.status(404).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: "Error interno del servidor" });
+        }
     }
 };
 
-module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, markSightingAsBlue};
+module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, validateSighting };

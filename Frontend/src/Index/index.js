@@ -416,15 +416,8 @@ window.addEventListener('resize', function () {
 });
 
 
-var redIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
-L.Marker.prototype.options.icon = redIcon;
+
+
 function updateGreyMarker(latlng) {
     if (greyMarker) {
         greyMarker.setLatLng(latlng);
@@ -453,17 +446,21 @@ function updateCoordinates(latlng) {
 
 async function loadMarkers() {
     try {
+        // Obtén el token de localStorage
         const accessToken = localStorage.getItem('accessToken');
+
+        // Realiza una solicitud GET para obtener los datos de los avistamientos
         const response = await customFetch('/api/sightings/all', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Bearer ${accessToken}` // Agrega el token al encabezado
             }
         });
 
         if (response.ok) {
             const { sightings } = await response.json();
+
             return sightings;
         } else {
             const error = await response.json();
@@ -473,6 +470,7 @@ async function loadMarkers() {
         console.error('Error al conectar con el servidor:', err);
     }
     return null;
+
 }
 
 function updateMarkersCount(count) {
@@ -556,7 +554,7 @@ const debouncedBuscarUbicacion = debounce((event) => {
     }
 }, 300);
 
-async function changeMarkerToBlue(marker, id) {
+async function changeMarkerToBlue(marker, sightingId) {
     const blueIcon = L.icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -567,21 +565,21 @@ async function changeMarkerToBlue(marker, id) {
     });
     marker.setIcon(blueIcon);
 
-    // Enviar el ID del marcador al backend
     try {
-        const response = await customFetch(`/api/sightings/${id}/mark-blue`, {
-            method: 'POST',
+        const response = await fetch(`/api/sightings/${sightingId}/validate`, {
+            method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             }
         });
 
         if (!response.ok) {
             const error = await response.json();
-            console.error('Error:', error.message);
+            throw new Error(error.message);
         }
-    } catch (err) {
-        console.error('Error al conectar con el servidor:', err);
+    } catch (error) {
+        console.error('Error al validar el avistamiento:', error);
     }
 }
 
@@ -603,16 +601,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     map.on('load', placeMarkersOnMap(sightings));
 
 
-    // Add click event to each marker
-    sightings.forEach(sighting => {
-        const marker = L.marker([sighting.latitud, sighting.longitud], { icon: redIcon }).addTo(map);
-        marker.on('click', () => {
-            changeMarkerToBlue(marker);
-            map.setView([sighting.latitud, sighting.longitud],6);
-            fillForm(sighting);
-            showForm();
-        });
-    });
 
 
 // Verificar si el parámetro "sighting" está presente
@@ -635,20 +623,34 @@ if (recordId) {
 
 
 });
+const redIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
 
+const blueIconMarker = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
 function placeMarkersOnMap(sightings) {
-    sightings.forEach(sighting => {
-        const { id, latitud, longitud, isBlue } = sighting;
-        const icon = isBlue ? L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
-        }) : L.Marker.prototype.options.icon;
+    // Limpiar los marcadores existentes
+   
 
+    // Itera sobre los datos y agrega marcadores al mapa
+    sightings.forEach(sighting => {
+        const { latitud, longitud, validador, id } = sighting;
+        const icon = validador ? blueIconMarker : redIcon;
         const marker = L.marker([latitud, longitud], { icon }).addTo(map);
+
+        
         marker.on('click', () => {
             changeMarkerToBlue(marker, id);
             map.setView([latitud, longitud], 6);
@@ -657,6 +659,7 @@ function placeMarkersOnMap(sightings) {
         });
     });
 
+    // Actualizar el número de marcadores
     updateMarkersCount(sightings.length);
 }
 
