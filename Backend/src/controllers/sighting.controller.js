@@ -140,7 +140,24 @@ const validateSighting = async (id) => {
     }
     return sighting;
 };
+const markSightingAsBlue = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id; // Obtener el ID del usuario que realiza la validación
+        console.log(`Marking sighting with ID ${id} as validated by user ${userId}`);
 
+        const sighting = await validateSighting(id);
+        console.log(`Sighting found: ${JSON.stringify(sighting)}`);
 
+        sighting.validado_por = userId; // Establecer el campo validado_por con el ID del usuario
+        await sighting.save();
+        console.log(`Sighting with ID ${id} validated by user ${userId}`);
 
-module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting};
+        res.status(200).json({ message: "Avistamiento marcado como validado exitosamente" });
+    } catch (error) {
+        console.error("Error al marcar avistamiento como validado:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
+module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, markSightingAsBlue};
