@@ -251,7 +251,7 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
             });
 
             if (response.ok) {
-                L.marker([formData["latitud"], formData["longitud"]]).addTo(map);
+                L.marker([formData["latitud"], formData["longitud"]], {icon: redIcon}).addTo(map);
                 hideForm();
                 updateMarkersCount();
             } else {
