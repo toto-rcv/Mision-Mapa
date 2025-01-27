@@ -17,6 +17,7 @@ const closeFormButton = document.getElementById('close-form');
 const cancelButton = document.getElementById('cancel-button');
 const inputs = formPanel.querySelectorAll('input, select, textarea');
 
+let formEditMode = false;
 let greyMarker = null;
 let isOverlayActive = false;
 let isFormActive = false;
@@ -77,6 +78,8 @@ function showOverlay() {
     overlay.style.display = 'flex';
     overlay.style.transform = 'translateY(0)';
     isOverlayActive = true;
+
+    hideForm();
 }
 
 function hideOverlay() {
@@ -86,14 +89,18 @@ function hideOverlay() {
     isOverlayActive = false;
 }
 
-function showForm() {
+function showForm(editMode = false) {
     const formPanel = document.getElementById('sighting-form');
     formPanel.style.display = 'block';
     isFormActive = true;
-
+    formEditMode = editMode;
 }
 
 function hideForm() {
+    if (formEditMode) {
+        formEditMode = false;
+    }
+
     const formPanel = document.getElementById('sighting-form');
     formPanel.style.display = 'none';
     isFormActive = false;
@@ -105,21 +112,40 @@ function hideForm() {
 }
 
 function closeForm() {
+    showNotificationOverlay();
     hideForm();
-}
 
+}
+function hideNotificationOverlay() {
+ 
+        const modal = document.getElementById('quantityMarkers');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+ 
+};
+
+function showNotificationOverlay() {
+    const modal = document.getElementById('quantityMarkers');
+        if (modal) {
+            modal.style.display = 'block';
+        }
+    
+}
 function formatCoordinates(value) {
     return Number(value).toFixed(6);
 }
 
 // Event Listeners
-registerButton.addEventListener('click', showOverlay);
-closeFormButton.addEventListener('click', closeForm);
+registerButton.addEventListener('click', () => { showOverlay() 
+     hideNotificationOverlay() });
+closeFormButton.addEventListener('click', closeForm );
 cancelButton.addEventListener('click', closeForm);
 
 // Handle map clicks
 map.on('click', function (e) {
-    if (isOverlayActive || isFormActive) {
+    let formEditable = isFormActive && formEditMode;
+    if (isOverlayActive || formEditable) {
         lat = formatCoordinates(e.latlng.lat);
         lng = formatCoordinates(e.latlng.lng);
         const timestamp = new Date().toLocaleString('es-ES', {
@@ -131,11 +157,8 @@ map.on('click', function (e) {
         });
 
         // Update coordinates in the form
-        const coordinates = document.querySelector('.coordinates');
-        coordinates.innerHTML = `
-            <div><label>Longitud:</label><span>${lng}</span></div>
-            <div><label>Latitud:</label><span>${lat}</span></div>
-        `;
+        document.getElementById('coordinateLog').textContent = lng;
+        document.getElementById('coordinateLat').textContent = lat;
 
         // Update timestamp
         const timestampElement = document.querySelector('.timestamp');
@@ -148,7 +171,7 @@ map.on('click', function (e) {
 
         if (isOverlayActive) {
             hideOverlay();
-            showForm();
+            showForm(true);
             const cancelButton = document.getElementById('cancel-button');
             const saveButton = document.getElementById('save-button');
             clearForm();
@@ -163,6 +186,7 @@ map.on('click', function (e) {
 
         }
     }
+
 });
 
 // Add this new function for reverse geocoding
@@ -251,9 +275,11 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
             });
 
             if (response.ok) {
-                L.marker([formData["latitud"], formData["longitud"]], {icon: redIcon}).addTo(map);
+                L.marker([formData["latitud"], formData["longitud"]], { icon: redIcon }).addTo(map);
                 hideForm();
+                showNotificationOverlay();
                 updateMarkersCount();
+                updateRedMarkersModal(++redMarkersCount);
             } else {
                 const error = await response.json();
                 console.error('Error:', error.message);
@@ -419,6 +445,7 @@ window.addEventListener('resize', function () {
 
 
 function updateGreyMarker(latlng) {
+
     if (greyMarker) {
         greyMarker.setLatLng(latlng);
     } else {
@@ -564,9 +591,11 @@ async function changeMarkerToBlue(marker, sightingId) {
         shadowSize: [41, 41]
     });
     marker.setIcon(blueIcon);
+    redMarkersCount--;
+    updateRedMarkersModal();
 
     try {
-        const response = await fetch(`/api/sightings/${sightingId}/validate`, {
+        const response = await customFetch(`/api/sightings/${sightingId}/validate`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -603,22 +632,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-// Verificar si el parámetro "sighting" está presente
-const recordId = urlParams.get('sighting');
+    // Verificar si el parámetro "sighting" está presente
+    const recordId = urlParams.get('sighting');
 
 
-// Si el parámetro "query" existe, imprimirlo en consola
-if (recordId) {
+    // Si el parámetro "query" existe, imprimirlo en consola
+    if (recordId) {
 
-    const sightingRecord = sightings.find(sighting => sighting.id === parseInt(recordId, 10));
-    const { latitud, longitud } = sightingRecord || {};
-    if (latitud !== undefined && longitud !== undefined) {
-        map.setView([latitud, longitud], 12);
-        fillForm(sightingRecord)
-        showForm();
+        const sightingRecord = sightings.find(sighting => sighting.id === parseInt(recordId, 10));
+        const { latitud, longitud } = sightingRecord || {};
+        if (latitud !== undefined && longitud !== undefined) {
+            map.setView([latitud, longitud], 12);
+            fillForm(sightingRecord)
+            showForm(false);
 
+        }
     }
-}
 
 
 
@@ -641,38 +670,65 @@ const blueIconMarker = new L.Icon({
     shadowSize: [41, 41]
 });
 function placeMarkersOnMap(sightings) {
-    // Limpiar los marcadores existentes
-   
-
+    let redMarkersCount = countRedMarkers(sightings);
     // Itera sobre los datos y agrega marcadores al mapa
     sightings.forEach(sighting => {
         const { latitud, longitud, validador, id } = sighting;
+
         const icon = validador ? blueIconMarker : redIcon;
         const marker = L.marker([latitud, longitud], { icon }).addTo(map);
 
-        
+
         marker.on('click', () => {
+            console.log('click', formEditMode, isFormActive);
+            let formEditable = isFormActive && formEditMode;
+            if (isOverlayActive || formEditable) {
+                return;
+            }
+
             changeMarkerToBlue(marker, id);
             map.setView([latitud, longitud], 6);
+            hideNotificationOverlay();
             fillForm(sighting);
-            showForm();
+            showForm(false);
+            redMarkersCount--;
+            updateMarkersCount(sightings.length);
+            
+            
         });
     });
 
     // Actualizar el número de marcadores
     updateMarkersCount(sightings.length);
+    const markersCount = refreshPendingMarkers(sightings);
+    
+    countRedMarkers(sightings)
+    if (markersCount > 0) {
+    showNotificationOverlay();
+        
+    }
+
 }
+
+function refreshPendingMarkers(sightings) {
+    const markersCount = countRedMarkers(sightings);
+
+    updateRedMarkersModal(markersCount);
+    return markersCount;
+};
 
 
 function fillForm({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones }) {
 
     // obtener el formulario
+
     const form = document.querySelector('#sighting-form');
-    // Llena el formulario con los datos del avistamiento
+
+    console.log(form)// Llena el formulario con los datos del avistamiento
     const idLabel = form.querySelector("span.sighting-id").innerHTML = `AV-${String(id).padStart(5, '0')}`
     form.querySelector("span.timestamp").innerHTML = fecha_avistamiento
-    form.querySelector("span#coordinateLog").innerHTML = latitud
-    form.querySelector("span#coordinateLat").innerHTML = longitud
+    form.querySelector("span#coordinateLog").innerHTML = longitud
+    form.querySelector("span#coordinateLat").innerHTML = latitud
     form.querySelector("input#location").value = ubicacion
     form.querySelector("input#estimated-height").value = altitud_estimada
     form.querySelector("select#heading").value = rumbo
@@ -693,6 +749,7 @@ function fillForm({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitu
         button_cancel.style.display = 'none';
 
     }
+
 };
 
 function clearForm() {
@@ -701,3 +758,27 @@ function clearForm() {
         form.querySelectorAll('input, select, textarea').forEach(element => element.value = '');
     }
 }
+
+let redMarkersCount = 0;
+
+function countRedMarkers(sightings) {
+    redMarkersCount = sightings.filter(sighting => !sighting.validador).length;
+    return redMarkersCount;
+}
+
+
+
+
+function updateRedMarkersModal(redMarkers) {
+    const modal = document.getElementById('quantityMarkers');
+    if (modal) {
+        if (redMarkers > 0) {
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <p>Hay ${redMarkers} marcadores rojos en el mapa.</p>
+                </div>
+            `;
+        } 
+    }
+}
+

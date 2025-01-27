@@ -240,7 +240,7 @@ form button:hover {
     background-color: #0056b3;
 }
 
-.overlay {
+.overlay, .quantityOverlay {
     position: absolute;
     top: 2rem;
     right: 1rem;
@@ -256,13 +256,13 @@ form button:hover {
     /* Added border radius */
 }
 
-.overlay h2 {
+.overlay h2, .quantityOverlay h2 {
     font-size: 24px;
     font-weight: 500;
     margin-bottom: 15px;
 }
 
-.overlay p {
+.overlay p, .quantityOverlay p {
     padding: 40px;
     border-radius: 3px;
     /* Added border radius */
