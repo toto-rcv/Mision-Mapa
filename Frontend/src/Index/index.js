@@ -117,30 +117,32 @@ function closeForm() {
 
 }
 function hideNotificationOverlay() {
- 
-        const modal = document.getElementById('quantityMarkers');
-        if (modal) {
-            modal.style.display = 'none';
-        }
- 
+
+    const modal = document.getElementById('quantityMarkers');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+
 };
 
 function showNotificationOverlay() {
     const modal = document.getElementById('quantityMarkers');
-        if (modal) {
-            modal.style.display = 'block';
-        }
-    
+    if (modal) {
+        modal.style.display = 'block';
+    }
+
 }
 function formatCoordinates(value) {
     return Number(value).toFixed(6);
 }
 
 // Event Listeners
-registerButton.addEventListener('click', () => { showOverlay() 
-     hideNotificationOverlay() });
-closeFormButton.addEventListener('click', closeForm );
-cancelButton.addEventListener('click', closeForm);
+registerButton.addEventListener('click', () => {
+    showOverlay()
+    hideNotificationOverlay()
+});
+closeFormButton.addEventListener('click', closeForm);
+cancelButton.addEventListener('click',closeForm);
 
 // Handle map clicks
 map.on('click', function (e) {
@@ -686,27 +688,37 @@ function placeMarkersOnMap(sightings) {
                 return;
             }
 
+
+            console.log("Before changing marker to blue, redMarkersCount:", redMarkersCount);
             changeMarkerToBlue(marker, id);
             map.setView([latitud, longitud], 6);
             hideNotificationOverlay();
             fillForm(sighting);
             showForm(false);
-            redMarkersCount--;
             updateMarkersCount(sightings.length);
-            
-            
+            if (icon == redIcon) {
+                if (redMarkersCount >= 1) {
+                    redMarkersCount--;
+                    console.log("After decrementing, redMarkersCount:", redMarkersCount);
+                    updateRedMarkersModal(redMarkersCount);
+                    console.log("After updating modal, redMarkersCount:", redMarkersCount);
+                }
+            }
+
         });
     });
 
     // Actualizar el número de marcadores
     updateMarkersCount(sightings.length);
     const markersCount = refreshPendingMarkers(sightings);
-    
-    countRedMarkers(sightings)
+
     if (markersCount > 0) {
-    showNotificationOverlay();
-        
+        showNotificationOverlay();
+
     }
+
+
+
 
 }
 
@@ -778,7 +790,7 @@ function updateRedMarkersModal(redMarkers) {
                     <p>Hay ${redMarkers} marcadores rojos en el mapa.</p>
                 </div>
             `;
-        } 
+        }
     }
 }
 

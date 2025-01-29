@@ -47,8 +47,19 @@ const getAllSightings = async (req, res) => {
         }
     }
 };
+const validateSighting = async (id) => {
+    const sighting = await Sighting.findByPk(id);
+    if (!sighting) {
+        throw new SightingNotFoundError();
+    }
+    if (sighting.fue_eliminado) {
+        throw new SightingAlreadyDeletedError();
+    }
+    return sighting;
+};
 
 const deleteSighting = async (req, res) => {
+    
     try {
         const { id } = req.params;
         const sighting = await validateSighting(id);
@@ -130,7 +141,7 @@ const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}
     return { sightings, totalRecords };
 };
 
-const validateSighting = async (req, res) => {
+const validateRedSighting = async (req, res) => {
     try {
         const { id } = req.params;
         const sighting = await Sighting.findByPk(id);
@@ -158,4 +169,4 @@ const validateSighting = async (req, res) => {
     }
 };
 
-module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, validateSighting };
+module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, validateRedSighting };
