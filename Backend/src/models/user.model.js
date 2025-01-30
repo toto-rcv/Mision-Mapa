@@ -34,13 +34,45 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'POA', // Valor por defecto
-    }
+    },
+    status: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "user_statuses", // La tabla referenciada para `status`
+        key: "id",
+      },
+    },
+    status_updated_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    status_updated_by: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "Users", // Referencia a la misma tabla de usuarios
+        key: "id",
+      },
+    },
   });
 
   // Restricción para evitar múltiples DNIs con un mismo correo
   User.addHook("beforeValidate", (user) => {
     if (!user.dni || !user.email) throw new Error("DNI y Email son obligatorios");
   });
+
+  User.associate = (models) => {
+    User.belongsTo(models.User, {
+        as: "updatedBy", // Usuario que actualizó el estado
+        foreignKey: "status_updated_by",
+    });
+
+    User.belongsTo(models.UserStatus, {
+        as: "statusDetail", // Detalle del estado
+        foreignKey: "status",
+    });
+};
 
   return User;
 };
