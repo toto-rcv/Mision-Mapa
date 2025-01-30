@@ -1,5 +1,6 @@
 import { reloadUserProfile } from '/utils/profile.js';
 import { showNavItems } from '/static/js/navigation.js';
+import { customFetch } from '/utils/auth.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
     await reloadUserProfile();
@@ -20,11 +21,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function getAllUsers() {
     try {
-        const response = await fetch('/api/users', {  // Usa la ruta correcta
+        const response = await customFetch('/api/users', {  // Usa la ruta correcta
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             }
         });
 
@@ -47,11 +48,15 @@ function renderTable(users) {
     table.innerHTML = `
         <thead>
             <tr>
-                <th>ID</th>
+                <th>DNI</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Email</th>
+                <th>Rango Militar</th>
                 <th>Rol</th>
+                <th>Fecha de creación</th>
+                <th>Fecha de actualización</th>
+                <th>pepe</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -71,6 +76,7 @@ function renderTable(users) {
             <td>${user.userRank}</td>
             <td>${user.createdAt}</td>
             <td>${user.updateAt}</td>
+            <td>${user.userStatus.status}</td>
             <td class="actions-cell">
                 <button class="delete-btn" data-id="${user.id}">Eliminar</button>
             </td>
@@ -80,6 +86,6 @@ function renderTable(users) {
 
     
 
-    document.querySelector('.users-list').innerHTML = '';
-    document.querySelector('.users-list').appendChild(table);
+    document.querySelector('.users-table').innerHTML = '';
+    document.querySelector('.users-table').appendChild(table);
 }
