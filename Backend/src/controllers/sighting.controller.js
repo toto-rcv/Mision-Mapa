@@ -8,8 +8,8 @@ const User = db.User;
 const createSighting = async (req, res) => {
     try {
         const newSighting = await Sighting.create(req.body);
-        const { id, fecha_avistamiento, usuario_id } = newSighting;
-        res.status(201).json({ id, fecha_avistamiento, usuario_id });
+        const { id, fecha_avistamiento, usuario_id, latitud, longitud } = newSighting;
+        res.status(201).json({ id, fecha_avistamiento, usuario_id, latitud, longitud });
     } catch (error) {
         console.error("Error al crear avistamiento:", error);
         res.status(500).json({ message: "Error interno del servidor" });
