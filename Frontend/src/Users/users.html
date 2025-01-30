@@ -71,9 +71,19 @@
                 </a>
             </div>
         </aside>
-        <section class="content">
-            <div class="users-list"></div>
-        </section>
+
+        <div class="register-container">
+            <div id="registro" aria-label="Mapa interactivo de avistamientos">
+                <div class="filters">
+                    <input type="text" id="search" class="search-input" placeholder="Buscar Avistamientos">
+                </div>
+                <div id="sightings-list" class="users-table">
+                    <!-- Aquí se cargarán los avistamientos -->
+                </div>
+                <div id="sightings-pagination" class="pagination"></div>
+            </div>
+        </div>
+
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
