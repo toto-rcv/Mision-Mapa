@@ -24,7 +24,7 @@
         <img class="logo" src="/static/img/logo.jpg" alt="Logo de la aplicación de avistamientos">
         <div class="title-container">
             <h1 class="title">Mapa de Avistamientos</h1>
-            <span class="markers-count">3 marcadores</span>
+            <span class="markers-count"></span>
         </div>
         <div class="profile">
             <div class="profile-avatar" aria-hidden="true">U</div>
@@ -215,6 +215,22 @@
             </div>
             <div class="quantityOverlay" id="quantityMarkers">
             </div>
+            <div class="marker-alert" id="markerAlert" role="alert">
+                <div class="marker-alert-content">
+                  <svg class="marker-alert-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  </svg>
+                  <div class="marker-alert-info">
+                    <p class="marker-alert-text" id="markerAlertText">
+                      <span class="marker-alert-count">1</span>
+                      marcador por validar
+                    </p>
+                    <p class="marker-alert-help">
+                      Busca los marcadores en <span class="marker-alert-highlight">rojo</span> en el mapa
+                    </p>
+                  </div>
+                </div>
+              </div>
         </div>
     </main>
 
