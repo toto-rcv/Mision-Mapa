@@ -2,13 +2,6 @@ import { reloadUserProfile } from '/utils/profile.js';
 import { customFetch } from '/utils/auth.js';
 import { showNavItems } from '/static/js/navigation.js';
 
-// Initialize the map
-const map = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
 // Initialize UI elements
 const registerButton = document.getElementById('register-button');
 const overlay = document.getElementById('new-sighting-overlay');
@@ -17,11 +10,56 @@ const closeFormButton = document.getElementById('close-form');
 const cancelButton = document.getElementById('cancel-button');
 const inputs = formPanel.querySelectorAll('input, select, textarea');
 
-let greyMarker = null;
-let isOverlayActive = false;
-let isFormActive = false;
-let lat = null;
-let lng = null;
+let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null;
+let formEditMode = false;
+let markers = [];
+
+const mapContainer = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap contributors'}).addTo(mapContainer);
+
+const redIcon = L.icon({
+    // Define redIcon here
+    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+});
+
+const blueIconMarker = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+const greyIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+// DOM elements
+const elements = {
+    mapContainer: document.getElementById("map"),
+    registerButton: document.getElementById("register-button"),
+    overlay: document.getElementById("new-sighting-overlay"),
+    formPanel: document.getElementById("sighting-form"),
+    closeFormButton: document.getElementById("close-form"),
+    cancelButton: document.getElementById("cancel-button"),
+    inputs: document.querySelectorAll("#sighting-form input, #sighting-form select, #sighting-form textarea"),
+    searchInput: document.querySelector(".search-input"),
+    zoomInButton: document.querySelector("#zoom-in"),
+    zoomOutButton: document.querySelector("#zoom-out"),
+    quantityMarkersModal: document.getElementById("markerAlert"),
+  }
+
 
 function validateField(input) {
     if (!input.required) {
@@ -73,39 +111,46 @@ inputs.forEach(input => {
 });
 
 function showOverlay() {
-    const overlay = document.getElementById('new-sighting-overlay');
-    overlay.style.display = 'flex';
-    overlay.style.transform = 'translateY(0)';
+    elements.overlay.style.display = 'flex';
+    elements.overlay.style.transform = 'translateY(0)';
     isOverlayActive = true;
+
+    hideForm();
 }
 
 function hideOverlay() {
-    const overlay = document.getElementById('new-sighting-overlay');
-    overlay.style.transform = 'translateY(100%)';
-    overlay.style.display = 'none';
+    elements.overlay.style.transform = 'translateY(100%)';
+    elements.overlay.style.display = 'none';
     isOverlayActive = false;
 }
 
-function showForm() {
-    const formPanel = document.getElementById('sighting-form');
-    formPanel.style.display = 'block';
+function showForm(editMode = false) {
+    elements.formPanel.style.display = 'block';
     isFormActive = true;
-
+    formEditMode = editMode;
 }
 
 function hideForm() {
-    const formPanel = document.getElementById('sighting-form');
-    formPanel.style.display = 'none';
-    isFormActive = false;
-    if (greyMarker) {
-        map.removeLayer(greyMarker);
-        greyMarker = null;
-    }
+    formEditMode = false;
 
+    elements.formPanel.style.display = 'none';
+    isFormActive = false;
 }
 
-function closeForm() {
-    hideForm();
+function removeGreyMarker() {
+    if (greyMarker) {
+        mapContainer.removeLayer(greyMarker);
+        greyMarker = null;
+    }
+}
+
+
+function hideNotificationOverlay() {
+    elements.quantityMarkersModal.style.display = 'none';
+};
+
+function showNotificationOverlay() {
+    elements.quantityMarkersModal.style.display = 'block';
 }
 
 function formatCoordinates(value) {
@@ -113,13 +158,27 @@ function formatCoordinates(value) {
 }
 
 // Event Listeners
-registerButton.addEventListener('click', showOverlay);
-closeFormButton.addEventListener('click', closeForm);
-cancelButton.addEventListener('click', closeForm);
+registerButton.addEventListener('click', () => {
+    hideNotificationOverlay();
+    showOverlay();
+});
+
+closeFormButton.addEventListener('click', () => { 
+    hideForm();
+    removeGreyMarker();
+    updateRedMarkersModal();
+});
+
+cancelButton.addEventListener('click', () => {
+    hideForm();
+    removeGreyMarker();
+    updateRedMarkersModal();
+});
 
 // Handle map clicks
-map.on('click', function (e) {
-    if (isOverlayActive || isFormActive) {
+mapContainer.on('click', function (e) {
+    let formEditable = isFormActive && formEditMode;
+    if (isOverlayActive || formEditable) {
         lat = formatCoordinates(e.latlng.lat);
         lng = formatCoordinates(e.latlng.lng);
         const timestamp = new Date().toLocaleString('es-ES', {
@@ -131,11 +190,8 @@ map.on('click', function (e) {
         });
 
         // Update coordinates in the form
-        const coordinates = document.querySelector('.coordinates');
-        coordinates.innerHTML = `
-            <div><label>Longitud:</label><span>${lng}</span></div>
-            <div><label>Latitud:</label><span>${lat}</span></div>
-        `;
+        document.getElementById('coordinateLog').textContent = lng;
+        document.getElementById('coordinateLat').textContent = lat;
 
         // Update timestamp
         const timestampElement = document.querySelector('.timestamp');
@@ -148,7 +204,7 @@ map.on('click', function (e) {
 
         if (isOverlayActive) {
             hideOverlay();
-            showForm();
+            showForm(true);
             const cancelButton = document.getElementById('cancel-button');
             const saveButton = document.getElementById('save-button');
             clearForm();
@@ -163,6 +219,7 @@ map.on('click', function (e) {
 
         }
     }
+
 });
 
 // Add this new function for reverse geocoding
@@ -238,7 +295,7 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
                 formData[key] = parse ? parse(value) : value;
             }
         });
-
+            
         try {
             // Envía los datos al backend con fetch
 
@@ -250,10 +307,15 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
                 body: JSON.stringify(formData)
             });
 
+            
+            hideForm();
+            greyMarker.remove();
+
             if (response.ok) {
-                L.marker([formData["latitud"], formData["longitud"]]).addTo(map);
-                hideForm();
-                updateMarkersCount();
+                const sighting = await response.json();
+                addMarker(sighting.id, sighting);
+                updateRedMarkersModal();
+
             } else {
                 const error = await response.json();
                 console.error('Error:', error.message);
@@ -277,13 +339,13 @@ document.querySelectorAll('.form-group input, .form-group select, .form-group te
 
 // Enable touch gestures for map
 if (L.Browser.touch) {
-    map.dragging.enable();
-    map.touchZoom.enable();
-    map.doubleClickZoom.enable();
-    map.scrollWheelZoom.enable();
-    map.boxZoom.enable();
-    map.keyboard.enable();
-    if (map.tap) map.tap.enable();
+    mapContainer.dragging.enable();
+    mapContainer.touchZoom.enable();
+    mapContainer.doubleClickZoom.enable();
+    mapContainer.scrollWheelZoom.enable();
+    mapContainer.boxZoom.enable();
+    mapContainer.keyboard.enable();
+    if (mapContainer.tap) mapContainer.tap.enable();
 }
 
 // Bottom navigation handling
@@ -299,8 +361,8 @@ navItems.forEach(item => {
 const zoomInButton = document.querySelector('#zoom-in');
 const zoomOutButton = document.querySelector('#zoom-out');
 
-zoomInButton.addEventListener('click', () => map.zoomIn());
-zoomOutButton.addEventListener('click', () => map.zoomOut());
+zoomInButton.addEventListener('click', () => mapContainer.zoomIn());
+zoomOutButton.addEventListener('click', () => mapContainer.zoomOut());
 
 function handleMobileFormVisibility() {
     const formPanel = document.getElementById('sighting-form');
@@ -355,7 +417,7 @@ function hideFormMobile() {
     }, 300);
     isFormActive = false;
     if (greyMarker) {
-        map.removeLayer(greyMarker);
+        mapContainer.removeLayer(greyMarker);
         greyMarker = null;
     }
 }
@@ -370,7 +432,7 @@ function initMobileListeners() {
     cancelButton.addEventListener('click', hideFormMobile);
 
     // Handle map clicks for mobile
-    map.on('click', function (e) {
+    mapContainer.on('click', function (e) {
         if (isOverlayActive || isFormActive) {
             const lat = formatCoordinates(e.latlng.lat);
             const lng = formatCoordinates(e.latlng.lng);
@@ -415,40 +477,13 @@ window.addEventListener('resize', function () {
     }
 });
 
-
-var redIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
-L.Marker.prototype.options.icon = redIcon;
 function updateGreyMarker(latlng) {
     if (greyMarker) {
         greyMarker.setLatLng(latlng);
-    } else {
-        const greyIcon = L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
-        });
-        greyMarker = L.marker(latlng, { icon: greyIcon }).addTo(map);
-    }
-}
+        return;
+    } 
 
-function updateCoordinates(latlng) {
-    const lat = formatCoordinates(latlng.lat);
-    const lng = formatCoordinates(latlng.lng);
-    const coordinates = document.querySelector('.coordinates');
-    coordinates.innerHTML = `
-        <div><label>Longitud:</label><span>${lng}</span></div>
-        <div><label>Latitud:</label><span>${lat}</span></div>
-    `;
+    greyMarker = L.marker(latlng, { icon: greyIcon }).addTo(mapContainer);
 }
 
 async function loadMarkers() {
@@ -467,7 +502,6 @@ async function loadMarkers() {
 
         if (response.ok) {
             const { sightings } = await response.json();
-
             return sightings;
         } else {
             const error = await response.json();
@@ -477,7 +511,6 @@ async function loadMarkers() {
         console.error('Error al conectar con el servidor:', err);
     }
     return null;
-
 }
 
 function updateMarkersCount(count) {
@@ -509,7 +542,7 @@ async function buscarUbicacion(nombreLugar) {
             }
 
             // Centrar el mapa y ajustar el zoom
-            map.setView([lat, lon], zoomLevel);
+            mapContainer.setView([lat, lon], zoomLevel);
         } else {
             alert('No se encontraron resultados para tu búsqueda.');
         }
@@ -518,7 +551,6 @@ async function buscarUbicacion(nombreLugar) {
         alert('Ocurrió un error al buscar la ubicación.');
     }
 }
-
 
 const debounce = (fn, delay = 1000) => {
     let timerId = null;
@@ -552,7 +584,6 @@ const debounce = (fn, delay = 1000) => {
     };
 };
 
-
 // Función debounced para buscar la ubicación
 const debouncedBuscarUbicacion = debounce((event) => {
     const nombreLugar = event.target.value;
@@ -561,93 +592,63 @@ const debouncedBuscarUbicacion = debounce((event) => {
     }
 }, 300);
 
-function changeMarkerToBlue(marker) {
-    const blueIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
-    marker.setIcon(blueIcon);
-}
+async function setMarkerAsSeen(sightingId) {
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await reloadUserProfile();
-    const userProfile = JSON.parse(localStorage.getItem("user"));
-    const userPermissions = userProfile.permissions || {};
-    const urlParams = new URLSearchParams(window.location.search);
+    const marker = markers.find(m => m.id === sightingId);
+    if (marker) {
+        marker.leafletObject.setIcon(blueIconMarker);
+        marker.isRed = false;
+        updateRedMarkersModal();
+    }
 
-    showNavItems(userPermissions);
-
-    // Search functionality
-    const searchInput = document.querySelector('.search-input');
-    searchInput.addEventListener('input', debouncedBuscarUbicacion);
-
-
-    const sightings = await loadMarkers();
-
-    map.on('load', placeMarkersOnMap(sightings));
-
-
-    // Add click event to each marker
-    sightings.forEach(sighting => {
-        const marker = L.marker([sighting.latitud, sighting.longitud], { icon: redIcon }).addTo(map);
-        marker.on('click', () => {
-            changeMarkerToBlue(marker);
-            map.setView([sighting.latitud, sighting.longitud],6);
-            fillForm(sighting);
-            showForm();
+    try {
+        const response = await customFetch(`/api/sightings/${sightingId}/validate`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
         });
-    });
 
-
-// Verificar si el parámetro "sighting" está presente
-const recordId = urlParams.get('sighting');
-
-
-// Si el parámetro "query" existe, imprimirlo en consola
-if (recordId) {
-
-    const sightingRecord = sightings.find(sighting => sighting.id === parseInt(recordId, 10));
-    const { latitud, longitud } = sightingRecord || {};
-    if (latitud !== undefined && longitud !== undefined) {
-        map.setView([latitud, longitud], 12);
-        fillForm(sightingRecord)
-        showForm();
-
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message);
+        }
+    } catch (error) {
+        console.error('Error al validar el avistamiento:', error);
     }
 }
 
-
-
-});
-
 function placeMarkersOnMap(sightings) {
+    markers = []
+
     // Itera sobre los datos y agrega marcadores al mapa
     sightings.forEach(sighting => {
-        const { latitud, longitud } = sighting;
-        L.marker([latitud, longitud]).addTo(map);
+        const { id, validador} = sighting;
+
+        addMarker(
+            id,
+            sighting,
+            validador
+        );
+
     });
 
-    // Actualizar el número de marcadores
     updateMarkersCount(sightings.length);
-
-
+    updateRedMarkersModal();
 
 }
-
 
 function fillForm({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones }) {
 
     // obtener el formulario
+
     const form = document.querySelector('#sighting-form');
-    // Llena el formulario con los datos del avistamiento
+
     const idLabel = form.querySelector("span.sighting-id").innerHTML = `AV-${String(id).padStart(5, '0')}`
     form.querySelector("span.timestamp").innerHTML = fecha_avistamiento
-    form.querySelector("span#coordinateLog").innerHTML = latitud
-    form.querySelector("span#coordinateLat").innerHTML = longitud
+    form.querySelector("span#coordinateLog").innerHTML = longitud
+    form.querySelector("span#coordinateLat").innerHTML = latitud
     form.querySelector("input#location").value = ubicacion
     form.querySelector("input#estimated-height").value = altitud_estimada
     form.querySelector("select#heading").value = rumbo
@@ -668,6 +669,7 @@ function fillForm({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitu
         button_cancel.style.display = 'none';
 
     }
+
 };
 
 function clearForm() {
@@ -675,4 +677,92 @@ function clearForm() {
     if (form) {
         form.querySelectorAll('input, select, textarea').forEach(element => element.value = '');
     }
+}
+
+function updateRedMarkersModal() {
+    const count = getCurrentRedMarkersCount();
+    const alertTextLabel = elements.quantityMarkersModal.querySelector('#markerAlertText');
+
+    if (count == 0) {
+        hideNotificationOverlay();
+        return;
+    }
+
+    alertTextLabel.innerHTML = count > 0 ? `
+    <span class="marker-alert-count">${count}</span>
+        marcador${count !== 1 ? 'es' : ''} por validar
+    ` : '';
+
+    showNotificationOverlay();
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    await reloadUserProfile();
+    const userProfile = JSON.parse(localStorage.getItem("user"));
+    const userPermissions = userProfile.permissions || {};
+    showNavItems(userPermissions);
+
+    // Search functionality
+    const searchInput = document.querySelector('.search-input');
+    searchInput.addEventListener('input', debouncedBuscarUbicacion);
+
+    const sightings = await loadMarkers();
+    placeMarkersOnMap(sightings);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const recordId = urlParams.get('sighting');
+
+    if (recordId) {
+        const sightingRecord = sightings.find(sighting => sighting.id === parseInt(recordId, 10));
+        const { latitud, longitud } = sightingRecord || {};
+        if (latitud !== undefined && longitud !== undefined) {
+            mapContainer.setView([latitud, longitud], 10);
+            fillForm(sightingRecord)
+            showForm(false);
+        }
+    }
+
+});
+
+function getCurrentRedMarkersCount() {
+    return markers.filter(marker => marker.isRed).length;
+}
+
+function addMarker(id, sighting, isValidated = false) {
+    const { latitud: lat, longitud: lng } = sighting;
+
+    const icon = isValidated ? blueIconMarker : redIcon;
+    const marker = L.marker([lat, lng], { icon }).addTo(mapContainer);
+
+    const markerObject = {
+        leafletObject: marker,
+        sighting: sighting,
+        isRed: !isValidated,
+        id: id
+    };
+
+    markerObject.leafletObject.on('click', () => handleMarkerClick(markerObject, sighting));
+
+    markers.push(markerObject);
+
+    return markerObject;
+}
+
+function handleMarkerClick(marker, sighting) {
+
+    let formEditable = isFormActive && formEditMode;
+    if (isOverlayActive || formEditable) {
+        return;
+    }
+
+    if (marker.isRed) {
+        setMarkerAsSeen(marker.id);
+    }
+
+    mapContainer.setView(marker.leafletObject.getLatLng(), 10);
+
+    hideNotificationOverlay();
+    fillForm(sighting);
+    showForm(false);
 }

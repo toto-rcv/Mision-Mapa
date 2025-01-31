@@ -240,7 +240,7 @@ form button:hover {
     background-color: #0056b3;
 }
 
-.overlay {
+.overlay, .quantityOverlay {
     position: absolute;
     top: 2rem;
     right: 1rem;
@@ -256,13 +256,13 @@ form button:hover {
     /* Added border radius */
 }
 
-.overlay h2 {
+.overlay h2, .quantityOverlay h2 {
     font-size: 24px;
     font-weight: 500;
     margin-bottom: 15px;
 }
 
-.overlay p {
+.overlay p, .quantityOverlay p {
     padding: 40px;
     border-radius: 3px;
     /* Added border radius */
@@ -521,6 +521,100 @@ form button:hover {
 
     .btn {
        width: 100%;
+    }
+}
+
+.marker-alert {
+    position: absolute;
+    top: 2rem;
+    right: 1rem;
+    z-index: 1000;
+    padding: 0 16px;
+    animation: fadeIn 0.25s ease-out;
+    font-size: 0.95em;
+}
+
+.marker-alert-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--background-color);
+    color: var(--text-color);
+    padding: 1rem 1.5rem;
+    padding-right: 1.75rem;
+    border-radius: 12px;
+    min-width: 280px;
+    max-width: 400px;
+    border-left: 4px solid var(--marker-alert-accent);
+  }
+
+.marker-alert-icon {
+    fill: var(--marker-alert-accent);
+    flex-shrink: 0;
+}
+
+.marker-alert-info {
+    flex-grow: 1;
+    display: flex;
+    gap: 0.5em;
+    flex-direction: column;
+}
+
+.marker-alert-help {
+    margin: 0;
+    font-size: 0.9em;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+.marker-alert-count {
+    font-weight: 600;
+    color: var(--marker-alert-accent);
+}
+
+.marker-alert-highlight {
+    color: var(--marker-alert-accent);
+    font-weight: 500;
+}
+
+/* Subtle attention-grabbing animation */
+@keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateX(-25%) translateY(0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) translateY(0);
+    }
+  }
+
+@keyframes borderPulse {
+    0% {
+        border-left-color: var(--marker-alert-accent);
+    }
+    50% {
+        border-left-color: rgba(255, 68, 68, 0.5);
+    }
+    100% {
+        border-left-color: var(--marker-alert-accent);
+    }
+}
+
+.marker-alert-content {
+    animation: borderPulse 2s infinite;
+}
+
+@media (max-width: 480px) {
+    .marker-alert {
+        padding: 0 12px;
+        left: 0rem;
+        top: 7rem;
+        width: 100%;
+    }
+
+    .marker-alert-content {
+        width: 100%;
     }
 }
 

@@ -19,7 +19,7 @@ const validateCreateSighting = [
         .notEmpty().withMessage("El campo 'altitud_estimada' es requerido"),
     body("rumbo")
         .isString().withMessage("El campo 'rumbo' debe ser un texto")
-        .isIn(["N", "NE", "E", "SE", "S", "SO", "O", "NO"]).withMessage("El campo 'rumbo' debe ser uno de los siguientes valores: N, NE, E, SE, S, SO, O, NO")
+        .isIn(["N", "NE", "E", "SE", "S", "SW", "W", "NW"]).withMessage("El campo 'rumbo' debe ser uno de los siguientes valores: N, NE, E, SE, S, SW, W, NW")
         .notEmpty().withMessage("El campo 'rumbo' es requerido"),
     body("tipo_motor")
         .optional()

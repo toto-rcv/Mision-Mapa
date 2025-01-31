@@ -8,8 +8,8 @@ const User = db.User;
 const createSighting = async (req, res) => {
     try {
         const newSighting = await Sighting.create(req.body);
-        const { id, fecha_avistamiento, usuario_id } = newSighting;
-        res.status(201).json({ id, fecha_avistamiento, usuario_id });
+        const {id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo,tipo_aeronave,tipo_motor,cantidad_motores,color,observaciones  } = newSighting;
+        res.status(201).json({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo,tipo_aeronave,tipo_motor,cantidad_motores,color,observaciones });
     } catch (error) {
         console.error("Error al crear avistamiento:", error);
         res.status(500).json({ message: "Error interno del servidor" });
@@ -47,8 +47,19 @@ const getAllSightings = async (req, res) => {
         }
     }
 };
+const validateSighting = async (id) => {
+    const sighting = await Sighting.findByPk(id);
+    if (!sighting) {
+        throw new SightingNotFoundError();
+    }
+    if (sighting.fue_eliminado) {
+        throw new SightingAlreadyDeletedError();
+    }
+    return sighting;
+};
 
 const deleteSighting = async (req, res) => {
+    
     try {
         const { id } = req.params;
         const sighting = await validateSighting(id);
@@ -130,17 +141,32 @@ const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}
     return { sightings, totalRecords };
 };
 
-const validateSighting = async (id) => {
-    const sighting = await Sighting.findByPk(id);
-    if (!sighting) {
-        throw new SightingNotFoundError();
+const validateRedSighting = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const sighting = await Sighting.findByPk(id);
+        if (!sighting) {
+            throw new SightingNotFoundError();
+        }
+
+        const user = await User.findByPk(req.user.id);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        sighting.validado_por = user.dni;
+        sighting.validado_en = new Date();
+        await sighting.save();
+
+        res.status(200).json({ message: "Avistamiento validado exitosamente" });
+    } catch (error) {
+        console.error("Error al validar avistamiento:", error);
+        if (error instanceof SightingNotFoundError) {
+            res.status(404).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: "Error interno del servidor" });
+        }
     }
-    if (sighting.fue_eliminado) {
-        throw new SightingAlreadyDeletedError();
-    }
-    return sighting;
 };
 
-
-
-module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting};
+module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, validateRedSighting };

@@ -1,5 +1,5 @@
 const express = require("express");
-const { createSighting, getAllSightings, deleteSighting, getAllMarkers, getSightingById } = require("../controllers/sighting.controller");
+const { createSighting, getAllSightings, deleteSighting, getAllMarkers, validateRedSighting} = require("../controllers/sighting.controller");
 const { validateAccessToken } = require("../middleware/auth.middleware");
 const validateCreateSighting = require("../middleware/sighting.middleware");
 const router = express.Router();
@@ -15,4 +15,6 @@ router.get("/all", validateAccessToken, validateRole(["POA", "DETECCION", "JEFE 
 // Eliminar un avistamiento
 router.delete("/:id", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), deleteSighting);
 
+
+router.put("/:id/validate", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), validateRedSighting);
 module.exports = router;

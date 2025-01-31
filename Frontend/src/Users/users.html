@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="description" content="Mapa interactivo para registrar y visualizar avistamientos de aeronaves">
     <meta name="theme-color" content="#26252A" />
-    <title>Mapa de Avistamientos</title>
+    <title>Tabla de Usuarios</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="index.css" />
@@ -23,7 +23,7 @@
     <header class="header">
         <img class="logo" src="/static/img/logo.jpg" alt="Logo de la aplicación de avistamientos">
         <div class="title-container">
-            <h1 class="title">Mapa de Avistamientos</h1>
+            <h1 class="title">Tabla de Usuarios</h1>
             <span class="markers-count">3 marcadores</span>
         </div>
         <div class="profile">
@@ -72,10 +72,17 @@
             </div>
         </aside>
 
-        <div class="map-container">
-            <div id="map" aria-label="Mapa interactivo de avistamientos"></div>
-
-
+        <div class="register-container">
+            <div id="registro" aria-label="Mapa interactivo de avistamientos">
+                <div class="filters">
+                    <input type="text" id="search" class="search-input" placeholder="Buscar Avistamientos">
+                </div>
+                <div id="sightings-list" class="users-table">
+                    <!-- Aquí se cargarán los avistamientos -->
+                </div>
+                <div id="sightings-pagination" class="pagination"></div>
+            </div>
+        </div>
 
     </main>
 

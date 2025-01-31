@@ -1,4 +1,7 @@
+
+
 module.exports = (sequelize, DataTypes) => {
+
   const User = sequelize.define("User", {
     dni: {
       type: DataTypes.STRING,
@@ -37,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.INTEGER,
+
       allowNull: true,
       references: {
         model: "user_statuses", // La tabla referenciada para `status`
@@ -55,8 +59,15 @@ module.exports = (sequelize, DataTypes) => {
         key: "id",
       },
     },
+
   });
 
+  User.associate = (models) => {
+    User.belongsTo(models.UserStatus, {
+      foreignKey: 'status',
+      as: 'userStatus'
+    });
+  };
   // Restricción para evitar múltiples DNIs con un mismo correo
   User.addHook("beforeValidate", (user) => {
     if (!user.dni || !user.email) throw new Error("DNI y Email son obligatorios");
