@@ -57,7 +57,7 @@ const elements = {
     searchInput: document.querySelector(".search-input"),
     zoomInButton: document.querySelector("#zoom-in"),
     zoomOutButton: document.querySelector("#zoom-out"),
-    quantityMarkersModal: document.getElementById("quantityMarkers"),
+    quantityMarkersModal: document.getElementById("markerAlert"),
   }
 
 
@@ -681,17 +681,16 @@ function clearForm() {
 
 function updateRedMarkersModal() {
     const count = getCurrentRedMarkersCount();
-    const modal = elements.quantityMarkersModal;
+    const alertTextLabel = elements.quantityMarkersModal.querySelector('#markerAlertText');
 
     if (count == 0) {
         hideNotificationOverlay();
         return;
     }
 
-    modal.innerHTML = count > 0 ? `
-        <div class="modal-content">
-            <p>Tienes ${count} marcador${count !== 1 ? 'es' : ''} por validar</p>
-        </div>
+    alertTextLabel.innerHTML = count > 0 ? `
+    <span class="marker-alert-count">${count}</span>
+        marcador${count !== 1 ? 'es' : ''} por validar
     ` : '';
 
     showNotificationOverlay();
