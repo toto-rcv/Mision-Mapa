@@ -3,6 +3,7 @@ const { generateAccessToken, generateRefreshToken } = require("../utils/jwt.util
 const { saveRefreshToken } = require("../utils/refreshTokens");
 const db = require("../models");
 const User = db.User;
+const UserStatus = db.UserStatus;
 
 exports.register = async (req, res) => {
   try {
@@ -33,7 +34,7 @@ exports.register = async (req, res) => {
       militaryRank,
     });
 
-    res.status(201).json({ message: "Usuario registrado exitosamente", user: {dni, email} });
+    res.status(201).json({ message: "Usuario registrado exitosamente", user: { dni, email } });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -41,8 +42,18 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-
-  const user = await User.findOne({ where: { email } });
+  //controlar que el estado del usuario sea activo
+  
+  
+  const user = await User.findOne({ where: { email },
+  include: {
+    model: UserStatus,
+    where: {status: 'active'},
+    required: true,
+    as: 'userStatus'
+    }
+  });
+  
   if (!user) return res.status(401).json({ message: "Credenciales Incorrectas" });
 
   const isValidPassword = await comparePassword(password, user.password);
@@ -109,7 +120,7 @@ exports.getProfile = async (req, res) => {
 
 
 
-    res.status(200).json({ user: userR, permissions:permissions } );
+    res.status(200).json({ user: userR, permissions: permissions });
   } catch (error) {
     console.error("Error en el controlador:", error.message);
 

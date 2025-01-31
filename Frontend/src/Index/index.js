@@ -295,7 +295,7 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
                 formData[key] = parse ? parse(value) : value;
             }
         });
-
+            
         try {
             // Envía los datos al backend con fetch
 
@@ -307,7 +307,9 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
                 body: JSON.stringify(formData)
             });
 
+            
             hideForm();
+            greyMarker.remove();
 
             if (response.ok) {
                 const sighting = await response.json();
