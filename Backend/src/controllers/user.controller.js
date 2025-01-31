@@ -8,7 +8,7 @@ const getAllUsers = async (req, res) => {
             include: [{
             model: db.UserStatus,
             attributes: ['status'],
-            as: 'userStatus'
+            as: 'statusDetail'
             }]
 
             

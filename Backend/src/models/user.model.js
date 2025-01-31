@@ -62,12 +62,7 @@ module.exports = (sequelize, DataTypes) => {
 
   });
 
-  User.associate = (models) => {
-    User.belongsTo(models.UserStatus, {
-      foreignKey: 'status',
-      as: 'userStatus'
-    });
-  };
+ 
   // Restricción para evitar múltiples DNIs con un mismo correo
   User.addHook("beforeValidate", (user) => {
     if (!user.dni || !user.email) throw new Error("DNI y Email son obligatorios");

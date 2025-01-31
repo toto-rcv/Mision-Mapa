@@ -78,9 +78,9 @@ function renderTable(users) {
             <td>${user.updateAt}</td>
             <td>
             <select class="status-select" data-id="${user.dni}">
-                    <option value="active" ${user.userStatus.status === 'active' ? 'selected' : ''}>Active</option>
-                    <option value="pending" ${user.userStatus.status === 'pending' ? 'selected' : ''}>Inactive</option>
-                    <option value="blocked" ${user.userStatus.status === 'blocked' ? 'selected' : ''}>Banned</option>
+                    <option value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Active</option>
+                    <option value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Inactive</option>
+                    <option value="blocked" ${user.statusDetail.status === 'blocked' ? 'selected' : ''}>Banned</option>
                 </select></td>
          
             <td class="actions-cell">

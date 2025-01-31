@@ -50,7 +50,7 @@ exports.login = async (req, res) => {
     model: UserStatus,
     where: {status: 'active'},
     required: true,
-    as: 'userStatus'
+    as: 'statusDetail'
     }
   });
   
