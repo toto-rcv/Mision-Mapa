@@ -1,28 +1,17 @@
 module.exports = (sequelize, DataTypes) => {
-    const UserStatus = sequelize.define(
-        "UserStatus",
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                primaryKey: true,
-                autoIncrement: true,
-            },
-            status: {
-                type: DataTypes.STRING(50),
-                allowNull: false,
-                unique: true,
-            },
-            createdAt: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                field: "created_at", // Mapea la columna de la base de datos
-            },
-            updatedAt: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                field: "updated_at", // Mapea la columna de la base de datos
-            },
-        },
+
+const UserStatus = sequelize.define('UserStatus', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+}, 
         {
             tableName: "user_statuses", // Asegura que Sequelize use la tabla correcta
             timestamps: true, // Sequelize manejará automáticamente `createdAt` y `updatedAt`
@@ -39,3 +28,4 @@ module.exports = (sequelize, DataTypes) => {
 
     return UserStatus;
 };
+

@@ -17,6 +17,7 @@
     --error-color: #ff4136;
     --link-color: #64D2FF;
     --search-background: rgba(0, 0, 0, 0.75);
+    --marker-alert-accent: #ff4444;
 }
 
 .hidden {
