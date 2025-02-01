@@ -2,6 +2,12 @@ import { reloadUserProfile } from '/utils/profile.js';
 import { customFetch } from '/utils/auth.js';
 import { showNavItems } from '/static/js/navigation.js';
 
+// Inicializar socket.io apuntando al host/api
+const socket = io("ws://", {
+    path: "/socket.io/",
+    transports: ["websocket", "polling"]
+});
+
 // Initialize UI elements
 const registerButton = document.getElementById('register-button');
 const overlay = document.getElementById('new-sighting-overlay');
@@ -16,6 +22,15 @@ let markers = [];
 
 const mapContainer = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap contributors'}).addTo(mapContainer);
+
+
+socket.on('NEW_SIGHTING', (sighting) => {
+    console.log('Nuevo avistamiento recibido:', sighting);
+
+    addMarker(sighting.id, sighting);
+
+});
+
 
 const redIcon = L.icon({
     // Define redIcon here
