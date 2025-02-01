@@ -112,12 +112,16 @@ td.actions-cell>button:last-child {
   padding: 5px 10px;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.3s ease;
   text-align: center;
 }
-.status-select:hover {
-  background-color: rgba(0, 188, 212, 0.1);
-}
+
+
+.opcion-select{
+  background-color: #1e1e24;
+  border-color: black;
+  color: #00bcd4;
+  text-align: left;
+} 
 
 
 h2 {

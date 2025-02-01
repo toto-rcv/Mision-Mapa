@@ -78,9 +78,9 @@ function renderTable(users) {
             <td>${user.updateAt}</td>
             <td>
             <select class="status-select" data-id="${user.dni}">
-                    <option value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Active</option>
-                    <option value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Inactive</option>
-                    <option value="blocked" ${user.statusDetail.status === 'blocked' ? 'selected' : ''}>Banned</option>
+                    <option class="opcion-select" value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Active</option>
+                    <option class="opcion-select" value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Inactive</option>
+                    <option class="opcion-select" value="blocked" ${user.statusDetail.status === 'blocked' ? 'selected' : ''}>Banned</option>
                 </select></td>
          
             <td class="actions-cell">
@@ -135,5 +135,31 @@ async function updateUserStatus(userId, newStatus) {
         console.log(`Estado actualizado para el usuario ${userId}: ${newStatus}`);
     } catch (error) {
         console.error('Error al actualizar el estado del usuario:', error);
+    }
+}
+
+// Función para eliminar un usuario
+async function deleteUser(userId) {
+    try {
+        const response = await customFetch(`/api/users/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json', // Usa el tipo de contenido correcto
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Incluye la autenticación
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: No se pudo eliminar el usuario`);
+        }
+        // Eliminar la fila del usuario en la tabla
+        const userRow = document.querySelector(`tr[data-id="${userId}"]`);
+        if (userRow) {
+            userRow.remove();
+        } else {
+            console.error(`No se encontró la fila del usuario ${userId}`);
+        }
+        console.log(`Usuario eliminado con éxito: ${userId}`);
+    } catch (error) {
+        console.error('Error al eliminar el usuario:', error);
     }
 }
