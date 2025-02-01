@@ -1,444 +1,321 @@
 /* Estilos para el contenedor del mapa */
-
-
-
 #registro {
-    border-radius: 8px;
-    background-color: #26252a;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    flex: 1;
+  border-radius: 8px;
+  background-color: #26252a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.users-table {
+  border-collapse: collapse;
+  border-radius: 8px;
+  color: white;
+  /*table-layout: fixed;*/
+  overflow: hidden;
+  width: 100%;
+}
+
+.users-table th img {
+  vertical-align: middle;
+  height: 1.5em;
+  margin-left: 5px;
+  padding: 3px;
+}
+
+.users-table thead th {
+  background-color: #1d4c54;
+  padding: 1rem 0.5rem;
+  white-space: nowrap;
+  border-bottom: 1px solid #3d3d3d;
+  font-weight: 400;
+  text-align: left;
+}
+
+.users-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #3d3d3d;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.users-table tbody tr:nth-child(even) {
+  background-color: #24242b;
+}
+
+.users-table tbody tr:nth-child(odd) {
+  background-color: #1e1e24;
+}
+
+.users-table tbody tr:hover {
+  background-color: #2e2e38;
+  cursor: pointer;
+}
+
+.users-table td:first-child {
+  font-weight: bold;
+  color: #00bcd4;
+  padding-left: 1rem;
+}
+
+.users-table th:first-child {
+  padding-left: 1rem;
+}
+
+.ubicacion-cell {
+  max-width: 350px;
+  min-width: 350px;
+  width: 350px;
+  white-space: normal !important;
+}
+
+.users-table td.actions-cell {
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+
+
+td.actions-cell>button {
+  margin-right: 10px;
+}
+
+td.actions-cell>button:last-child {
+  margin-right: 0px;
+}
+
+.delete-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #ff1a1a;
+}
+
+.delete-btn:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+
+.status-select{
+  background-color: transparent;
+  color: #00bcd4;
+  border: 1px solid #00bcd4;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+.status-select:hover {
+  background-color: rgba(0, 188, 212, 0.1);
+}
+
+
+h2 {
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-input {
+  padding: 10px;
+  width: 40%;
+  /* Ajusta el ancho según sea necesario */
+  border: 1px solid #00BCD4;
+  border-radius: 4px;
+  background-color: #1e1e24;
+  color: white;
+}
+
+.register-container {
+  background: #1A1A1C;
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  font-size: 0.95rem;
+}
+
+.prev-page,
+.next-page {
+  background-color: transparent;
+  color: #00bcd4;
+  border: 1px solid #00bcd4;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination {
+  padding: 1rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.filters {
+  padding: 1rem;
+}
+
+.users-list {
+  flex: 1;
+}
+
+.mobile-only {
+  display: none;
+
+}
+
+
+@media (max-width: 768px) {
+
+  #registro {
+    background: none;
+    box-shadow: none;
+  }
+
+  .main-content {
+    margin-top: 70px;
+  }
+
+  .users-table thead {
+    display: none;
+    /* Ocultar encabezados de tabla en móviles */
+  }
+
+  .users-table tbody tr {
     display: flex;
     flex-direction: column;
-  }
-  
-  .users-table {
-    border-collapse: collapse;
+    margin-bottom: 0.5rem;
+    border: 1px solid #3d3d3d;
     border-radius: 8px;
-    color: white;
-    /*table-layout: fixed;*/
-    overflow: hidden;
-    width: 100%;
-  }
-  
-  .users-table  th img{
-    vertical-align: middle;
-    height: 1.5em;
-    margin-left: 5px;
-    padding: 3px;
-  }
-  .users-table thead th {
-    background-color: #1d4c54;
-    padding: 1rem 0.5rem;
-    white-space: nowrap;
-    border-bottom: 1px solid #3d3d3d;
-    font-weight: 400;
-    text-align: left;
-  }
-  
-  .users-table td {
-    padding: 0.5rem;
-    border-bottom: 1px solid #3d3d3d;
-    text-align: left;
-    white-space: nowrap;
-  }
-  
-  .users-table tbody tr:nth-child(even) {
-    background-color: #24242b;
-  }
-  
-  .users-table tbody tr:nth-child(odd) {
+    padding: 1rem;
     background-color: #1e1e24;
   }
-  
-  .users-table tbody tr:hover {
-    background-color: #2e2e38;
-    cursor: pointer;
-  }
-  
-  .users-table td:first-child {
-    font-weight: bold;
-    color: #00bcd4;
-    padding-left: 1rem;
-  }
-  
-  .users-table th:first-child {
-    padding-left: 1rem;
-  }
-  
-  .ubicacion-cell {
-    max-width: 350px;
-    min-width: 350px;
-    width: 350px;
-    white-space: normal !important;
-  }
-  
-  .users-table td.actions-cell {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-  
-  
-  
-  td.actions-cell>button {
-    margin-right: 10px;
-  }
-  
-  td.actions-cell>button:last-child {
-    margin-right: 0px;
-  }
-  
-  .delete-btn {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  
-  .delete-btn:hover {
-    background-color: #ff1a1a;
-  }
-  
-  .delete-btn:disabled {
-    background-color: gray;
-    cursor: not-allowed;
-  }
-  
-  .view-details-btn {
-    background-color: transparent;
-    color: #00bcd4;
-    border: 1px solid #00bcd4;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
-  }
-  
-  .view-details-btn:hover {
-    background-color: rgba(0, 188, 212, 0.1);
-  }
-  
-  h2 {
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    color: var(--text-color);
-    cursor: pointer;
-  }
-  
-  .close-button:hover {
-    color: red;
-    /* Color al pasar el mouse */
-  }
-  
-  /* Estilos para el modal */
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+
+  .users-table tbody td {
+    width: 100%;
+    padding: 5px 0;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    opacity: 0;
+    text-align: right;
+    font-size: 1em;
     border: none;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    transform: none;
-    z-index: 2000;
-    width: unset;
-    background-color: rgba(0, 0, 0, 0.3);
-    overscroll-behavior: contain;
   }
-  
-  .modal.active {
-    opacity: 1;
-    visibility: visible;
+
+  .users-table tbody td::before {
+    content: attr(data-label);
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 1rem;
+    color: #00bcd4;
   }
-  
-  .modal-content {
-    background-color: var(--background-color);
-    border: 1px solid var(--accent-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    width: 90%;
-    max-width: 400px;
-    transition: transform 0.5s ease;
-    will-change: transform;
-    overscroll-behavior: contain;
+
+
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
-  
-  .modal-content h2 {
-    margin-top: 0;
-    padding-bottom: 1rem;
-    color: white;
-    margin-bottom: 1rem;
+
+  .form-group {
+    width: calc(50% - 0.5rem);
   }
-  
-  .modal:not(.active) .modal-content {
-    transform: translateY(20px);
-  }
-  
-  .modal.active .modal-content {
-    transform: translateY(0);
-  }
-  
-  .modal-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--accent-color);
-    border-radius: 4px;
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    font-size: 1rem;
-  }
-  
-  textarea.modal-input {
-    resize: vertical;
-    min-height: 100px;
-  }
-  
-  .modal-input[readonly] {
-    cursor: not-allowed;
-  }
-  
-  .search-input {
-    padding: 10px;
-    width: 40%;
-    /* Ajusta el ancho según sea necesario */
-    border: 1px solid #00BCD4;
-    border-radius: 4px;
-    background-color: #1e1e24;
-    color: white;
-  }
-  
+
   .register-container {
     background: #1A1A1C;
     padding: 1rem;
     flex: 1;
     display: flex;
-    font-size: 0.95rem;
+    margin-bottom: 60px;
   }
-  
-  .prev-page,
-  .next-page {
-    background-color: transparent;
-    color: #00bcd4;
-    border: 1px solid #00bcd4;
-    border-radius: 4px;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
+
+  .form-group.full-width {
+    width: 100%;
+
   }
-  
-  .pagination{
-   padding: 1rem;
-  }
-  
-  .pagination-controls {
+
+
+
+
+  .mobile-only {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+
   }
-  
+
+  .users-table thead {
+    display: none;
+    /* Ocultar encabezados de tabla en móviles */
+  }
+
+  .users-table td.actions-cell {
+    width: unset;
+    margin-top: 0.75rem;
+    padding-block: 0;
+  }
+
+  .ubicacion-cell {
+    max-width: unset;
+    min-width: unset;
+    width: unset;
+  }
+
+  .pagination {
+    padding: 0;
+    padding-block: 1rem;
+  }
+
   .filters {
+    padding: 0;
+    padding-block: 1rem;
+  }
+
+  .search-input {
+    width: 100%;
+    font-size: 1em;
+    height: unset;
     padding: 1rem;
   }
-  
-  .users-list {
-    flex: 1;
+}
+
+@media (max-width: 1600px) {
+
+  .register-container {
+    font-size: 0.8rem;
   }
-  
-  .mobile-only {
+
+  .col-large-screen {
     display: none;
-  
   }
-  
-  
-  .maps-btn {
-    background-color: transparent; /* Fondo transparente */
-    border: none; /* Elimina bordes predeterminados del botón */
-    padding: 0; /* Elimina el padding del botón */
-    border-radius: 2px; /* Border radius */
-    
-    
+
+}
+
+@media (max-width: 1280px) {
+
+  .col-medium-screen {
+    display: none;
   }
-  
-  
-  .maps-btn img {
-    height: 20px; /* Altura de la imagen */
-    width: 20px; /* Ancho de la imagen */
-    border-radius: 2px; /* Border radius de la imagen */
-    filter: none; /* Asegúrate de no tener filtros que alteren el color */
-    color: white; /* Cambia el color del SVG */
+
+  .ubicacion-cell {
+    max-width: unset;
+    min-width: unset;
+    width: auto;
   }
-  @media (max-width: 768px) {
-  
-    #registro {
-      background: none;
-      box-shadow: none;
-    }
-  
-    .main-content {
-      margin-top: 70px;
-    }
-  
-    .users-table thead {
-      display: none;
-      /* Ocultar encabezados de tabla en móviles */
-    }
-  
-    .users-table tbody tr {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 0.5rem;
-      border: 1px solid #3d3d3d;
-      border-radius: 8px;
-      padding: 1rem;
-      background-color: #1e1e24;
-    }
-  
-    .users-table tbody td {
-      width: 100%;
-      padding: 5px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      text-align: right;
-      font-size: 1em;
-      border: none;
-    }
-  
-    .users-table tbody td::before {
-      content: attr(data-label);
-      display: inline-block;
-      font-weight: bold;
-      margin-right: 1rem;
-      color: #00bcd4;
-    }
-  
-    .modal-content {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      max-width: none;
-      border-radius: 2rem;
-      width: 100%;
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-      touch-action: pan-y;
-    }
-  
-    .modal:not(.active) .modal-content {
-      transform: translateY(100%);
-    }
-  
-    form {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-  
-    .form-group {
-      width: calc(50% - 0.5rem);
-    }
-  
-    .register-container {
-      background: #1A1A1C;
-      padding: 1rem;
-      flex: 1;
-      display: flex;
-      margin-bottom: 60px;
-    }
-  
-    .form-group.full-width {
-      width: 100%;
-  
-    }
-  
-    .form-group #modal-coordenadas {
-      text-align: center;
-    }
-  
-  
-    .mobile-only {
-      display: flex;
-  
-    }
-  
-    .users-table thead {
-      display: none;
-      /* Ocultar encabezados de tabla en móviles */
-    }
-  
-    .users-table td.actions-cell {
-      width: unset;
-      margin-top: 0.75rem;
-      padding-block: 0;
-    }
-  
-    .ubicacion-cell {
-      max-width: unset;
-      min-width: unset;
-      width: unset;
-    }
-  
-    .pagination{
-      padding: 0;
-      padding-block: 1rem;
-     }
-  
-     .filters {
-      padding: 0;
-      padding-block: 1rem;
-     }
-  
-     .search-input {
-      width: 100%;
-      font-size: 1em;
-      height: unset;
-      padding: 1rem;
-     }
+
+  .users-table td.col-ws {
+    white-space: pre-line;
   }
-  
-  @media (max-width: 1600px) {
-  
-    .register-container {
-      font-size: 0.8rem;
-    }
-    .col-large-screen {
-      display: none;
-    }
-  
-  }
-  
-  @media (max-width: 1280px) {
-  
-    .col-medium-screen {
-      display: none;
-    }
-  
-    .ubicacion-cell {
-      max-width: unset;
-      min-width: unset;
-      width: auto;
-    }
-  
-    .users-table td.col-ws {
-      white-space: pre-line;
-    }
-  }
+}
