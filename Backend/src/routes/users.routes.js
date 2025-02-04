@@ -8,5 +8,5 @@ router.get("/",validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCIO
 
 router.post("/:id/status", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), updateUserStatus);
 
-router.delete("/:id", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), getDeleteUser);
+router.delete("/:id/deleteUser", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), getDeleteUser);
 module.exports = router;

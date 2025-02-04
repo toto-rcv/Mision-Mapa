@@ -80,11 +80,10 @@ function renderTable(users) {
             <select class="status-select" data-id="${user.dni}">
                     <option class="opcion-select" value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Active</option>
                     <option class="opcion-select" value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Inactive</option>
-                    <option class="opcion-select" value="blocked" ${user.statusDetail.status === 'blocked' ? 'selected' : ''}>Banned</option>
                 </select></td>
          
             <td class="actions-cell">
-                <button class="delete-btn" data-id="${user.id}">Eliminar</button>
+                <button class="delete-btn" id="btnDelete"  data-id="${user.dni}" >Eliminar</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -107,6 +106,52 @@ function renderTable(users) {
         });
     });
 
+
+    let userIdToDelete = null; // Variable global para almacenar el usuario a eliminar
+
+    // Evento para abrir el modal cuando se presiona un botón de eliminar
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("delete-btn")) {
+            userIdToDelete = event.target.getAttribute("data-id"); // Guardamos el ID del usuario
+            document.getElementById("modal-confirm-delete").style.display = "block"; // Mostrar modal
+        }
+    });
+    
+    // Evento para confirmar la eliminación cuando se presiona "Sí" en el modal
+    document.getElementById("confirmDelete").addEventListener("click", async function () {
+        if (userIdToDelete) { // Asegurar que hay un usuario seleccionado
+            try {
+                const response = await fetch(`/api/users/${userIdToDelete}/deleteUser`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+    
+                const result = await response.json();
+    
+                if (response.ok) {
+                    location.reload(); // Recargar la tabla tras eliminar
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error("Error al eliminar el usuario:", error);
+                alert("Error al eliminar el usuario.");
+            } finally {
+                userIdToDelete = null; // Limpiar variable después de la eliminación
+                document.getElementById("modal-confirm-delete").style.display = "none"; // Ocultar modal
+            }
+        }
+    });
+    
+    // Evento para cerrar el modal si el usuario presiona "No" o fuera del modal
+    document.getElementById("cancelDelete").addEventListener("click", function () {
+        userIdToDelete = null; // Limpiar variable
+        document.getElementById("modal-confirm-delete").style.display = "none"; // Ocultar modal
+    });
+    
 }
 
 
@@ -135,31 +180,5 @@ async function updateUserStatus(userId, newStatus) {
         console.log(`Estado actualizado para el usuario ${userId}: ${newStatus}`);
     } catch (error) {
         console.error('Error al actualizar el estado del usuario:', error);
-    }
-}
-
-// Función para eliminar un usuario
-async function deleteUser(userId) {
-    try {
-        const response = await customFetch(`/api/users/${userId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json', // Usa el tipo de contenido correcto
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Incluye la autenticación
-            }
-        });
-        if (!response.ok) {
-            throw new Error(`Error ${response.status}: No se pudo eliminar el usuario`);
-        }
-        // Eliminar la fila del usuario en la tabla
-        const userRow = document.querySelector(`tr[data-id="${userId}"]`);
-        if (userRow) {
-            userRow.remove();
-        } else {
-            console.error(`No se encontró la fila del usuario ${userId}`);
-        }
-        console.log(`Usuario eliminado con éxito: ${userId}`);
-    } catch (error) {
-        console.error('Error al eliminar el usuario:', error);
     }
 }
