@@ -55,7 +55,7 @@ function renderTable(users) {
                 <th>Rango Militar</th>
                 <th>Rol</th>
                 <th>Fecha de creación</th>
-                <th>Fecha de actualización</th>
+                <th>Creador</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -75,7 +75,7 @@ function renderTable(users) {
             <td>${user.militaryRank}</td>
             <td>${user.userRank}</td>
             <td>${user.createdAt}</td>
-            <td>${user.updateAt}</td>
+            <td>${user.confirmUpdate}</td>
             <td>
             <select class="status-select" data-id="${user.dni}">
                     <option class="opcion-select" value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Active</option>
@@ -83,11 +83,12 @@ function renderTable(users) {
                 </select></td>
          
             <td class="actions-cell">
-                <button class="delete-btn" id="btnDelete"  data-id="${user.dni}" >Eliminar</button>
+                <button class="delete-btn" id="btnDelete"  data-id="${user.dni}" >X</button>
             </td>
         `;
         tbody.appendChild(row);
         console.log(`Created select for user ${user.dni} with status ${user.status}`);
+        console.log(user.confirmUpdate)
     });
 
 
@@ -109,12 +110,28 @@ function renderTable(users) {
 
     let userIdToDelete = null; // Variable global para almacenar el usuario a eliminar
 
-    // Evento para abrir el modal cuando se presiona un botón de eliminar
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("delete-btn")) {
-            userIdToDelete = event.target.getAttribute("data-id"); // Guardamos el ID del usuario
-            document.getElementById("modal-confirm-delete").style.display = "block"; // Mostrar modal
+            userIdToDelete = event.target.getAttribute("data-id"); // Guarda el ID del usuario
+    
+            const modal = document.getElementById("modal-confirm-delete");
+            const button = event.target; // Botón que se presionó
+    
+            // Obtiene la posición del botón en la pantalla
+            const rect = button.getBoundingClientRect();
+            
+            // Posiciona el modal al lado derecho del botón
+            modal.style.position = "absolute";
+            modal.style.top = `${rect.top + window.scrollY -20}px`;
+    
+            // Muestra el modal
+            modal.style.display = "block";
         }
+    });
+    
+    // Evento para cerrar el modal cuando se presiona el botón "No"
+    document.getElementById("cancelDelete").addEventListener("click", function () {
+        document.getElementById("modal-confirm-delete").style.display = "none";
     });
     
     // Evento para confirmar la eliminación cuando se presiona "Sí" en el modal
@@ -164,7 +181,7 @@ async function updateUserStatus(userId, newStatus) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
-            body: JSON.stringify({ status: newStatus })
+            body: JSON.stringify({ status: newStatus ,})
         });
 
         if (!response.ok) {
@@ -176,6 +193,8 @@ async function updateUserStatus(userId, newStatus) {
         if (statusCell) {
             statusCell.textContent = newStatus;
         }
+
+
 
         console.log(`Estado actualizado para el usuario ${userId}: ${newStatus}`);
     } catch (error) {

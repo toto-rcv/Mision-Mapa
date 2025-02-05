@@ -14,7 +14,7 @@ const getAllUsers = async (req, res) => {
                 as: 'statusDetail',
                 required: true,
                 where:{
-                    status : {[Op.in]: ["active","pending   "]} },
+                    status : {[Op.in]: ["active","pending"]} },
 
             }],
            
@@ -42,6 +42,9 @@ const updateUserStatus = async (req, res) => {
             return res.status(404).json({ message: 'Estado no encontrado' });
         }
         user.status = statusId.id;
+        user.confirmUpdate = req.user.id;
+       
+        
         await user.save();
 
         res.status(200).json({ message: 'Estado del usuario actualizado exitosamente' });
@@ -88,7 +91,6 @@ const validateUser = async (id) => {
     }
     return sighting;
 };
-
 
 
 module.exports = { getAllUsers, updateUserStatus, getDeleteUser };

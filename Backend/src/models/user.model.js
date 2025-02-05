@@ -58,7 +58,14 @@ module.exports = (sequelize, DataTypes) => {
         model: "Users", // Referencia a la misma tabla de usuarios
         key: "id",
       },
-    }
+    },
+    confirmUpdate: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: false
+      }
+    
+
 
   });
 

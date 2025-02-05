@@ -103,8 +103,44 @@ td.actions-cell>button:last-child {
   cursor: not-allowed;
 }
 
+.modal {
+  border-radius: 20px;
+  color: white;
+  background-color: var(--form-background-color);
+  width: 185px;
+  border: 2px solid var(--link-color);
 
-.status-select{
+}
+
+.modal p {
+  font-size: small;
+  text-align: center;
+}
+
+.buttons-confirm {
+  display: flex;
+  justify-content: space-evenly;
+  padding-top: 10px;
+
+}
+
+.button-confirm-delete {
+  background-color: #00BCD4;
+  /* Color inicial */
+  color: white;
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  transition: background-color 0.3s ease;
+  /* Transición suave */
+}
+
+.button-confirm-delete:hover {
+  background-color: red;
+  /* Color al pasar el mouse */
+}
+
+.status-select {
   background-color: transparent;
   color: #00bcd4;
   border: 1px solid #00bcd4;
@@ -116,12 +152,12 @@ td.actions-cell>button:last-child {
 }
 
 
-.opcion-select{
+.opcion-select {
   background-color: #1e1e24;
   border-color: black;
   color: #00bcd4;
   text-align: left;
-} 
+}
 
 
 h2 {
