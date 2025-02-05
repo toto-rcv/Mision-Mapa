@@ -18,8 +18,14 @@
     --link-color: #64D2FF;
     --search-background: rgba(0, 0, 0, 0.75);
     --marker-alert-accent: #ff4444;
+    --form-input-color: rgba(26, 26, 26, 0.6)
 }
 
 .hidden {
     visibility: hidden !important;
+}
+
+.visible {
+    visibility: visible;
+    display: block;
 }

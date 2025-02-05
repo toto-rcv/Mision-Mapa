@@ -13,9 +13,18 @@ const inputs = formPanel.querySelectorAll('input, select, textarea');
 let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null;
 let formEditMode = false;
 let markers = [];
+let minTimestamp, maxTimestamp;
+
+// Estado de los filtros (se elimina la propiedad userId)
+let currentFilters = {
+    startDate: null,
+    endDate: null,
+    statuses: []
+};
 
 const mapContainer = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap contributors'}).addTo(mapContainer);
+
 
 const redIcon = L.icon({
     // Define redIcon here
@@ -58,6 +67,15 @@ const elements = {
     zoomInButton: document.querySelector("#zoom-in"),
     zoomOutButton: document.querySelector("#zoom-out"),
     quantityMarkersModal: document.getElementById("markerAlert"),
+
+    filterButton: document.getElementById("toggle-filters"),
+    filtersPanel: document.getElementById("filters-panel"),
+    filtersCloseButton: document.getElementById("close-filters-form"),
+    statusButtons: document.querySelectorAll(".status-btn"),
+    startDateInput: document.getElementById("start-date"),
+    endDateInput: document.getElementById("end-date"),
+    filtersClearButton: document.querySelector(".btn-clear"),
+    quickDateButtons: document.querySelectorAll('.quick-date')
   }
 
 
@@ -174,6 +192,67 @@ cancelButton.addEventListener('click', () => {
     removeGreyMarker();
     updateRedMarkersModal();
 });
+
+elements.filterButton.addEventListener("click", function() {
+    elements.filtersPanel.classList.toggle("active");
+    elements.filterButton.classList.toggle("active");
+});
+
+elements.filtersCloseButton.addEventListener("click", function() {
+    elements.filtersPanel.classList.remove("active");
+    elements.filterButton.classList.remove("active");
+});
+
+elements.statusButtons.forEach(btn => {
+    btn.addEventListener("click", function() {
+      const statusValue = btn.getAttribute("data-value");
+      if (btn.classList.contains("active")) {
+        // Si ya está activo, se desactiva
+        btn.classList.remove("active");
+        currentFilters.statuses = currentFilters.statuses.filter(s => s !== statusValue);
+      } else {
+        // Se activa el botón y se agrega el valor al arreglo
+        btn.classList.add("active");
+        currentFilters.statuses.push(statusValue);
+      }
+    });
+});
+
+elements.startDateInput.addEventListener("change", function() {
+    currentFilters.startDate = startDateInput.value ? startDateInput.value : null;
+});
+
+elements.endDateInput.addEventListener("change", function() {
+    currentFilters.endDate = endDateInput.value ? endDateInput.value : null;
+});
+
+elements.filtersClearButton.addEventListener("click", function() {
+    // Resetear los inputs de fecha
+    startDateInput.value = "";
+    endDateInput.value = "";
+    currentFilters.startDate = null;
+    currentFilters.endDate = null;
+
+    // Desactivar todos los botones de estado
+    statusButtons.forEach(btn => {
+      btn.classList.remove("active");
+    });
+    currentFilters.statuses = [];
+  });
+
+elements.quickDateButtons.forEach(btn => {
+    btn.addEventListener("click", function() {
+      // Agrega la clase para disparar el efecto bounce
+      btn.classList.add("clicked");
+      // Remueve la clase después de la duración de la animación (300ms)
+      setTimeout(() => {
+        btn.classList.remove("clicked");
+      }, 300);
+
+      animateShrink(elements.startDateInput);
+      animateShrink(elements.endDateInput);
+    })
+})
 
 // Handle map clicks
 mapContainer.on('click', function (e) {
@@ -707,8 +786,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const searchInput = document.querySelector('.search-input');
     searchInput.addEventListener('input', debouncedBuscarUbicacion);
 
+    initFilters();
+
     const sightings = await loadMarkers();
+    processTimestamps(sightings);
     placeMarkersOnMap(sightings);
+    filterMarkersByDateRange();
 
     const urlParams = new URLSearchParams(window.location.search);
     const recordId = urlParams.get('sighting');
@@ -766,3 +849,312 @@ function handleMarkerClick(marker, sighting) {
     fillForm(sighting);
     showForm(false);
 }
+
+
+// Timeline
+const timelineContainer = document.querySelector('.timeline-container');
+const timelineToggle = document.querySelector('.timeline-toggle');
+const startSlider = document.getElementById('start-slider');
+const endSlider = document.getElementById('end-slider');
+const currentRangeFeedback = document.getElementById('current-range');
+
+// Al hacer click en el toggle se muestra u oculta el timeline
+timelineToggle.addEventListener('click', () => {
+    timelineContainer.classList.toggle('expanded');
+    const icon = timelineToggle.querySelector('i');
+    if (timelineContainer.classList.contains('expanded')) {
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+    } else {
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
+    }
+  });
+  
+  // Eventos de cambio en los sliders
+startSlider.addEventListener('input', onRangeChange);
+endSlider.addEventListener('input', onRangeChange);
+
+startSlider.addEventListener('pointerup', snapStartSlider);
+endSlider.addEventListener('pointerup', snapEndSlider);
+
+// Función para snappear el slider de inicio
+function snapStartSlider() {
+    const step = sliderStep();
+    const rawValue = parseFloat(startSlider.value);
+    const dayIndexFloat = rawValue / step;
+    let dayIndex;
+    // Si la parte fraccionaria es menor a 0.5, se redondea hacia abajo; de lo contrario, se avanza un día.
+    if (dayIndexFloat - Math.floor(dayIndexFloat) < 0.5) {
+      dayIndex = Math.floor(dayIndexFloat);
+    } else {
+      dayIndex = Math.floor(dayIndexFloat) + 1;
+    }
+    
+    // Verificar la distancia mínima: el índice de inicio debe ser menor que el índice del extremo final
+    const currentEndIndex = Math.round(parseFloat(endSlider.value) / step);
+    if (dayIndex >= currentEndIndex) {
+      // Si el snap haría que ambos extremos sean iguales o que se invierta el orden, forzamos el inicio a quedar 1 día antes
+      dayIndex = Math.max(0, currentEndIndex - 1);
+    }
+    
+    const newValue = dayIndex * step;
+    // Forzamos a un entero
+    startSlider.value = Math.round(newValue);
+    onRangeChange();
+  }
+  
+  // Función para snappear el slider final
+  function snapEndSlider() {
+    const step = sliderStep();
+    const rawValue = parseFloat(endSlider.value);
+    const dayIndexFloat = rawValue / step;
+    let dayIndex;
+    // Si la parte fraccionaria es menor a 0.5, se redondea hacia abajo; de lo contrario, se redondea hacia arriba.
+    if (dayIndexFloat - Math.floor(dayIndexFloat) < 0.5) {
+      dayIndex = Math.floor(dayIndexFloat);
+    } else {
+      dayIndex = Math.floor(dayIndexFloat) + 1;
+    }
+    
+    // Verificar la distancia mínima: el índice final debe ser al menos 1 mayor que el índice de inicio
+    const currentStartIndex = Math.round(parseFloat(startSlider.value) / step);
+    if (dayIndex <= currentStartIndex) {
+      // Se fuerza a que el final sea 1 día mayor, sin exceder el límite máximo (totalDays()-1)
+      dayIndex = Math.min(totalDays() - 1, currentStartIndex + 1);
+    }
+    
+    const newValue = dayIndex * step;
+    endSlider.value = Math.round(newValue);
+    onRangeChange();
+  }
+function onRangeChange() {
+    // Asegurarse de que el slider de inicio no supere al de fin
+    if (parseInt(startSlider.value) > parseInt(endSlider.value)) {
+      startSlider.value = endSlider.value;
+    }
+    if (parseInt(endSlider.value) < parseInt(startSlider.value)) {
+      endSlider.value = startSlider.value;
+    }
+
+    updateSliderTrack();
+    filterMarkersByDateRange();
+    updateRangeFeedback();
+  }
+  
+  // Actualiza la posición y tamaño del tramo seleccionado en el slider
+  function updateSliderTrack() {
+    const startVal = parseFloat(startSlider.value);
+    const endVal = parseFloat(endSlider.value);
+    const track = document.querySelector('.slider-track');
+    track.style.left = startVal + '%';
+    track.style.width = (endVal - startVal) + '%';
+  }
+  
+  // Filtra los marcadores según el rango de fechas seleccionado
+  function filterMarkersByDateRange() {
+    const minDate = new Date(minTimestamp);
+    const maxDate = new Date(maxTimestamp);
+    const startValue = parseFloat(startSlider.value);
+    const endValue = parseFloat(endSlider.value);
+  
+    const selectedStartDate = new Date(minDate.getTime() + (startValue / 100) * (maxDate - minDate));
+    const selectedEndDate = new Date(minDate.getTime() + (endValue / 100) * (maxDate - minDate));
+
+    selectedStartDate.setHours(0, 0, 0, 0);
+    // La fecha superior se establece a las 23:59:59.999 para incluir todo el día
+    selectedEndDate.setHours(23, 59, 59, 999);
+  
+    markers.forEach(marker => {
+      const markerDate = new Date(marker.sighting.fecha_avistamiento);
+      if (markerDate >= selectedStartDate && markerDate <= selectedEndDate) {
+        marker.leafletObject.setOpacity(1);
+      } else {
+        marker.leafletObject.setOpacity(0.2);
+      }
+    });
+  }
+  
+// Actualiza el feedback visual basándose en los valores discretos
+function updateRangeFeedback() {
+    const step = sliderStep();
+    let startDayIndex = Math.round(startSlider.value / step);
+    let endDayIndex = Math.round(endSlider.value / step);
+    
+    // Aseguramos que el índice final no exceda el límite (totalDays()-1)
+    if (endDayIndex >= totalDays()) {
+      endDayIndex = totalDays() - 1;
+    }
+    
+    // Si por el snapping el extremo final cae en el mismo día (o incluso anterior) que el de inicio,
+    // se fuerza a que ambos tengan el mismo índice (es decir, el día inicial).
+    if (endDayIndex < startDayIndex) {
+      endDayIndex = startDayIndex;
+    }
+    
+    // Se calcula la fecha correspondiente a cada índice, partiendo de minTimestamp
+    let startDate = new Date(minTimestamp + startDayIndex * 24 * 60 * 60 * 1000);
+    let endDate = new Date(minTimestamp + (endDayIndex - 1) * 24 * 60 * 60 * 1000);
+    
+    // Forzamos que para el feedback el inicio muestre 00:00 y el final 23:59
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 0, 0);
+    
+    currentRangeFeedback.textContent = `${formatDate(startDate)} (00:00) - ${formatDate(endDate)} (23:59)`;
+  }
+  
+  // Procesa los timestamps de los avistamientos para determinar el rango global
+  function processTimestamps(sightings) {
+    const timestamps = sightings.map(s => new Date(s.fecha_avistamiento).getTime());
+    // Se obtiene el primer y último timestamp del dataset
+    let rawMin = new Date(Math.min(...timestamps));
+    let rawMax = new Date(Math.max(...timestamps));
+    
+    // Ajustamos para que el primer día comience a las 00:00...
+    rawMin.setHours(0, 0, 0, 0);
+    // ...y el último día finalice a las 23:59:59.999
+    rawMax.setHours(23, 59, 59, 999);
+    
+    // Actualizamos las variables globales
+    minTimestamp = rawMin.getTime();
+    maxTimestamp = rawMax.getTime();
+    
+    // Actualizamos la interfaz con los nuevos límites formateados en dd/mm/yyyy
+    console.log(document.getElementById('start-date'))
+    document.getElementById('timeline-start-date').textContent = formatDate(rawMin);
+    document.getElementById('timeline-end-date').textContent = formatDate(rawMax);
+  
+    updateRangeFeedback();
+    updateSliderTrack();
+
+    generateTicks();
+  }
+
+
+  function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  function totalDays() {
+    // Cada día son 24*60*60*1000 milisegundos
+    return ((maxTimestamp - minTimestamp) / (24 * 60 * 60 * 1000) + 1);
+  }
+
+  // Calcula el tamaño de cada paso discreto en el slider (en porcentaje)
+function sliderStep() {
+    // Dividimos el slider (0–100) en (totalDays()-1) intervalos.
+    return 100 / (totalDays() - 1);
+  }
+
+  // Función que genera de forma dinámica los ticks
+function generateTicks() {
+    const tickContainer = document.querySelector('.slider-ticks');
+    tickContainer.innerHTML = ''; // Limpiar cualquier tick previo
+    const total = totalDays();
+    const step = sliderStep();
+    
+    for (let i = 0; i < total; i++) {
+      const tick = document.createElement('div');
+      tick.className = 'tick';
+      tick.style.left = (i * step) + '%';
+      tickContainer.appendChild(tick);
+    }
+}
+
+// Inicialización de Filtros
+function initFilters() {
+  
+    document.querySelectorAll('.quick-date').forEach(button => {
+      button.addEventListener('click', handleQuickDate);
+    });
+  
+    document.querySelector('.btn-apply').addEventListener('click', applyFilters);
+  
+    // Se elimina la carga inicial de usuarios:
+    // loadUsers();
+}
+  
+  // Manejadores de Eventos
+function handleQuickDate(e) {
+    const days = parseInt(e.target.dataset.days);
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - days);
+    
+    currentFilters.startDate = startDate;
+    currentFilters.endDate = endDate;
+    
+    document.getElementById('start-date').value = startDate.toISOString().slice(0,16);
+    document.getElementById('end-date').value = endDate.toISOString().slice(0,16);
+  }
+  
+function handleStatusChange(e) {
+    currentFilters.statuses = Array.from(
+      document.querySelectorAll('.status-filters input:checked')
+    ).map(c => c.value);
+}
+  
+  // Se elimina la función handleUserSearch:
+  // function handleUserSearch(e) {
+  //   currentFilters.userId = e.target.value;
+  // }
+  
+  // Lógica de Filtrado
+function applyFilters() {
+    const filteredMarkers = markers.filter(marker => {
+      const date = new Date(marker.sighting.fecha_avistamiento);
+      const statusMatch = currentFilters.statuses.length === 0 || 
+                        currentFilters.statuses.includes(marker.sighting.estado);
+      const dateMatch = (!currentFilters.startDate || date >= currentFilters.startDate) &&
+                      (!currentFilters.endDate || date <= currentFilters.endDate);
+      // Se elimina la validación por usuario:
+      // const userMatch = !currentFilters.userId || marker.sighting.userId === currentFilters.userId;
+      
+      return statusMatch && dateMatch;
+    });
+  
+    updateMarkersVisibility(filteredMarkers);
+    showFilterFeedback(filteredMarkers.length);
+}
+  
+function updateMarkersVisibility(visibleMarkers) {
+    markers.forEach(marker => {
+      const opacity = visibleMarkers.includes(marker) ? 1 : 0.2;
+      marker.leafletObject.setOpacity(opacity);
+    });
+}
+  
+function showFilterFeedback(visibleCount) {
+    const feedback = document.getElementById('filter-feedback');
+    feedback.textContent = visibleCount === 0 ? 
+      "No se encontraron avistamientos con los filtros aplicados." : 
+      `${visibleCount} avistamientos encontrados`;
+    feedback.style.display = 'block';
+    setTimeout(() => feedback.style.display = 'none', 3000);
+}
+  
+  // Se elimina la función loadUsers, ya que no es necesaria para filtrar por usuario
+  // async function loadUsers() {
+  //   try {
+  //     const response = await customFetch('/api/users');
+  //     const users = await response.json();
+  //     const datalist = document.getElementById('user-list');
+      
+  //     datalist.innerHTML = users.map(user => 
+  //       `<option value="${user.name} ${user.lastname} (${user.id})" data-user-id="${user.id}">`
+  //     ).join('');
+  //   } catch (error) {
+  //     console.error('Error loading users:', error);
+  //   }
+  // }
+
+  function animateShrink(input) {
+    const animationDuration = 400;
+    input.classList.add("animate-shrink");
+    setTimeout(() => {
+      input.classList.remove("animate-shrink");
+    }, animationDuration);
+  }

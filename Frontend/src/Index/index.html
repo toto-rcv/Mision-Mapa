@@ -85,12 +85,75 @@
 
         <div class="map-container">
             <div class="search-container">
+                <div class="advanced-filters">
                 <input type="text" class="search-input" placeholder="Buscar ubicación..." id="search-field">
-                <button class="filter-button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-                    </svg>
-                </button>
+               
+                    <!-- Botón para mostrar/ocultar filtros -->
+                    <button class="filter-button" id="toggle-filters">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                        </svg>
+                    </button>
+                  
+                    <!-- Panel de Filtros (inicialmente oculto) -->
+                    <div class="filters-panel" id="filters-panel">
+                        <!-- Título principal -->
+                        <h2 class="filters-title">Filtros</h2>
+                        <button class="filter-close-button" id="close-filters-form" aria-label="Cerrar formulario">x</button>
+                        
+                        <!-- Filtro de rango de fechas -->
+                        <div class="filter-section">
+                          <h4>
+                            Rango de Fechas 
+                            <span class="icon icon-calendar"></span>
+                          </h4>
+                          <div class="date-quick-options">
+                            <button class="quick-date" data-days="7">Última semana</button>
+                            <button class="quick-date" data-days="15">Últimos 15 días</button>
+                            <button class="quick-date" data-days="30">Último mes</button>
+                          </div>
+                          <div class="custom-dates">
+                            <input type="datetime-local" id="start-date" class="date-input">
+                            <input type="datetime-local" id="end-date" class="date-input">
+                          </div>
+                        </div>
+                        
+                        <!-- Filtro de estado de validación -->
+                        <div class="filter-section">
+                          <h4>
+                            Estado de Validación 
+                            <span class="icon icon-status"></span>
+                          </h4>
+                          <div class="status-filters">
+                            <!-- Los botones Pendiente y Validado tienen clase active por defecto -->
+                            <button type="button" class="status-btn active" data-value="pending">Pendiente</button>
+                            <button type="button" class="status-btn active" data-value="validated">Validado</button>
+                            <button type="button" class="status-btn" data-value="rejected">Descartado</button>
+                          </div>
+                        </div>
+                        
+                        <!-- Filtro de usuario creador -->
+                        <div class="filter-section">
+                          <h4>
+                            Usuario Creador 
+                            <span class="icon icon-user"></span>
+                          </h4>
+                          <div class="user-search-container">
+                            <input type="text" id="user-filter" class="user-search" placeholder="Buscar usuario..." list="user-list">
+                            <span class="icon icon-search"></span>
+                            <datalist id="user-list"></datalist>
+                          </div>
+                        </div>
+                        
+                        <!-- Acciones: aplicar y limpiar filtros -->
+                        <div class="filter-actions">
+                          <button class="btn-apply">Aplicar Filtros</button>
+                          <button class="btn-clear">Limpiar</button>
+                        </div>
+                        
+                        <div class="filter-feedback" id="filter-feedback"></div>
+                      </div>
+                </div>
             </div>
             <div id="map" aria-label="Mapa interactivo de avistamientos"></div>
             <div class="map-controls">
@@ -213,8 +276,6 @@
                 <h2>Nuevo avistamiento</h2>
                 <p>Haga clic en el mapa para empezar</p>
             </div>
-            <div class="quantityOverlay" id="quantityMarkers">
-            </div>
             <div class="marker-alert" id="markerAlert" role="alert">
                 <div class="marker-alert-content">
                   <svg class="marker-alert-icon" viewBox="0 0 24 24" width="24" height="24">
@@ -231,6 +292,34 @@
                   </div>
                 </div>
               </div>
+            <div class="timeline-container">
+                <button class="timeline-toggle">
+                  <i class="fas fa-chevron-up"></i>
+                </button>
+                <div class="timeline-content">
+                  <!-- Muestra las fechas límites de todo el dataset -->
+                  <div class="time-labels">
+                    <span id="timeline-start-date"></span>
+                    <span id="timeline-end-date"></span>
+                  </div>
+                  
+                  <!-- Contenedor para el slider dual -->
+                  <div class="slider-container">
+                    <div class="slider-ticks"></div>
+                    <div class="slider-track"></div>
+                    <!-- Slider para la fecha de inicio del rango -->
+                    <input type="range" id="start-slider" class="timeline-slider" min="0" max="100" step="1" value="0">
+                    <!-- Slider para la fecha final del rango -->
+                    <input type="range" id="end-slider" class="timeline-slider" min="0" max="100" step="1" value="100">
+                  </div>
+                  
+                  <!-- Feedback visual para indicar el rango seleccionado -->
+                  <div class="timeline-feedback">
+                    <span id="current-range"></span>
+                  </div>
+               
+                </div>
+            </div>
         </div>
     </main>
 
