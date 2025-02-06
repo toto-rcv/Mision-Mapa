@@ -109,30 +109,16 @@ function renderTable(users) {
 
 
     let userIdToDelete = null; // Variable global para almacenar el usuario a eliminar
-
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("delete-btn")) {
             userIdToDelete = event.target.getAttribute("data-id"); // Guarda el ID del usuario
     
             const modal = document.getElementById("modal-confirm-delete");
-            const button = event.target; // Botón que se presionó
-    
-            // Obtiene la posición del botón en la pantalla
-            const rect = button.getBoundingClientRect();
-            
-            // Posiciona el modal al lado derecho del botón
-            modal.style.position = "absolute";
-            modal.style.top = `${rect.top + window.scrollY -20}px`;
-    
-            // Muestra el modal
+        // Muestra el modal
             modal.style.display = "block";
         }
     });
     
-    // Evento para cerrar el modal cuando se presiona el botón "No"
-    document.getElementById("cancelDelete").addEventListener("click", function () {
-        document.getElementById("modal-confirm-delete").style.display = "none";
-    });
     
     // Evento para confirmar la eliminación cuando se presiona "Sí" en el modal
     document.getElementById("confirmDelete").addEventListener("click", async function () {

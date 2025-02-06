@@ -3,7 +3,9 @@ import { customFetch } from '../utils/auth.js';
 import { showNavItems } from '/static/js/navigation.js';
 import { toProperCase, debounce, formatDate } from '../utils/utils.js';
 
-const SightingsApp = (function() {
+
+
+const SightingsApp = (function () {
     let currentSearch = '';
     let sightingsCurrentPage = 1;
     let touchStartY = 0;
@@ -66,10 +68,10 @@ const SightingsApp = (function() {
         loadAndDisplaySightings()
     }
 
-   // Modal functions
-   function showObservationsModal(sighting) {
+    // Modal functions
+    function showObservationsModal(sighting) {
         const modalFields = [
-            'observaciones', 'tipo-motor', 'cantidad-motores', 'color', 
+            'observaciones', 'tipo-motor', 'cantidad-motores', 'color',
             'rumbo', 'tipo-aeronave', 'altitud'
         ];
         modalFields.forEach(field => {
@@ -87,7 +89,7 @@ const SightingsApp = (function() {
         elements.modal.classList.remove("active")
         document.body.style.overflow = ""
         if (window.location.hash === "#modal-open") {
-          history.back()
+            history.back()
         }
     }
 
@@ -161,6 +163,7 @@ const SightingsApp = (function() {
                     <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
                     <button class="delete-btn" data-id="${sighting.id}">X</button>
                     <button class="maps-btn"><img src="static/img/map.svg"/></button>
+                    <button id="generarPDF">Generar PDF</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -210,26 +213,75 @@ const SightingsApp = (function() {
 
         });
 
-        table.querySelectorAll('.delete-btn').forEach(button => {
+
+
+
+        let sightingIdToDelete = null; // Variable global para almacenar el avistamiento a eliminar
+
+        document.querySelectorAll('.delete-btn').forEach(button => {
             if (!button.disabled) {
-                button.addEventListener('click', async (event) => {
-                    const id = event.target.getAttribute('data-id');
-                    const deleted = await deleteSighting(id);
-                    if (deleted) {
-                        event.target.closest('tr').remove();
-                    }
+                button.addEventListener('click', (event) => {
+                    sightingIdToDelete = event.target.getAttribute('data-id'); // Guarda el ID del avistamiento
+
+                    const modal = document.getElementById("modal-confirm-delete");
+
+                    // Muestra el modal
+                    modal.style.display = "block";
                 });
             }
         });
+        // Evento para confirmar la eliminación cuando se presiona "Sí"
+        document.getElementById("confirmDelete").addEventListener('click', async () => {
+            if (sightingIdToDelete) {
+                const deleted = await deleteSighting(sightingIdToDelete);
+                if (deleted) {
+                    document.querySelector(`[data-id='${sightingIdToDelete}']`).closest('tr').remove();
+                } else {
+                    alert("Error al eliminar el avistamiento.");
+                }
+
+                sightingIdToDelete = null; // Limpiar variable
+                document.getElementById("modal-confirm-delete").style.display = "none"; // Ocultar modal
+            }
+        });
+
+        // Evento para cancelar la eliminación
+        document.getElementById("cancelDelete").addEventListener('click', () => {
+            sightingIdToDelete = null;
+            const modal = document.getElementById("modal-confirm-delete");
+            // Muestra el modal
+            modal.style.display = "none";
+        });
+
+
+        document.getElementById('generarPDF').addEventListener('click', function () {
+            const { jsPDF } = window.jspdf; // Si estás usando el CDN o importando el módulo
+            const doc = new jsPDF();
+
+            // Selecciona la tabla de avistamientos
+            const table = document.querySelector('.sightings-table');
+
+            // Usamos autoTable para generar el PDF
+            doc.autoTable({
+                html: table, // Pasamos la tabla HTML para que sea renderizada en el PDF
+                startY: 20,  // Inicia la tabla en Y para dejar espacio en la parte superior
+                margin: { top: 10 }, // Margen superior
+                theme: 'striped', // Estilo de la tabla
+            });
+
+            // Guarda el archivo PDF generado
+            doc.save('tabla-avistamientos.pdf');
+        });
+
 
         document.querySelectorAll('.maps-btn').forEach(mapButton => {
             mapButton.addEventListener('click', (event) => {
                 // Buscar el <tr> más cercano al botón
                 const row = mapButton.closest('tr');
-                
+
                 // Obtener el identificador desde el atributo data-id de la fila
                 const recordId = row.getAttribute('data-id');
-                
+
                 // Redirigir a index.html y enviar el identificador como parámetro
                 window.location.href = `index.html?sighting=${recordId}`;
             });
@@ -284,18 +336,18 @@ const SightingsApp = (function() {
     function adjustColumnsForSmallScreens() {
         const isSmallScreen = window.innerWidth <= 768
         const tableRows = document.querySelectorAll(".sightings-table tbody tr")
-    
+
         tableRows.forEach((row) => {
-          row.classList.toggle("small-screen", isSmallScreen)
-          const cells = row.querySelectorAll("td")
-          cells.forEach((cell, index) => {
-            if (isSmallScreen) {
-              cell.style.display =
-                index === 1 || index === 2 || index === 3 || cell.classList.contains("actions-cell") ? "flex" : "none"
-            } else {
-              cell.style.display = ""
-            }
-          })
+            row.classList.toggle("small-screen", isSmallScreen)
+            const cells = row.querySelectorAll("td")
+            cells.forEach((cell, index) => {
+                if (isSmallScreen) {
+                    cell.style.display =
+                        index === 1 || index === 2 || index === 3 || cell.classList.contains("actions-cell") ? "flex" : "none"
+                } else {
+                    cell.style.display = ""
+                }
+            })
         })
     }
 

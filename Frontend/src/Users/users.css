@@ -104,12 +104,16 @@ td.actions-cell>button:last-child {
 }
 
 .modal {
+  position: fixed; /* Hace que el modal esté fijo en la pantalla */
+  top: 50%; /* Coloca el modal en el centro vertical */
+  left: 50%; /* Coloca el modal en el centro horizontal */
+  transform: translate(-50%, -50%); /* Ajusta para que el modal quede completamente centrado */
   border-radius: 20px;
   color: white;
   background-color: var(--form-background-color);
-  width: 185px;
   border: 2px solid var(--link-color);
-
+  padding: 20px; /* Puedes ajustar el padding según el diseño que desees */
+  z-index: 1000; /* Asegura que el modal esté por encima de otros elementos */
 }
 
 .modal p {
@@ -121,7 +125,6 @@ td.actions-cell>button:last-child {
   display: flex;
   justify-content: space-evenly;
   padding-top: 10px;
-
 }
 
 .button-confirm-delete {
