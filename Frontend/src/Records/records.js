@@ -129,7 +129,7 @@ const SightingsApp = (function () {
             <thead>
                 <tr>
                     <th>#</th>
-                    <th class="col-ws fecha-header">Fecha <img src="static/img/angles-up-down.svg"/></th>
+                    <th class="col-ws fecha-header">Fecha</th>
                     <th class="ubicacion-cell">Ubicacion</th>
                     <th class="col-medium-screen">Creado por</th>
                     <th class="col-large-screen">Latitud</th>
@@ -163,7 +163,6 @@ const SightingsApp = (function () {
                     <button class="view-details-btn" data-id="${sighting.id}">Ver detalles</button>
                     <button class="delete-btn" data-id="${sighting.id}">X</button>
                     <button class="maps-btn"><img src="static/img/map.svg"/></button>
-                    <button id="generarPDF">Generar PDF</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -255,24 +254,65 @@ const SightingsApp = (function () {
 
 
         document.getElementById('generarPDF').addEventListener('click', function () {
-            const { jsPDF } = window.jspdf; // Si estás usando el CDN o importando el módulo
-            const doc = new jsPDF();
-
-            // Selecciona la tabla de avistamientos
-            const table = document.querySelector('.sightings-table');
-
-            // Usamos autoTable para generar el PDF
+            const { jsPDF } = window.jspdf;
+            // Crear el PDF en orientación horizontal
+            const doc = new jsPDF({ orientation: 'landscape' });
+        
+            // Obtén los datos de los avistamientos desde localStorage (o la fuente que utilices)
+            const sightings = JSON.parse(localStorage.getItem("sightings") || "[]");
+        
+            // Define el encabezado de la tabla con los nombres de las columnas
+            const head = [[
+                'Avistamiento',
+                'Creado por',
+                'Fecha',
+                'Ubicación',
+                'Latitud',
+                'Longitud',
+                'Rumbo',
+                'Altitud Est.',
+                'Tipo de Aeronave',
+                'Color',
+                'Tipo de Motor',
+                'Cantidad de Motores',
+                'Observaciones'
+            ]];
+        
+            // Mapea cada avistamiento a una fila de la tabla
+            const body = sightings.map(sighting => [
+                sighting.id,
+                `${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}`,
+                formatDate(new Date(sighting.fecha_avistamiento)),
+                sighting.ubicacion,
+                sighting.latitud,
+                sighting.longitud,
+                sighting.rumbo,
+                sighting.altitud_estimada,
+                sighting.tipo_aeronave,
+                sighting.color,
+                sighting.tipo_motor,
+                sighting.cantidad_motores,
+                sighting.observaciones
+            ]);
+        
+            // Opcional: Obtén el ancho de la página para ajustar el ancho de la tabla
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 10;
+            
+            // Genera la tabla usando autoTable, asegurando que la tabla se ajuste al ancho de la hoja
             doc.autoTable({
-                html: table, // Pasamos la tabla HTML para que sea renderizada en el PDF
-                startY: 20,  // Inicia la tabla en Y para dejar espacio en la parte superior
-                margin: { top: 10 }, // Margen superior
-                theme: 'striped', // Estilo de la tabla
+                head: head,
+                body: body,
+                startY: 20, // Posición vertical inicial de la tabla
+                margin: { left: margin, right: margin },
+                tableWidth: pageWidth - margin * 2,
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [22, 160, 133] } // Puedes personalizar el estilo del encabezado
             });
-
+        
             // Guarda el archivo PDF generado
             doc.save('tabla-avistamientos.pdf');
         });
-
 
         document.querySelectorAll('.maps-btn').forEach(mapButton => {
             mapButton.addEventListener('click', (event) => {
@@ -287,34 +327,10 @@ const SightingsApp = (function () {
             });
         });
 
-        table.querySelectorAll('.sightings-table th').forEach(header => {
-            header.addEventListener('click', () => handleSort(header));
-        });
+        
     }
 
-    function handleSort(header) {
-        const currentSort = header.getAttribute('data-sort');
-        const sortIcon = header.querySelector('img');
-        let newSort;
-        switch (currentSort) {
-            case 'asc':
-                newSort = 'desc';
-                sortIcon.src = 'static/img/angles-down.svg';
-                sortIcon.style.padding = '0';
-                break;
-            case 'desc':
-                newSort = 'none';
-                sortIcon.src = 'static/img/angles-up-down.svg';
-                sortIcon.style = '';
-                break;
-            default:
-                newSort = 'asc';
-                sortIcon.src = 'static/img/angles-up.svg';
-                sortIcon.style.padding = '0';
-        }
-        header.setAttribute('data-sort', newSort);
-        // TODO: Implement actual sorting logic
-    };
+   
 
     // Utility functions
     function checkPermissionsAndDisableDeleteButtons() {
@@ -350,7 +366,7 @@ const SightingsApp = (function () {
             })
         })
     }
-
+    
     // Initialization
     async function init() {
         setupEventListeners();

@@ -6,7 +6,8 @@ const validateRole = require("../middleware/role.middleware");
 
 router.get("/",validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), getAllUsers);
 
-router.post("/:id/status", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), updateUserStatus);
+router.put("/:id/status", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), updateUserStatus);
+
 
 router.delete("/:id/deleteUser", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), getDeleteUser);
 module.exports = router;

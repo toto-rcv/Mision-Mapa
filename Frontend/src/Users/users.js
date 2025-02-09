@@ -162,7 +162,7 @@ function renderTable(users) {
 async function updateUserStatus(userId, newStatus) {
     try {
         const response = await customFetch(`/api/users/${userId}/status`, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`

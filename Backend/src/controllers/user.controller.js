@@ -81,16 +81,7 @@ const getDeleteUser = async (req, res) => {
     }
 };
 
-const validateUser = async (id) => {
-    const user = await User.findByPk(id);
-    if (!user) {
-        throw new UserNotFoundError();
-    }
-    if (user.status === blocked) {
-        throw new UserAlreadyDeletedError();
-    }
-    return sighting;
-};
+
 
 
 module.exports = { getAllUsers, updateUserStatus, getDeleteUser };

@@ -169,4 +169,8 @@ const validateRedSighting = async (req, res) => {
     }
 };
 
+
+
+
+
 module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, validateRedSighting };
