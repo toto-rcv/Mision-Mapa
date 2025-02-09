@@ -91,56 +91,59 @@ if (window.location.pathname !== "/login" && window.location.pathname !== "/regi
 export async function customFetch(url, options = {}) {
     let accessToken = localStorage.getItem("accessToken");
 
-    // Agregar el accessToken a los headers
     options.headers = {
         ...options.headers,
         "Authorization": `Bearer ${accessToken}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json" 
     };
-   
-    let response = await fetch(url, options);
-    
-    // Si el token es inválido, intenta renovarlo
-    if (response.status === 401 || response.status === 403) {
 
+
+    let response = await fetch(url, options);
+
+    if (response.status === 401 || response.status === 403) {
         const refreshToken = localStorage.getItem("refreshToken");
 
         if (!refreshToken) {
-            console.error("No hay Refresh Token disponible.");
+            console.error("No hay Refresh Token disponible. Redirigiendo a login.");
             redirectToLogin();
-            return;
+            return response; 
         }
 
         if (!isRefreshing) {
             isRefreshing = true;
             try {
                 await refreshAccessToken();
-                onRefreshed(localStorage.getItem("accessToken"));
-            } catch (error) {
-                console.error("Error al renovar el Access Token:", error);
+                accessToken = localStorage.getItem("accessToken");
+                onRefreshed(accessToken);
+                
+                options.headers["Authorization"] = `Bearer ${accessToken}`; // Actualizar headers con el nuevo token
+                response = await fetch(url, options); // Reintentar la petición original
+                return response; // Retornar la nueva respuesta (petición reintentada)
+            } catch (refreshError) {
+                console.error("Error al renovar el Access Token en customFetch:", refreshError);
                 redirectToLogin();
+                return response; // Retornar la respuesta original (o podrías retornar un error específico)
             } finally {
                 isRefreshing = false;
             }
         } else {
-            await new Promise((resolve) => {
-                subscribeTokenRefresh(() => {
-                    resolve();
+            // Esperar a que se refresque el token y reintentar
+            return new Promise((resolve) => {
+                subscribeTokenRefresh(async () => { // Usar async para await dentro del subscriber
+                    accessToken = localStorage.getItem("accessToken");
+                    options.headers["Authorization"] = `Bearer ${accessToken}`;
+                    try {
+                        const retryResponse = await fetch(url, options);
+                        resolve(retryResponse); // Resolver la promesa con la respuesta reintentada
+                    } catch (retryError) {
+                        console.error("Error al reintentar la petición después de refrescar el token:", retryError);
+                        redirectToLogin(); // O manejar el error de otra manera
+                        resolve(response); // Resolver con la respuesta original (o podrías retornar un error específico)
+                    }
                 });
             });
-        }
-
-        try {
-            accessToken = localStorage.getItem("accessToken");
-            options.headers["Authorization"] = `Bearer ${accessToken}`;
-            response = await fetch(url, options);
-        } catch (error) {
-            console.error("No se pudo renovar el Access Token:", error.message);
-            redirectToLogin();
-            return;
         }
     }
 
     return response;
-
 }
