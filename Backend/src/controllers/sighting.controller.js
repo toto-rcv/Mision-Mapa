@@ -145,7 +145,7 @@ const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}
     return { sightings, totalRecords };
 };
 
-const validateRedSighting = async (req, res) => {
+const markSightingAsSeen = async (req, res) => {
     try {
         const { id } = req.params;
         const sighting = await Sighting.findByPk(id);
@@ -162,6 +162,8 @@ const validateRedSighting = async (req, res) => {
         sighting.validado_en = new Date();
         await sighting.save();
 
+        eventEmitter.emit('VALIDATE_SIGHTING', id);
+
         res.status(200).json({ message: "Avistamiento validado exitosamente" });
     } catch (error) {
         console.error("Error al validar avistamiento:", error);
@@ -173,4 +175,4 @@ const validateRedSighting = async (req, res) => {
     }
 };
 
-module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, validateRedSighting };
+module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, markSightingAsSeen };
