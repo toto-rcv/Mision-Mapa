@@ -49,13 +49,17 @@ export function loadUserProfile() {
 }
 
 export function getUserId() {
-    const { user } = JSON.parse(localStorage.getItem('user'));
+    const user = retrieveUserProfile()
 
     if (!user) {
         console.error('No se encontraron datos de usuario en el localStorage.');
     }
 
     return user.dni
+}
+
+function retrieveUserProfile() {
+    return JSON.parse(localStorage.getItem('user'));
 }
 
 export async function reloadUserProfile() {
