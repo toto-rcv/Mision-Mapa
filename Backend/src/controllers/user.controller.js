@@ -54,6 +54,27 @@ const updateUserStatus = async (req, res) => {
     }
 };
 
+const updateUserRank = async (req, res) => { 
+    try {
+        const { id } = req.params;
+        const { userRank } = req.body;
+
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        // Asignar directamente el nuevo userRank que envía el frontend
+        user.userRank = userRank;
+
+        await user.save();
+
+        res.status(200).json({ message: 'Rango del usuario actualizado exitosamente' });
+    } catch (error) {
+        console.error('Error al actualizar el rango del usuario:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
 
 const getDeleteUser = async (req, res) => {
     try {
@@ -84,4 +105,4 @@ const getDeleteUser = async (req, res) => {
 
 
 
-module.exports = { getAllUsers, updateUserStatus, getDeleteUser };
+module.exports = { getAllUsers, updateUserStatus, getDeleteUser, updateUserRank };

@@ -15,6 +15,7 @@
   /*table-layout: fixed;*/
   overflow: hidden;
   width: 100%;
+  flex: 1;
 }
 
 .users-table th img {
@@ -103,17 +104,26 @@ td.actions-cell>button:last-child {
   cursor: not-allowed;
 }
 
+#modal-confirm-delete.active {
+  display: block;
+}
 .modal {
-  position: fixed; /* Hace que el modal esté fijo en la pantalla */
-  top: 50%; /* Coloca el modal en el centro vertical */
-  left: 50%; /* Coloca el modal en el centro horizontal */
-  transform: translate(-50%, -50%); /* Ajusta para que el modal quede completamente centrado */
+  position: fixed;
+  /* Hace que el modal esté fijo en la pantalla */
+  top: 50%;
+  /* Coloca el modal en el centro vertical */
+  left: 50%;
+  /* Coloca el modal en el centro horizontal */
+  transform: translate(-50%, -50%);
+  /* Ajusta para que el modal quede completamente centrado */
   border-radius: 20px;
   color: white;
   background-color: var(--form-background-color);
   border: 2px solid var(--link-color);
-  padding: 20px; /* Puedes ajustar el padding según el diseño que desees */
-  z-index: 1000; /* Asegura que el modal esté por encima de otros elementos */
+  padding: 20px;
+  /* Puedes ajustar el padding según el diseño que desees */
+  z-index: 1000;
+  /* Asegura que el modal esté por encima de otros elementos */
 }
 
 .modal p {
@@ -143,6 +153,18 @@ td.actions-cell>button:last-child {
   /* Color al pasar el mouse */
 }
 
+
+.rank-select {
+  background-color: transparent;
+  color: #00bcd4;
+  border: 1px solid #00bcd4;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+
+}
+
 .status-select {
   background-color: transparent;
   color: #00bcd4;
@@ -154,8 +176,7 @@ td.actions-cell>button:last-child {
   text-align: center;
 }
 
-
-.opcion-select {
+select option {
   background-color: #1e1e24;
   border-color: black;
   color: #00bcd4;
@@ -178,6 +199,91 @@ h2 {
   color: white;
 }
 
+/* Estilos para el modal de filtro */
+#filter-modal {
+  display: none;
+  position: absolute;
+  background-color: var(--background-color);
+  border: 3px solid var(--primary-color);
+  padding: 1rem;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+}
+
+#filter-modal.active {
+  display: block;
+  border-radius: 5px;
+}
+
+#filter-modal.active label {
+  width: 200px;
+}
+
+#filter-modal.active h3 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid white;
+}
+
+/* Estilos para cada opción de filtro */
+.filter-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.7rem;
+}
+
+.filter-option label {
+  margin-left: 0.5rem;
+}
+
+/* Contenedor para los botones de acción del modal */
+.filter-actions {
+  margin-top: 1rem;
+}
+
+/* Estilos para los botones dentro del modal */
+#filter-modal button {
+  margin-right: 0.5rem;
+  margin-bottom: 10px;
+}
+
+/* Estilo para el botón de opciones de filtro */
+#filter-options-btn {
+  margin-left: 1rem;
+  color: white;
+  cursor: pointer;
+  width: 100px;
+  height: 40px;
+  border-radius: 5px;
+  background: var(--form-background-color);
+  border: 2px solid var(--primary-color);
+}
+
+#filter-options-btn svg {
+  width: 50%;
+  height: 38%;
+}
+
+#filter-options-btn:hover {
+  background-color: #00BCD4;
+}
+
+form button{
+  background-color: var(--input-border);
+}
+
+#filter-confirm-btn:hover{
+  background-color: var(--link-color);
+}
+
+#cancel-filter-btn:hover{
+  background-color:var(--error-color);
+}
+form input {
+  width: 25px;
+}
+
 .register-container {
   background: #1A1A1C;
   padding: 1rem;
@@ -186,8 +292,16 @@ h2 {
   font-size: 0.95rem;
 }
 
-.prev-page,
-.next-page {
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.pagination button {
+
   background-color: transparent;
   color: #00bcd4;
   border: 1px solid #00bcd4;
@@ -195,17 +309,7 @@ h2 {
   padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-}
 
-.pagination {
-  padding: 1rem;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
 }
 
 .filters {

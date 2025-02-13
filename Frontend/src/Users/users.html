@@ -74,7 +74,7 @@
         <div class="register-container">
             <div id="registro" aria-label="Mapa interactivo de avistamientos">
                 <div class="filters">
-                    <input type="text" id="search" class="search-input" placeholder="Buscar Avistamientos">
+                    <input type="text" id="search" class="search-input" placeholder="Buscar Usuarios">
                 </div>
                 <div id="sightings-list" class="users-table">
                     <!-- Aquí se cargarán los avistamientos -->
@@ -84,14 +84,14 @@
         </div>
 
         <div id="modal-confirm-delete" class="modal">
-            <div id="modal-confirm-delete">
-                <p>¿Estás seguro de querer eliminar este usuario?</p>
-                <div class="buttons-confirm">
-                    <button class="button-confirm-delete" id="confirmDelete">Sí</button>
-                    <button class="button-confirm-delete" id="cancelDelete">No</button>
-                </div>
+            <div class="modal-content">
+              <p>¿Estás seguro de querer eliminar este usuario?</p>
+              <div class="buttons-confirm">
+                <button class="button-confirm-delete" id="confirmDelete">Sí</button>
+                <button class="button-confirm-delete" id="cancelDelete">No</button>
+              </div>
             </div>
-        </div>
+          </div>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
