@@ -37,7 +37,9 @@ exports.validateRegister = [
   
   body('password')
     .exists().withMessage('El campo password es obligatorio')
-    .isString().withMessage('El campo password debe ser un string'),
+    .isString().withMessage('El campo password debe ser un string')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)
+    .withMessage('La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo'),
 
   body('firstName')
     .exists().withMessage('El campo firstName es obligatorio')
