@@ -191,6 +191,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                         // Animate success message in
                         successMessage.classList.add('fade-in');
+
+                        setTimeout(() => {
+                            const progressBar = document.querySelector(".progress-bar")
+                            progressBar.style.width = "100%"
+              
+                            // Redirect after 5 seconds
+                            setTimeout(() => {
+                              redirectToLogin()
+                            }, 10000)
+                          }, 500)
                     }, 500); // Wait for the form fade-out animation to complete
                 }, 1000);
 
@@ -204,3 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+
+function redirectToLogin() {
+    window.location.href = "/login"
+  }

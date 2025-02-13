@@ -344,6 +344,17 @@ input[type="number"] {
   display: none;
 }
 
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: var(--link-color);
+  transition: width 5s linear;
+  border-bottom-left-radius: 12px;
+}
+
 .submit-btn {
   width: 100%;
   padding: 14px;
@@ -543,4 +554,24 @@ input[type="number"] {
   font-weight: bold;
   margin-left: 0.5rem;
   animation: pulse 1s infinite;
+}
+
+.login-redirect {
+  margin-top: 20px;
+}
+
+.login-redirect-button {
+  background-color: var(--link-color);
+  color: var(--button-text);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-redirect-button:hover {
+  background-color: var(--secondary-color);
 }
