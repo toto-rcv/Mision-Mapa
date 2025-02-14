@@ -195,21 +195,21 @@ select {
   transition: opacity 0.3s ease;
 }
 
-.password-input-wrapper .eye-icon.hidden {
+.password-input-wrapper .eye-icon.eye-hidden {
   opacity: 0;
   position: absolute;
 }
 
-.password-input-wrapper .eye-icon.visible {
+.password-input-wrapper .eye-icon.eye-visible {
   opacity: 1;
 }
 
-.password-input-wrapper button[aria-label="Ocultar contraseña"] .eye-icon.hidden {
+.password-input-wrapper button[aria-label="Ocultar contraseña"] .eye-icon.eye-hidden {
   opacity: 1;
   position: static;
 }
 
-.password-input-wrapper button[aria-label="Ocultar contraseña"] .eye-icon.visible {
+.password-input-wrapper button[aria-label="Ocultar contraseña"] .eye-icon.eye-visible {
   opacity: 0;
   position: absolute;
 }
@@ -344,6 +344,17 @@ input[type="number"] {
   display: none;
 }
 
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: var(--link-color);
+  transition: width 5s linear;
+  border-bottom-left-radius: 12px;
+}
+
 .submit-btn {
   width: 100%;
   padding: 14px;
@@ -463,4 +474,104 @@ input[type="number"] {
 
 .register-link:hover {
   opacity: 0.8;
+}
+
+.password-requirements {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: var(--input-background);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.password-requirements p {
+  font-size: 0.875rem;
+  color: var(--secondary-color);
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.password-requirements ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.password-requirements li {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--secondary-color);
+  transition: color 0.2s ease;
+}
+
+.password-requirements li::before {
+  content: '✗';
+  color: var(--error-color);
+  font-size: 0.9em;
+  display: inline-block;
+  width: 1.25em;
+}
+
+.password-requirements li.valid {
+  color: var(--text-color);
+}
+
+.password-requirements li.valid::before {
+  content: '✓';
+  color: #4CAF50; /* Color coherente con el éxito del mensaje final */
+}
+
+.password-requirements li.invalid {
+  color: var(--secondary-color);
+}
+
+.invalid-vibration {
+  animation: vibration 0.3s linear;
+}
+
+@keyframes vibration {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(3px); }
+  50% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.error-highlight {
+  position: relative;
+}
+
+.error-highlight::after {
+  content: "!";
+  color: var(--error-color);
+  font-weight: bold;
+  margin-left: 0.5rem;
+  animation: pulse 1s infinite;
+}
+
+.login-redirect {
+  margin-top: 20px;
+}
+
+.login-redirect-button {
+  background-color: var(--link-color);
+  color: var(--button-text);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-redirect-button:hover {
+  background-color: var(--secondary-color);
 }
