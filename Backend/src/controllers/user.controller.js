@@ -2,7 +2,6 @@ const db = require("../models");
 const { Op } = require("sequelize");
 const User = db.User;
 const UserStatus = db.UserStatus;
-
 const getAllUsers = async (req, res) => {
     try {
       

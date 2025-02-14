@@ -86,6 +86,15 @@ td.actions-cell>button:last-child {
   margin-right: 0px;
 }
 
+
+
+
+
+
+
+
+
+
 .delete-btn {
   background-color: #ff4d4d;
   color: white;
@@ -314,6 +323,7 @@ form input {
 
 .filters {
   padding: 1rem;
+  display: flex;
 }
 
 .users-list {
@@ -323,6 +333,78 @@ form input {
 .mobile-only {
   display: none;
 
+}
+
+.users-search {
+  position: relative;
+  width: 40%;
+}
+
+.search-input {
+  padding: 0.75rem;
+  padding-left: 2rem;
+  width: 100%; /* Ocupa todo el ancho del contenedor */
+  border: 1px solid #555; /* Borde más sutil */
+  background-color: #333; /* Fondo más oscuro */
+  color: white;
+  transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s; /* Transiciones suaves */
+  outline: none; /* Quita el borde azul al hacer foco */
+  border-radius: 5px;
+  background-color: #1e1e24;
+  color: white;
+}
+
+.search-input:focus {
+  border-color: #00BCD4; /* Color del borde al hacer foco (tu color original) */
+  background-color: #444; /* Fondo ligeramente más claro al hacer foco */
+  box-shadow: 0 0 5px rgba(0, 188, 212, 0.5); /* Sombra sutil */
+}
+
+.search-icon {
+  position: absolute; /* Posicionamos el ícono */
+  left: 10px; /* Distancia desde el borde izquierdo */
+  top: 50%;  /* Centrado verticalmente */
+  transform: translateY(-50%); /* Ajuste fino para centrar verticalmente */
+  color: #888; /* Color del ícono */
+  pointer-events: none; /* Evita que el ícono interfiera con clics en el input */
+  transition: color 0.3s;
+}
+
+.search-input:focus + .search-icon {
+  color: #00BCD4; /* Cambia el color del ícono al hacer foco */
+}
+
+/* Estilos para el placeholder (opcional) */
+.search-input::placeholder {
+  color: #aaa;
+}
+.search-table{
+    margin-top:1rem;
+}
+
+.clear-button {
+  position: absolute;
+  right: 10px; /* Ajusta según sea necesario */
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 5px; /* Para que sea más fácil hacer clic */
+  font-size: 14px; /* Ajusta según tu diseño */
+  z-index: 2; /* Asegúrate de que esté encima del input */
+  transition: color 0.2s;
+  display:none; /*Se oculta por defecto*/
+}
+.search-input:not(:placeholder-shown) + .search-icon + .clear-button{
+    display:block; /*Se muestra si hay texto*/
+}
+
+.clear-button:hover,
+.clear-button:focus {
+  color: #00BCD4; /* Cambia el color al hacer hover/focus */
+  outline: none;
 }
 
 

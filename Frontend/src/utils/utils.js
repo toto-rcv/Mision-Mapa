@@ -16,9 +16,9 @@ export function debounce(fn, delay = 1000) {
 
 
 export function formatDate(date) {
-    const day = date.getDate(); // Día (1-31)
-    const monthIndex = date.getMonth(); // Mes (0-11)
-    const year = date.getFullYear(); // Año (4 dígitos)
+    const day = String(date.getDate()).padStart(2, '0');
+    const monthIndex = date.getMonth();
+    const year = date.getFullYear();
     const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
     const formattedDate = `${day}/${months[monthIndex]}/${year}`
