@@ -24,13 +24,12 @@
         <img class="logo" src="/static/img/logo.jpg" alt="Logo de la aplicación de avistamientos">
         <div class="title-container">
             <h1 class="title">Tabla de Usuarios</h1>
-            <span class="markers-count">3 marcadores</span>
         </div>
         <div class="profile">
-            <div class="profile-avatar" aria-hidden="true">S</div>
+            <div class="profile-avatar" aria-hidden="true"></div>
             <div class="profile-info">
-                <span class="profile-name">Simon</span>
-                <span class="profile-role">POA</span>
+                <span class="profile-name"></span>
+                <span class="profile-role"></span>
             </div>
         </div>
     </header>
@@ -75,7 +74,19 @@
         <div class="register-container">
             <div id="registro" aria-label="Mapa interactivo de avistamientos">
                 <div class="filters">
-                    <input type="text" id="search" class="search-input" placeholder="Buscar Avistamientos">
+                    <div class="users-search">
+                        <input type="text" id="search" class="search-input"
+                            placeholder="Buscar por DNI, nombre, apellido, email...">
+                        <i class="fas fa-search search-icon"></i>
+                        <button type="button" class="clear-button" aria-label="Limpiar búsqueda">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button id="filter-options-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                        </svg>
+                    </button>
                 </div>
                 <div id="sightings-list" class="users-table">
                     <!-- Aquí se cargarán los avistamientos -->
@@ -84,6 +95,15 @@
             </div>
         </div>
 
+        <div id="modal-confirm-delete" class="modal">
+            <div class="modal-content">
+                <p>¿Estás seguro de querer eliminar este usuario?</p>
+                <div class="buttons-confirm">
+                    <button class="button-confirm-delete" id="confirmDelete">Sí</button>
+                    <button class="button-confirm-delete" id="cancelDelete">No</button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

@@ -18,6 +18,8 @@
     <script src="/utils/auth.js" type="module" defer></script>
     <script src="/utils/profile.js" type="module" defer></script>
     <script src="/static/js/profile.js" type="module" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
@@ -85,11 +87,22 @@
             <div id="registro" aria-label="Mapa interactivo de avistamientos">
                 <div class="filters">
                     <input type="text" id="search" class="search-input" placeholder="Buscar Avistamientos">
+                    <button class="generarPDF"  id="generarPDF">Generar PDF</button>
                 </div>
                 <div id="sightings-list" class="table-container">
                     <!-- Aquí se cargarán los avistamientos -->
                 </div>
                 <div id="sightings-pagination" class="pagination"></div>
+            </div>
+        </div>
+
+        <div id="modal-confirm-delete" class="modalConfirm">
+            <div id="modal-confirm-delete">
+                <p>¿Estás seguro de querer eliminar este avistamiento?</p>
+                <div class="buttons-confirm">
+                    <button class="button-confirm-delete" id="confirmDelete">Sí</button>
+                    <button class="button-confirm-delete" id="cancelDelete">No</button>
+                </div>
             </div>
         </div>
     </main>
@@ -138,8 +151,12 @@
             </form>
         </div>
     </div>
+    
 
     <script src="records.js" type="module"></script>
+    
+
+    
     <noscript>
         <p>Esta página requiere JavaScript para funcionar correctamente. Por favor, habilite JavaScript en su navegador.
         </p>

@@ -175,4 +175,5 @@ const markSightingAsSeen = async (req, res) => {
     }
 };
 
+
 module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, markSightingAsSeen };

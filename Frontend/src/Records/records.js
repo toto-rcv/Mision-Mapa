@@ -3,7 +3,9 @@ import { customFetch } from '../utils/auth.js';
 import { showNavItems } from '/static/js/navigation.js';
 import { toProperCase, debounce, formatDate } from '../utils/utils.js';
 
-const SightingsApp = (function() {
+
+
+const SightingsApp = (function () {
     let currentSearch = '';
     let sightingsCurrentPage = 1;
     let touchStartY = 0;
@@ -66,10 +68,10 @@ const SightingsApp = (function() {
         loadAndDisplaySightings()
     }
 
-   // Modal functions
-   function showObservationsModal(sighting) {
+    // Modal functions
+    function showObservationsModal(sighting) {
         const modalFields = [
-            'observaciones', 'tipo-motor', 'cantidad-motores', 'color', 
+            'observaciones', 'tipo-motor', 'cantidad-motores', 'color',
             'rumbo', 'tipo-aeronave', 'altitud'
         ];
         modalFields.forEach(field => {
@@ -87,7 +89,7 @@ const SightingsApp = (function() {
         elements.modal.classList.remove("active")
         document.body.style.overflow = ""
         if (window.location.hash === "#modal-open") {
-          history.back()
+            history.back()
         }
     }
 
@@ -127,7 +129,7 @@ const SightingsApp = (function() {
             <thead>
                 <tr>
                     <th>#</th>
-                    <th class="col-ws fecha-header">Fecha <img src="static/img/angles-up-down.svg"/></th>
+                    <th class="col-ws fecha-header">Fecha</th>
                     <th class="ubicacion-cell">Ubicacion</th>
                     <th class="col-medium-screen">Creado por</th>
                     <th class="col-large-screen">Latitud</th>
@@ -210,59 +212,125 @@ const SightingsApp = (function() {
 
         });
 
-        table.querySelectorAll('.delete-btn').forEach(button => {
+
+
+
+        let sightingIdToDelete = null; // Variable global para almacenar el avistamiento a eliminar
+
+        document.querySelectorAll('.delete-btn').forEach(button => {
             if (!button.disabled) {
-                button.addEventListener('click', async (event) => {
-                    const id = event.target.getAttribute('data-id');
-                    const deleted = await deleteSighting(id);
-                    if (deleted) {
-                        event.target.closest('tr').remove();
-                    }
+                button.addEventListener('click', (event) => {
+                    sightingIdToDelete = event.target.getAttribute('data-id'); // Guarda el ID del avistamiento
+
+                    const modal = document.getElementById("modal-confirm-delete");
+
+                    // Muestra el modal
+                    modal.style.display = "block";
                 });
             }
+        });
+        // Evento para confirmar la eliminación cuando se presiona "Sí"
+        document.getElementById("confirmDelete").addEventListener('click', async () => {
+            if (sightingIdToDelete) {
+                const deleted = await deleteSighting(sightingIdToDelete);
+                if (deleted) {
+                    document.querySelector(`[data-id='${sightingIdToDelete}']`).closest('tr').remove();
+                } else {
+                    alert("Error al eliminar el avistamiento.");
+                }
+
+                sightingIdToDelete = null; // Limpiar variable
+                document.getElementById("modal-confirm-delete").style.display = "none"; // Ocultar modal
+            }
+        });
+
+        // Evento para cancelar la eliminación
+        document.getElementById("cancelDelete").addEventListener('click', () => {
+            sightingIdToDelete = null;
+            const modal = document.getElementById("modal-confirm-delete");
+            // Muestra el modal
+            modal.style.display = "none";
+        });
+
+
+        document.getElementById('generarPDF').addEventListener('click', function () {
+            const { jsPDF } = window.jspdf;
+            // Crear el PDF en orientación horizontal
+            const doc = new jsPDF({ orientation: 'landscape' });
+        
+            // Obtén los datos de los avistamientos desde localStorage (o la fuente que utilices)
+            const sightings = JSON.parse(localStorage.getItem("sightings") || "[]");
+        
+            // Define el encabezado de la tabla con los nombres de las columnas
+            const head = [[
+                'Avistamiento',
+                'Creado por',
+                'Fecha',
+                'Ubicación',
+                'Latitud',
+                'Longitud',
+                'Rumbo',
+                'Altitud Est.',
+                'Tipo de Aeronave',
+                'Color',
+                'Tipo de Motor',
+                'Cantidad de Motores',
+                'Observaciones'
+            ]];
+        
+            // Mapea cada avistamiento a una fila de la tabla
+            const body = sightings.map(sighting => [
+                sighting.id,
+                `${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}`,
+                formatDate(new Date(sighting.fecha_avistamiento)),
+                sighting.ubicacion,
+                sighting.latitud,
+                sighting.longitud,
+                sighting.rumbo,
+                sighting.altitud_estimada,
+                sighting.tipo_aeronave,
+                sighting.color,
+                sighting.tipo_motor,
+                sighting.cantidad_motores,
+                sighting.observaciones
+            ]);
+        
+            // Opcional: Obtén el ancho de la página para ajustar el ancho de la tabla
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 10;
+            
+            // Genera la tabla usando autoTable, asegurando que la tabla se ajuste al ancho de la hoja
+            doc.autoTable({
+                head: head,
+                body: body,
+                startY: 20, // Posición vertical inicial de la tabla
+                margin: { left: margin, right: margin },
+                tableWidth: pageWidth - margin * 2,
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [22, 160, 133] } // Puedes personalizar el estilo del encabezado
+            });
+        
+            // Guarda el archivo PDF generado
+            doc.save('tabla-avistamientos.pdf');
         });
 
         document.querySelectorAll('.maps-btn').forEach(mapButton => {
             mapButton.addEventListener('click', (event) => {
                 // Buscar el <tr> más cercano al botón
                 const row = mapButton.closest('tr');
-                
+
                 // Obtener el identificador desde el atributo data-id de la fila
                 const recordId = row.getAttribute('data-id');
-                
+
                 // Redirigir a index.html y enviar el identificador como parámetro
                 window.location.href = `index.html?sighting=${recordId}`;
             });
         });
 
-        table.querySelectorAll('.sightings-table th').forEach(header => {
-            header.addEventListener('click', () => handleSort(header));
-        });
+        
     }
 
-    function handleSort(header) {
-        const currentSort = header.getAttribute('data-sort');
-        const sortIcon = header.querySelector('img');
-        let newSort;
-        switch (currentSort) {
-            case 'asc':
-                newSort = 'desc';
-                sortIcon.src = 'static/img/angles-down.svg';
-                sortIcon.style.padding = '0';
-                break;
-            case 'desc':
-                newSort = 'none';
-                sortIcon.src = 'static/img/angles-up-down.svg';
-                sortIcon.style = '';
-                break;
-            default:
-                newSort = 'asc';
-                sortIcon.src = 'static/img/angles-up.svg';
-                sortIcon.style.padding = '0';
-        }
-        header.setAttribute('data-sort', newSort);
-        // TODO: Implement actual sorting logic
-    };
+   
 
     // Utility functions
     function checkPermissionsAndDisableDeleteButtons() {
@@ -284,21 +352,21 @@ const SightingsApp = (function() {
     function adjustColumnsForSmallScreens() {
         const isSmallScreen = window.innerWidth <= 768
         const tableRows = document.querySelectorAll(".sightings-table tbody tr")
-    
+
         tableRows.forEach((row) => {
-          row.classList.toggle("small-screen", isSmallScreen)
-          const cells = row.querySelectorAll("td")
-          cells.forEach((cell, index) => {
-            if (isSmallScreen) {
-              cell.style.display =
-                index === 1 || index === 2 || index === 3 || cell.classList.contains("actions-cell") ? "flex" : "none"
-            } else {
-              cell.style.display = ""
-            }
-          })
+            row.classList.toggle("small-screen", isSmallScreen)
+            const cells = row.querySelectorAll("td")
+            cells.forEach((cell, index) => {
+                if (isSmallScreen) {
+                    cell.style.display =
+                        index === 1 || index === 2 || index === 3 || cell.classList.contains("actions-cell") ? "flex" : "none"
+                } else {
+                    cell.style.display = ""
+                }
+            })
         })
     }
-
+    
     // Initialization
     async function init() {
         setupEventListeners();

@@ -25,6 +25,9 @@ export async function getUserProfile() {
     }
 }
 
+export function retrieveUserProfile() {
+    return JSON.parse(localStorage.getItem('user'));
+}
 export function loadUserProfile() {
     const { user } = JSON.parse(localStorage.getItem('user'));
 
