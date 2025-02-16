@@ -134,15 +134,23 @@
                         
                         <!-- Filtro de usuario creador -->
                         <div class="filter-section">
-                          <h4>
-                            Usuario Creador 
-                            <span class="icon icon-user"></span>
-                          </h4>
-                          <div class="user-search-container">
-                            <input type="text" id="user-filter" class="user-search" placeholder="Buscar usuario..." list="user-list">
-                            <span class="icon icon-search"></span>
-                            <datalist id="user-list"></datalist>
-                          </div>
+                            <h4>
+                                Creador 
+                                <span class="icon icon-user"></span>
+                            </h4>
+                            <div class="user-search-container" style="position: relative;">
+                                <div id="user-filter" class="user-search" tabindex="0">
+                                    <div class="selected-users" id="selected-users"></div>
+                                    <span class="placeholder" id="user-placeholder">Selecciona usuarios...</span>
+                                  </div>
+                                <span class="icon icon-search"></span>
+                                <span class="dropdown-icon">&#x25BC;</span>
+                                <div class="user-multi-select" id="user-multi-select" style="display: none;">
+                                    <input type="text" id="user-dropdown-search" class="user-dropdown-search" placeholder="Buscar por nombre o DNI">
+                                    <!-- Contenedor donde se agregarán las opciones -->
+                                    <div class="user-options-list" id="user-options-list"></div>
+                                </div>
+                            </div>
                         </div>
                         
                         <!-- Acciones: aplicar y limpiar filtros -->

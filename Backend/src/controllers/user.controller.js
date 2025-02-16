@@ -19,6 +19,34 @@ const getAllUsers = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
+const getMinimalUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: ['dni', 'firstName', 'lastName', 'militaryRank', 'email'],
+            order: [
+                ['firstName', 'ASC'],
+                ['lastName', 'ASC']  
+              ]
+          });
+      
+          const minimalUsers = users.map(user => {
+            return {
+              dni: user.dni,
+              fullName: `${user.firstName} ${user.lastName}`,
+              militaryRank: user.militaryRank,
+              email: user.email
+            };
+          });
+      
+          return res.status(200).json({ users: minimalUsers });
+
+    } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+}
+
 const updateUserStatus = async (req, res) => {
     try {
         const { id } = req.params;
@@ -48,4 +76,4 @@ const updateUserStatus = async (req, res) => {
 
 
 
-module.exports = { getAllUsers, updateUserStatus};
+module.exports = { getAllUsers, updateUserStatus, getMinimalUsers};

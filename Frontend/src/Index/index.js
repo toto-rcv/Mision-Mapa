@@ -19,7 +19,8 @@ let minTimestamp, maxTimestamp;
 let currentFilters = {
     startDate: null,
     endDate: null,
-    statuses: []
+    statuses: ['pending', 'validated'],
+    userIds: []
 };
 
 const mapContainer = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
@@ -75,7 +76,9 @@ const elements = {
     startDateInput: document.getElementById("start-date"),
     endDateInput: document.getElementById("end-date"),
     filtersClearButton: document.querySelector(".btn-clear"),
-    quickDateButtons: document.querySelectorAll('.quick-date')
+    quickDateButtons: document.querySelectorAll('.quick-date'),
+    userFilter: document.getElementById('user-filter'),
+    applyFiltersButton: document.querySelector('.btn-apply')
   }
 
 
@@ -219,25 +222,27 @@ elements.statusButtons.forEach(btn => {
 });
 
 elements.startDateInput.addEventListener("change", function() {
-    currentFilters.startDate = startDateInput.value ? startDateInput.value : null;
+    currentFilters.startDate = elements.startDateInput.value ? new Date(elements.startDateInput.value) : null;
 });
 
 elements.endDateInput.addEventListener("change", function() {
-    currentFilters.endDate = endDateInput.value ? endDateInput.value : null;
+    currentFilters.endDate = elements.endDateInput.value ? new Date(elements.endDateInput.value) : null;
 });
 
 elements.filtersClearButton.addEventListener("click", function() {
-    // Resetear los inputs de fecha
-    startDateInput.value = "";
-    endDateInput.value = "";
-    currentFilters.startDate = null;
-    currentFilters.endDate = null;
+    currentFilters = {
+        startDate: new Date(Date.now() - 30 * 86400000),
+        endDate: new Date(),
+        statuses: ['pending', 'validated'],
+        users: []
+    };
 
-    // Desactivar todos los botones de estado
-    statusButtons.forEach(btn => {
-      btn.classList.remove("active");
+    // Actualizar UI
+    document.querySelectorAll('.status-btn').forEach(btn => {
+        btn.classList.toggle('active', currentFilters.statuses.includes(btn.dataset.value));
     });
-    currentFilters.statuses = [];
+
+    applyFilters();
   });
 
 elements.quickDateButtons.forEach(btn => {
@@ -253,6 +258,8 @@ elements.quickDateButtons.forEach(btn => {
       animateShrink(elements.endDateInput);
     })
 })
+
+elements.userFilter.addEventListener('click', toggleUserMultiSelect);
 
 // Handle map clicks
 mapContainer.on('click', function (e) {
@@ -592,6 +599,38 @@ async function loadMarkers() {
     return null;
 }
 
+function loadUsers() {
+    customFetch('/api/users/minimal')
+      .then(response => response.json())
+      .then(data => {
+       
+        const optionsList = document.getElementById('user-options-list');
+        optionsList.innerHTML = ''; // Limpiar contenido previo
+  
+        data.users.forEach(user => {
+          const label = document.createElement('label');
+          label.classList.add('user-option');
+          // Construir el contenido: checkbox + info del usuario
+          label.innerHTML = `
+            <input type="checkbox" value="${user.dni}" class="user-checkbox">
+            <div class="user-info">
+                <span class="user-militaryRank">${user.militaryRank}</span>
+                <span class="user-fullname">
+                ${user.fullName} <span class="user-dni">(${user.dni})</span>
+                </span>
+            </div>
+          `;
+          optionsList.appendChild(label);
+        });
+  
+        // Asocia el evento change a cada checkbox
+        document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+          checkbox.addEventListener('change', handleUserSelection);
+        });
+      })
+      .catch(error => console.error('Error loading users:', error));
+}
+
 function updateMarkersCount(count) {
     const markersCountSpan = document.querySelector('.markers-count');
     markersCountSpan.textContent = `${count} marcadores`;
@@ -928,6 +967,7 @@ function snapStartSlider() {
     endSlider.value = Math.round(newValue);
     onRangeChange();
   }
+
 function onRangeChange() {
     // Asegurarse de que el slider de inicio no supere al de fin
     if (parseInt(startSlider.value) > parseInt(endSlider.value)) {
@@ -1064,31 +1104,41 @@ function generateTicks() {
     }
 }
 
-// Inicialización de Filtros
+/* 
+    Funciones de Filtros
+*/
 function initFilters() {
+
+    setDefaultDateRange(30);
+
+    currentFilters.statuses = ['pending', 'validated'];
+    currentFilters.users = [];
   
     document.querySelectorAll('.quick-date').forEach(button => {
       button.addEventListener('click', handleQuickDate);
     });
   
-    document.querySelector('.btn-apply').addEventListener('click', applyFilters);
+    elements.applyFiltersButton.addEventListener('click', applyFilters);
   
-    // Se elimina la carga inicial de usuarios:
-    // loadUsers();
+    loadUsers();
+}
+
+function setDefaultDateRange(days) {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - days);
+  
+    currentFilters.startDate = startDate;
+    currentFilters.endDate = endDate;
+  
+    elements.startDateInput.value = startDate.toISOString().slice(0, 16);
+    elements.endDateInput.value = endDate.toISOString().slice(0, 16);
 }
   
   // Manejadores de Eventos
 function handleQuickDate(e) {
     const days = parseInt(e.target.dataset.days);
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(endDate.getDate() - days);
-    
-    currentFilters.startDate = startDate;
-    currentFilters.endDate = endDate;
-    
-    document.getElementById('start-date').value = startDate.toISOString().slice(0,16);
-    document.getElementById('end-date').value = endDate.toISOString().slice(0,16);
+    setDefaultDateRange(days);
   }
   
 function handleStatusChange(e) {
@@ -1097,27 +1147,18 @@ function handleStatusChange(e) {
     ).map(c => c.value);
 }
   
-  // Se elimina la función handleUserSearch:
-  // function handleUserSearch(e) {
-  //   currentFilters.userId = e.target.value;
-  // }
-  
   // Lógica de Filtrado
 function applyFilters() {
-    const filteredMarkers = markers.filter(marker => {
-      const date = new Date(marker.sighting.fecha_avistamiento);
-      const statusMatch = currentFilters.statuses.length === 0 || 
-                        currentFilters.statuses.includes(marker.sighting.estado);
-      const dateMatch = (!currentFilters.startDate || date >= currentFilters.startDate) &&
-                      (!currentFilters.endDate || date <= currentFilters.endDate);
-      // Se elimina la validación por usuario:
-      // const userMatch = !currentFilters.userId || marker.sighting.userId === currentFilters.userId;
-      
-      return statusMatch && dateMatch;
-    });
-  
-    updateMarkersVisibility(filteredMarkers);
-    showFilterFeedback(filteredMarkers.length);
+
+    // Prepara el payload para enviar al backend (conversión de fechas a ISO)
+    const payload = {
+        startDate: currentFilters.startDate ? currentFilters.startDate.toISOString() : null,
+        endDate: currentFilters.endDate ? currentFilters.endDate.toISOString() : null,
+        statuses: currentFilters.statuses,
+        userIds: currentFilters.userIds
+    };
+
+    console.log(payload)
 }
   
 function updateMarkersVisibility(visibleMarkers) {
@@ -1135,26 +1176,89 @@ function showFilterFeedback(visibleCount) {
     feedback.style.display = 'block';
     setTimeout(() => feedback.style.display = 'none', 3000);
 }
-  
-  // Se elimina la función loadUsers, ya que no es necesaria para filtrar por usuario
-  // async function loadUsers() {
-  //   try {
-  //     const response = await customFetch('/api/users');
-  //     const users = await response.json();
-  //     const datalist = document.getElementById('user-list');
-      
-  //     datalist.innerHTML = users.map(user => 
-  //       `<option value="${user.name} ${user.lastname} (${user.id})" data-user-id="${user.id}">`
-  //     ).join('');
-  //   } catch (error) {
-  //     console.error('Error loading users:', error);
-  //   }
-  // }
 
-  function animateShrink(input) {
+function animateShrink(input) {
     const animationDuration = 400;
     input.classList.add("animate-shrink");
     setTimeout(() => {
       input.classList.remove("animate-shrink");
     }, animationDuration);
+}
+
+let allUsers = [];
+
+function toggleUserMultiSelect() {
+    const container = document.getElementById('user-multi-select');
+    if (container.style.display === 'none' || container.style.display === '') {
+      container.style.display = 'block';
+      // Enfoca el buscador interno al abrir el dropdown
+      document.getElementById('user-dropdown-search').focus();
+    } else {
+      container.style.display = 'none';
+    }
   }
+
+function handleUserSelection(e) {
+    const checkbox = e.target;
+    const userDni = checkbox.value;
+    if (checkbox.checked) {
+      if (!currentFilters.userIds.includes(userDni)) {
+        currentFilters.userIds.push(userDni);
+      }
+    } else {
+      currentFilters.userIds = currentFilters.userIds.filter(id => id !== userDni);
+    }
+
+    // Actualiza el input principal con los nombres de los usuarios seleccionados
+    updateSelectedUserCards();
+  }
+
+  function updateSelectedUserCards() {
+    const selectedContainer = document.getElementById('selected-users');
+    const placeholder = document.getElementById('user-placeholder');
+    // Limpiar el contenedor
+    selectedContainer.innerHTML = '';
+  
+    // Obtener todas las opciones seleccionadas
+    const selectedCheckboxes = document.querySelectorAll('.user-checkbox:checked');
+    selectedCheckboxes.forEach(cb => {
+      const option = cb.closest('.user-option');
+      const fullName = option.querySelector('.user-fullname').textContent;
+      
+      // Crear la tarjeta (badge)
+      const badge = document.createElement('div');
+      badge.classList.add('selected-user-card');
+      badge.textContent = fullName;
+      
+      selectedContainer.appendChild(badge);
+    });
+  
+    // Mostrar u ocultar el placeholder
+    placeholder.style.display = selectedContainer.children.length ? 'none' : 'block';
+  }
+
+function filterUserOptions() {
+    const searchTerm = document.getElementById('user-dropdown-search').value.toLowerCase();
+    const options = document.querySelectorAll('.user-option');
+    options.forEach(option => {
+      const fullName = option.querySelector('.user-fullname').textContent.toLowerCase();
+      const dni = option.querySelector('.user-dni').textContent.toLowerCase();
+      // Se verifica si el término de búsqueda coincide con el nombre o el DNI
+      if (fullName.includes(searchTerm) || dni.includes(searchTerm)) {
+        option.style.display = '';
+      } else {
+        option.style.display = 'none';
+      }
+    });
+}
+
+document.getElementById('user-dropdown-search').addEventListener('input', filterUserOptions);
+
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('user-multi-select');
+    const input = document.getElementById('user-filter');
+    // Si el clic se produce fuera del dropdown y del input, se cierra el dropdown
+    if (!dropdown.contains(event.target) && event.target !== input) {
+      dropdown.style.display = 'none';
+    }
+  });

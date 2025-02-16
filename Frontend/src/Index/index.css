@@ -1194,17 +1194,31 @@ textarea::-webkit-scrollbar-thumb:hover {
   /* Input para búsqueda de usuario */
   .user-search {
     width: 100%;
-    background: var(--form-input-color, #fff);
-    border: 0.063rem solid var(--input-border, #ccc);
+    min-height: 2.5em;
+    border: 1px solid var(--input-border, #ccc);
     border-radius: 0.5rem;
     padding: 0.75rem 0.875rem;
-    color: var(--text-color, #333);
-    transition: border-color 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    background-color: var(--form-input-color, #fff);
   }
-  
+
   .user-search:focus {
     border-color: var(--btn-apply, #00BCD4);
     outline: none;
+  }
+
+  .dropdown-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 1.2em;
+    color: var(--text-muted, #777);
   }
   
   /* Acciones: botones de aplicar y limpiar filtros (ancho completo) */
@@ -1274,7 +1288,7 @@ textarea::-webkit-scrollbar-thumb:hover {
     position: relative;
     display: flex;
     align-items: center;
-  }
+  }  
   
   /* Ajuste en el input para dejar espacio al ícono */
   .user-search-container .user-search {
@@ -1335,4 +1349,136 @@ textarea::-webkit-scrollbar-thumb:hover {
       gap: 0.5rem;
       align-items: stretch;
     }
+  }
+
+  .user-multi-select {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1002;
+    background: var(--background-color, #fff);
+    border: 1px solid var(--input-border, #ccc);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Estilo para el input interno de búsqueda */
+  .user-dropdown-search {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.25rem;
+    border: 1px solid var(--input-border, #ccc);
+    border-radius: 0.5rem;
+    font-size: 0.9em;
+    background: var(--form-input-color, #fff);
+    color: var(--text-color);
+  }
+
+  .user-dropdown-search:focus {
+      border-color: var(--btn-apply, #00BCD4);
+      outline: none;
+    }
+  
+  /* Estilos para cada opción de usuario */
+  .user-option {
+    display: flex;
+    align-items: center;
+    padding: 0.7rem 0.5rem;
+    border-bottom: 1px solid var(--input-border, #ccc);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .user-option:last-child {
+    border-bottom: none;
+  }
+  
+  .user-option:hover {
+    background: var(--form-input-color)
+  }
+  
+  .user-option input[type="checkbox"] {
+    margin-right: 1rem;
+    /* Se aplican estilos personalizados al checkbox */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 1.1em; /* un poco más grande */
+    height: 1.1em;
+    border: 1px solid var(--input-border, #ccc); /* borde oscuro */
+    border-radius: 4px;
+    background-color: var(--form-input-color, #fff); /* fondo oscuro */
+    cursor: pointer;
+    position: relative;
+  }
+
+  .user-option input[type="checkbox"]:checked {
+    background-color: var(--primary-color, #00BCD4);
+    border-color: var(--primary-color, #00BCD4);
+  }
+
+  .user-option input[type="checkbox"]:checked::after {
+    content: "\2713";
+    color: #fff;
+    font-size: 1em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Contenedor de información del usuario */
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  /* Nombre completo resaltado */
+  .user-fullname {
+    font-weight: bold;
+    font-size: 0.95em;
+    color: var(--text-color)
+  }
+  
+  /* DNI y rango militar con tipografía más discreta */
+  .user-dni {
+    font-size: 0.95em;
+    color: var(--primary-color, #00BCD4);
+  }
+
+  .user-militaryRank {
+    font-size: 0.95em;
+    color: var(--input-placeholder);
+  }
+
+  .selected-users {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-height: 3.5rem; /* Ajusta para que en wrap se muestren hasta 2 líneas */
+    overflow-y: auto;
+  }
+
+  .selected-users::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Cada tarjeta (badge) de usuario */
+  .selected-user-card {
+    background-color: var(--primary-color, #00BCD4);
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+
+  .placeholder {
+    color: #aaa;
+    margin-left: 0.5rem;
   }
