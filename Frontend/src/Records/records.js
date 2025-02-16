@@ -309,7 +309,7 @@ const SightingsApp = (function () {
                 // Establece la columna "Ubic" (índice 3) con un ancho fijo de 50px
                 columnStyles: {
                     3: { cellWidth: 45 },
-                    1: { cellWidth: 40 }
+                    1: { cellWidth: 41 }
                 }
             });
 
