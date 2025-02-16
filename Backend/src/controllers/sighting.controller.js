@@ -115,8 +115,8 @@ const getAllMarkers = async (req, res) => {
 
 const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}) => {
     const commonInclude = [
-        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
-        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
+        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni", "powerMilitary", "militaryRank"] },
+        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni", ] },
     ];
 
     const commonAttributes = { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] };

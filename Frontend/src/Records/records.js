@@ -255,51 +255,49 @@ const SightingsApp = (function () {
 
         document.getElementById('generarPDF').addEventListener('click', function () {
             const { jsPDF } = window.jspdf;
-            // Crear el PDF en orientación horizontal
-            const doc = new jsPDF({ orientation: 'landscape' });
-        
+            // Crear el PDF usando formato oficio en orientación horizontal (330 x 215 mm)
+            const doc = new jsPDF({ orientation: 'landscape', format: [330, 215] });
+
             // Obtén los datos de los avistamientos desde localStorage (o la fuente que utilices)
             const sightings = JSON.parse(localStorage.getItem("sightings") || "[]");
-        
+
             // Define el encabezado de la tabla con los nombres de las columnas
             const head = [[
-                'Avistamiento',
-                'Creado por',
+                'Avist',
+                'Creador',
                 'Fecha',
-                'Ubicación',
-                'Latitud',
-                'Longitud',
+                'Ubic',
+                'Lat./Lon',
                 'Rumbo',
-                'Altitud Est.',
-                'Tipo de Aeronave',
+                'Alt. Est.',
+                'T.Aeronave',
                 'Color',
-                'Tipo de Motor',
-                'Cantidad de Motores',
+                'T.Motor',
+                'Cant. Motores',
                 'Observaciones'
             ]];
-        
+
             // Mapea cada avistamiento a una fila de la tabla
             const body = sightings.map(sighting => [
                 sighting.id,
-                `${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}`,
+                `${toProperCase(sighting.usuario.powerMilitary)} ${toProperCase(sighting.usuario.militaryRank)} ${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)} `,
                 formatDate(new Date(sighting.fecha_avistamiento)),
                 sighting.ubicacion,
-                sighting.latitud,
-                sighting.longitud,
+                `${sighting.latitud}   ${sighting.longitud}`,
                 sighting.rumbo,
                 sighting.altitud_estimada,
                 sighting.tipo_aeronave,
                 sighting.color,
                 sighting.tipo_motor,
                 sighting.cantidad_motores,
-                sighting.observaciones
+                sighting.observaciones,
             ]);
-        
-            // Opcional: Obtén el ancho de la página para ajustar el ancho de la tabla
+
+            // Obtén el ancho de la página para ajustar el ancho total de la tabla
             const pageWidth = doc.internal.pageSize.getWidth();
             const margin = 10;
-            
-            // Genera la tabla usando autoTable, asegurando que la tabla se ajuste al ancho de la hoja
+
+            // Genera la tabla usando autoTable
             doc.autoTable({
                 head: head,
                 body: body,
@@ -307,12 +305,19 @@ const SightingsApp = (function () {
                 margin: { left: margin, right: margin },
                 tableWidth: pageWidth - margin * 2,
                 styles: { fontSize: 10 },
-                headStyles: { fillColor: [22, 160, 133] } // Puedes personalizar el estilo del encabezado
+                headStyles: { fillColor: [22, 160, 133] },
+                // Establece la columna "Ubic" (índice 3) con un ancho fijo de 50px
+                columnStyles: {
+                    3: { cellWidth: 45 },
+                    1: { cellWidth: 40 }
+                }
             });
-        
+
             // Guarda el archivo PDF generado
             doc.save('tabla-avistamientos.pdf');
         });
+
+
 
         document.querySelectorAll('.maps-btn').forEach(mapButton => {
             mapButton.addEventListener('click', (event) => {
@@ -327,10 +332,10 @@ const SightingsApp = (function () {
             });
         });
 
-        
+
     }
 
-   
+
 
     // Utility functions
     function checkPermissionsAndDisableDeleteButtons() {
@@ -366,7 +371,7 @@ const SightingsApp = (function () {
             })
         })
     }
-    
+
     // Initialization
     async function init() {
         setupEventListeners();

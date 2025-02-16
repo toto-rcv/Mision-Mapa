@@ -201,10 +201,8 @@ const UsersApp = (function () {
       <thead>
         <tr>
           <th>DNI</th>
-          <th>Nombre</th>
-          
+          <th>Usuario</th>
           <th>Email</th>
-          <th>Rango Militar</th>
           <th>Rol</th>
           <th>Fecha de creación</th>
           <th>Creador</th>
@@ -221,9 +219,9 @@ const UsersApp = (function () {
             row.setAttribute('data-id', user.id);
             row.innerHTML = `
         <td>${user.dni}</td>
-        <td>${user.firstName.trim()} ${user.lastName.trim()} </td>
+        <td>${user.powerMilitary.trim()}, ${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
         <td>${user.email}</td>
-        <td>${user.militaryRank}</td>
+        
         <td>
           <select class="rank-select" data-id="${user.dni}">
             <option value="POA" ${user.userRank === 'POA' ? 'selected' : ''}>POA</option>
@@ -296,12 +294,21 @@ const UsersApp = (function () {
     // ================================
     function setupTableEventListeners() {
         document.querySelectorAll('.status-select').forEach(select => {
+            const currentUser = retrieveUserProfile();
+            if (currentUser.user.userRank === "POA" || currentUser.user.userRank === "DETECCION") {
+                select.style.cursor = 'not-allowed';
+                select.disabled = true;
+            }
+        });
+        document.querySelectorAll('.status-select').forEach(select => {
             select.addEventListener('change', async (event) => {
                 const userId = select.getAttribute('data-id');
                 const newStatus = event.target.value;
                 await updateUserStatus(userId, newStatus);
             });
         });
+
+
 
         document.querySelectorAll('.rank-select').forEach(select => {
             const currentUser = retrieveUserProfile();
