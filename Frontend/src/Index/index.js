@@ -572,19 +572,30 @@ function updateGreyMarker(latlng) {
     greyMarker = L.marker(latlng, { icon: greyIcon }).addTo(mapContainer);
 }
 
-async function loadMarkers() {
+async function loadMarkers(filters = {}) {
     try {
-        // Obtén el token de localStorage
-        const accessToken = localStorage.getItem('accessToken');
-
+        let url = '/api/sightings/all';
+        const queryParams = new URLSearchParams();
+    
+        if (filters.startDate) {
+          queryParams.append('startDate', filters.startDate.toISOString());
+        }
+        if (filters.endDate) {
+          queryParams.append('endDate', filters.endDate.toISOString());
+        }
+        if (filters.statuses && filters.statuses.length) {
+          queryParams.append('statuses', filters.statuses.join(','));
+        }
+        if (filters.userIds && filters.userIds.length) {
+          queryParams.append('userIds', filters.userIds.join(','));
+        }
+    
+        // Si se han agregado parámetros, se adjuntan a la URL
+        if ([...queryParams].length) {
+          url += `?${queryParams.toString()}`;
+        }
         // Realiza una solicitud GET para obtener los datos de los avistamientos
-        const response = await customFetch('/api/sightings/all', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}` // Agrega el token al encabezado
-            }
-        });
+        const response = await customFetch(url, {method: 'GET'});
 
         if (response.ok) {
             const { sightings } = await response.json();
@@ -738,7 +749,7 @@ async function setMarkerAsSeen(sightingId) {
 }
 
 function placeMarkersOnMap(sightings) {
-    markers = []
+   clearAllMarkers();
 
     // Itera sobre los datos y agrega marcadores al mapa
     sightings.forEach(sighting => {
@@ -827,10 +838,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     initFilters();
 
-    const sightings = await loadMarkers();
+    const sightings = await loadMarkers(currentFilters);
+    /*
     processTimestamps(sightings);
     placeMarkersOnMap(sightings);
     filterMarkersByDateRange();
+    */
+    updateSightingsComponents(sightings);
 
     const urlParams = new URLSearchParams(window.location.search);
     const recordId = urlParams.get('sighting');
@@ -846,6 +860,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 });
+
+function updateSightingsComponents(sightings) {
+    processTimestamps(sightings);
+    placeMarkersOnMap(sightings);
+    filterMarkersByDateRange();
+}
 
 function getCurrentRedMarkersCount() {
     return markers.filter(marker => marker.isRed).length;
@@ -869,6 +889,16 @@ function addMarker(id, sighting, isValidated = false) {
     markers.push(markerObject);
 
     return markerObject;
+}
+
+function clearAllMarkers() {
+    if (markers && markers.length) {
+      markers.forEach(marker => {
+        marker.leafletObject.remove();
+      });
+
+      markers = [];
+    }
 }
 
 function handleMarkerClick(marker, sighting) {
@@ -1060,7 +1090,6 @@ function updateRangeFeedback() {
     maxTimestamp = rawMax.getTime();
     
     // Actualizamos la interfaz con los nuevos límites formateados en dd/mm/yyyy
-    console.log(document.getElementById('start-date'))
     document.getElementById('timeline-start-date').textContent = formatDate(rawMin);
     document.getElementById('timeline-end-date').textContent = formatDate(rawMax);
   
@@ -1112,7 +1141,7 @@ function initFilters() {
     setDefaultDateRange(30);
 
     currentFilters.statuses = ['pending', 'validated'];
-    currentFilters.users = [];
+    currentFilters.userIds = [];
   
     document.querySelectorAll('.quick-date').forEach(button => {
       button.addEventListener('click', handleQuickDate);
@@ -1128,11 +1157,20 @@ function setDefaultDateRange(days) {
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - days);
   
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+  
     currentFilters.startDate = startDate;
     currentFilters.endDate = endDate;
+
+    const formatLocalDate = (date) => {
+      // Ajustamos la fecha restando el offset en milisegundos
+      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return localDate.toISOString().slice(0, 16);
+    };
   
-    elements.startDateInput.value = startDate.toISOString().slice(0, 16);
-    elements.endDateInput.value = endDate.toISOString().slice(0, 16);
+    elements.startDateInput.value = formatLocalDate(startDate);
+    elements.endDateInput.value = formatLocalDate(endDate);
 }
   
   // Manejadores de Eventos
@@ -1148,17 +1186,10 @@ function handleStatusChange(e) {
 }
   
   // Lógica de Filtrado
-function applyFilters() {
-
-    // Prepara el payload para enviar al backend (conversión de fechas a ISO)
-    const payload = {
-        startDate: currentFilters.startDate ? currentFilters.startDate.toISOString() : null,
-        endDate: currentFilters.endDate ? currentFilters.endDate.toISOString() : null,
-        statuses: currentFilters.statuses,
-        userIds: currentFilters.userIds
-    };
-
-    console.log(payload)
+async function applyFilters() {
+    const sightings = await loadMarkers(currentFilters);
+    updateSightingsComponents(sightings);
+    showFilterFeedback(sightings ? sightings.length : 0);
 }
   
 function updateMarkersVisibility(visibleMarkers) {
