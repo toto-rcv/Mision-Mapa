@@ -259,6 +259,7 @@ const SightingsApp = (function () {
         });
 
         document.getElementById('generarPDF').replaceWith(document.getElementById('generarPDF').cloneNode(true));
+
         document.getElementById('generarPDF').addEventListener('click', async function () {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', format: [330, 215] });
@@ -270,7 +271,7 @@ const SightingsApp = (function () {
                 'Avist',
                 'Creador',
                 'Fecha',
-                'Ubic',
+                'Ubicacion',
                 'Lat./Lon',
                 'Rumbo',
                 'Alt. Est.',
@@ -283,8 +284,7 @@ const SightingsApp = (function () {
 
             const body = allSightings.map(sighting => [
                 sighting.id,
-                `${toProperCase(sighting.usuario.powerMilitary)} ${toProperCase(sighting.usuario.militaryRank)}
-                 ${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}`,
+                `${toProperCase(sighting.usuario.powerMilitary)} ${toProperCase(sighting.usuario.militaryRank)}    ${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}`,
                 formatDate(new Date(sighting.fecha_avistamiento)),
                 sighting.ubicacion,
                 `${sighting.latitud}\n${sighting.longitud}`,
@@ -299,21 +299,64 @@ const SightingsApp = (function () {
 
             const pageWidth = doc.internal.pageSize.getWidth();
             const margin = 10;
+            const title = "Avistamientos";
+            const titleYPosition = 15;  // Posición vertical para el título
+            const tableMarginBottom = 10;  // Margen de 10px entre título y tabla
+
+            // Solo agregar el título en la primera página
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.text(title, pageWidth / 2, titleYPosition, { align: "center" });
+
+            // Definir el inicio de la tabla en la primera página
+            let tableStartY = titleYPosition + tableMarginBottom;
 
             doc.autoTable({
                 head: head,
                 body: body,
-                startY: 20,
+                startY: tableStartY,  // Ajusta la posición de inicio de la tabla
                 margin: { left: margin, right: margin },
                 tableWidth: pageWidth - margin * 2,
                 styles: { fontSize: 10 },
-                headStyles: { fillColor: [22, 160, 133] },
+                headStyles: { fillColor: [22, 100, 133] },
                 rowPageBreak: 'avoid',
-                columnStyles: { 3: { cellWidth: 45 }, 1: { cellWidth: 28 } }
+                columnStyles: {
+                    1: { cellWidth: 28 },
+                    3: { cellWidth: 45 },
+                    5: { halign: 'center' }, // Centrar "Rumbo"
+                    6: { halign: 'center' }, // Centrar "Alt. Est."
+                    7: { halign: 'center' }, // Centrar "T.Aeronave"
+                    8: { halign: 'center' }, // Centrar "Color"
+                    9: { halign: 'center' }, // Centrar "T.Motor"
+                    10: { halign: 'center' }, // Centrar "Cant. Motores" },
+                },
+                didDrawPage: function (data) {
+                    // No dibujar el título en las páginas siguientes
+                    if (data.pageCount === 1) {
+                        // Solo agregar el título en la primera página
+                        doc.setFontSize(16);
+                        doc.setFont("helvetica", "bold");
+                        doc.text(title, pageWidth / 2, titleYPosition, { align: "center" });
+                    }
+
+                    // Asegurar que la tabla comience con el margen de 10px en cada página
+                    data.settings.startY = titleYPosition + tableMarginBottom;
+                }
             });
 
-            doc.save('tabla-avistamientos.pdf');
+            // Obtener fecha y hora formateada desde la función importada
+            const now = new Date();
+            const timestamp = formatDate(now)
+                .replace(' ', ' -- ')   // Reemplaza espacio entre fecha y hora con ' -- '
+                .replace(':', '-')     // Reemplaza ':' entre hora y minutos con '-'
+                .replace(/\//g, '-');   // Reemplaza '/' por '-'
+
+            // Nombre del archivo con fecha y hora
+            const fileName = `Tabla_de_Avistamientos_${timestamp}.pdf`;
+
+            doc.save(fileName);
         });
+
 
 
 
