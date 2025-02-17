@@ -201,11 +201,12 @@ const UsersApp = (function () {
       <thead>
         <tr>
           <th>DNI</th>
+          <th>Fuerza Per.</th>
           <th>Usuario</th>
           <th>Email</th>
           <th>Rol</th>
           <th>Fecha de creación</th>
-          <th>Creador</th>
+          <th>Modificador</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -219,7 +220,8 @@ const UsersApp = (function () {
             row.setAttribute('data-id', user.id);
             row.innerHTML = `
         <td>${user.dni}</td>
-        <td>${user.powerMilitary.trim()}, ${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
+        <td>${user.powerMilitary.trim()}</td>
+        <td>${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
         <td>${user.email}</td>
         
         <td>
@@ -256,22 +258,27 @@ const UsersApp = (function () {
     function renderPaginationButtons() {
         const container = elements.paginationContainer;
         container.innerHTML = '';
-
+    
         const totalPages = Math.ceil(currentDisplayList.length / usersPerPage);
-
+    
         const prevButton = document.createElement('button');
         prevButton.textContent = 'Anterior';
         prevButton.id = 'prevPage';
         prevButton.disabled = currentPage === 1;
-
+    
         const nextButton = document.createElement('button');
         nextButton.textContent = 'Siguiente';
         nextButton.id = 'nextPage';
         nextButton.disabled = currentPage === totalPages || totalPages === 0;
-
+    
+        const pageInfo = document.createElement('span');
+        pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+        pageInfo.style.margin = '0 10px'; // Espaciado entre botones
+    
         container.appendChild(prevButton);
+        container.appendChild(pageInfo);
         container.appendChild(nextButton);
-
+    
         prevButton.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -279,7 +286,7 @@ const UsersApp = (function () {
                 renderPaginationButtons();
             }
         });
-
+    
         nextButton.addEventListener('click', () => {
             if (currentPage < totalPages) {
                 currentPage++;

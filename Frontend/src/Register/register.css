@@ -245,6 +245,10 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+#powerMilitary option{
+  color : #000;
+}
+
 @media (max-width: 480px) {
   .container {
     padding: 16px;

@@ -70,14 +70,20 @@ const SightingsApp = (function () {
 
     // Modal functions
     function showObservationsModal(sighting) {
-        const modalFields = [
-            'observaciones', 'tipo-motor', 'cantidad-motores', 'color',
-            'rumbo', 'tipo-aeronave', 'altitud'
-        ];
-        modalFields.forEach(field => {
-            document.getElementById(`modal-${field}`).value = sighting[field] || 'N/A';
+        const modalMapping = {
+            observaciones: 'modal-observaciones',
+            tipo_motor: 'modal-tipo-motor',
+            cantidad_motores: 'modal-cantidad-motores',
+            color: 'modal-color',
+            rumbo: 'modal-rumbo',
+            tipo_aeronave: 'modal-tipo-aeronave',
+            altitud_estimada: 'modal-altitud'
+        };
+
+        Object.entries(modalMapping).forEach(([propiedad, modalId]) => {
+            document.getElementById(modalId).value = sighting[propiedad] || 'N/A';
         });
-        document.getElementById('modal-coordenadas').value = `[${sighting.latitud},${sighting.longitud}]`;
+        document.getElementById('modal-coordenadas').value = `[${sighting.latitud}, ${sighting.longitud}]`;
 
         elements.modal.classList.add('active');
         elements.modal.setAttribute('aria-hidden', 'false');
@@ -252,16 +258,14 @@ const SightingsApp = (function () {
             modal.style.display = "none";
         });
 
-
-        document.getElementById('generarPDF').addEventListener('click', function () {
+        document.getElementById('generarPDF').replaceWith(document.getElementById('generarPDF').cloneNode(true));
+        document.getElementById('generarPDF').addEventListener('click', async function () {
             const { jsPDF } = window.jspdf;
-            // Crear el PDF usando formato oficio en orientación horizontal (330 x 215 mm)
             const doc = new jsPDF({ orientation: 'landscape', format: [330, 215] });
 
-            // Obtén los datos de los avistamientos desde localStorage (o la fuente que utilices)
-            const sightings = JSON.parse(localStorage.getItem("sightings") || "[]");
+            const searchQuery = document.getElementById('search').value.trim();
+            const allSightings = await fetchAllSightings(searchQuery);
 
-            // Define el encabezado de la tabla con los nombres de las columnas
             const head = [[
                 'Avist',
                 'Creador',
@@ -277,13 +281,13 @@ const SightingsApp = (function () {
                 'Observaciones'
             ]];
 
-            // Mapea cada avistamiento a una fila de la tabla
-            const body = sightings.map(sighting => [
+            const body = allSightings.map(sighting => [
                 sighting.id,
-                `${toProperCase(sighting.usuario.powerMilitary)} ${toProperCase(sighting.usuario.militaryRank)} ${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)} `,
+                `${toProperCase(sighting.usuario.powerMilitary)} ${toProperCase(sighting.usuario.militaryRank)}
+                 ${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}`,
                 formatDate(new Date(sighting.fecha_avistamiento)),
                 sighting.ubicacion,
-                `${sighting.latitud}   ${sighting.longitud}`,
+                `${sighting.latitud}\n${sighting.longitud}`,
                 sighting.rumbo,
                 sighting.altitud_estimada,
                 sighting.tipo_aeronave,
@@ -293,29 +297,26 @@ const SightingsApp = (function () {
                 sighting.observaciones,
             ]);
 
-            // Obtén el ancho de la página para ajustar el ancho total de la tabla
             const pageWidth = doc.internal.pageSize.getWidth();
             const margin = 10;
 
-            // Genera la tabla usando autoTable
             doc.autoTable({
                 head: head,
                 body: body,
-                startY: 20, // Posición vertical inicial de la tabla
+                startY: 20,
                 margin: { left: margin, right: margin },
                 tableWidth: pageWidth - margin * 2,
                 styles: { fontSize: 10 },
                 headStyles: { fillColor: [22, 160, 133] },
-                // Establece la columna "Ubic" (índice 3) con un ancho fijo de 50px
-                columnStyles: {
-                    3: { cellWidth: 45 },
-                    1: { cellWidth: 41 }
-                }
+                rowPageBreak: 'avoid',
+                columnStyles: { 3: { cellWidth: 45 }, 1: { cellWidth: 28 } }
             });
 
-            // Guarda el archivo PDF generado
             doc.save('tabla-avistamientos.pdf');
         });
+
+
+
 
 
 
@@ -348,6 +349,20 @@ const SightingsApp = (function () {
             });
         }
     };
+
+    // Función para obtener todos los avistamientos recorriendo las páginas
+    async function fetchAllSightings(search = '') {
+        let allSightings = [];
+        let page = 1;
+        let totalPages = 1;
+        do {
+            const data = await loadSightings({ page, limit: 10, search });
+            allSightings = allSightings.concat(data.sightings);
+            totalPages = data.totalPages;
+            page++;
+        } while (page <= totalPages);
+        return allSightings;
+    }
 
     function getSightingById(id) {
         const sightings = JSON.parse(localStorage.getItem("sightings") || "[]")
