@@ -93,25 +93,88 @@ const deleteSighting = async (req, res) => {
 
 const getAllMarkers = async (req, res) => {
     try {
-        const role = req.role;
-        const userId = req.user.id;
+      const role = req.role;
+      const userId = req.user.id;
+      
+      // Extraer filtros desde la query string
+      const { startDate, endDate, statuses, userIds } = req.query;
+      const whereClause = {};
+  
+      // Filtrado por fecha: si se pasan startDate o endDate, se utilizan;
+      // de lo contrario se usa el filtro por defecto de 30 días.
+      if (startDate || endDate) {
+        whereClause.fecha_avistamiento = {};
+        if (startDate) {
+          whereClause.fecha_avistamiento[Op.gte] = new Date(startDate);
+        }
+        if (endDate) {
+          whereClause.fecha_avistamiento[Op.lte] = new Date(endDate);
+        }
+      } else {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-        const whereClause = { fecha_avistamiento: { [Op.gte]: thirtyDaysAgo } };
-
-        const { sightings } = await fetchSightingsByRole(role, userId, whereClause);
-
-        res.status(200).json({ sightings });
-    } catch (error) {
-        console.error("Error al obtener los marcadores:", error);
-        if (error instanceof InsufficientPermissionsError) {
-            res.status(403).json({ message: error.message });
-            return;
+        whereClause.fecha_avistamiento = { [Op.gte]: thirtyDaysAgo };
+      }
+  
+      // Filtrado por estados, si se especifica (se espera una lista separada por comas)
+      if (statuses) {
+        const statusesArr = statuses.split(',');
+        const stateConditions = [];
+        
+        statusesArr.forEach(status => {
+            switch (status.toLowerCase()) {
+                case 'pending':
+                // Pendiente: validado_por y eliminado_por son null
+                stateConditions.push({
+                    validado_por: { [Op.is]: null },
+                    eliminado_por: { [Op.is]: null }
+                });
+                break;
+                case 'validated':
+                // Validado: validado_por NO es null y eliminado_por es null
+                stateConditions.push({
+                    validado_por: { [Op.not]: null },
+                    eliminado_por: { [Op.is]: null }
+                });
+                break;
+                case 'rejected':
+                case 'descartado':
+                // Descartado: eliminado_por NO es null
+                stateConditions.push({
+                    eliminado_por: { [Op.not]: null }
+                });
+                break;
+                default:
+                break;
+            }
+        });
+        
+        
+        if (stateConditions.length > 0) {
+            // Combina las condiciones de estado con un OR
+            whereClause[Op.or] = stateConditions;
         }
-        res.status(500).json({ message: "Error interno del servidor" });
+      }
+  
+      // Filtrado por usuario, si se especifica (se espera una lista separada por comas)
+      if (userIds) {
+        const userIdsArr = userIds.split(',');
+        whereClause.usuario_id = { [Op.in]: userIdsArr };
+      }
+  
+      // Se asume que fetchSightingsByRole utiliza whereClause para filtrar
+      const { sightings } = await fetchSightingsByRole(role, userId, whereClause);
+  
+      res.status(200).json({ sightings });
+    } catch (error) {
+      console.error("Error al obtener los marcadores:", error);
+      if (error instanceof InsufficientPermissionsError) {
+        res.status(403).json({ message: error.message });
+        return;
+      }
+      res.status(500).json({ message: "Error interno del servidor" });
     }
-};
+  };
 
 const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}) => {
     const commonInclude = [

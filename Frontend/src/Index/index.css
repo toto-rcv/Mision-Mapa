@@ -47,10 +47,11 @@ body {
     z-index: 1000;
     display: flex;
     gap: 0.5rem;
-    background-color: var(--search-background);
+    background-color: var(--background-color);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 12px;
+    
     padding: 0.5rem;
 }
 
@@ -96,6 +97,14 @@ body {
     outline: none;
     border-color: var(--focus-color);
     box-shadow: 0 0 0 3px rgba(77, 144, 254, 0.2);
+}
+
+.filter-button.active {
+    border-color: var(--primary-color, #00BCD4);
+  }
+  
+.filter-button.active svg {
+    stroke: var(--primary-color, #00BCD4);
 }
 
 #map {
@@ -253,11 +262,12 @@ form button:hover {
     flex-direction: column;
     z-index: 1000;
     border-radius: 5px;
+    font-size: 1rem;
     /* Added border radius */
 }
 
 .overlay h2, .quantityOverlay h2 {
-    font-size: 24px;
+    font-size: 1.15em;
     font-weight: 500;
     margin-bottom: 15px;
 }
@@ -268,7 +278,7 @@ form button:hover {
     /* Added border radius */
     text-align: center;
     color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
+    font-size: 0.8em;
     border: 1px solid var(--input-border);
 }
 
@@ -282,7 +292,7 @@ form button:hover {
     max-width: max(30%, 500px);
     max-height: 90vh;
     overflow-y: auto;
-    background-color: rgba(38, 37, 42, 0.95);
+    background-color: var(--background-color);
     color: white;
     padding: 1.5rem;
     display: none;
@@ -651,7 +661,6 @@ form button:hover {
         top: 80px;
         width: calc(100% - 2rem);
         margin: 0.5rem 0;
-        background-color: rgba(38, 37, 42, 0.95);
         backdrop-filter: blur(10px);
     }
 
@@ -880,3 +889,596 @@ textarea::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.5);
 }
 
+
+
+/* Timeline */
+.timeline-container {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    background: var(--background-color);
+    border-radius: 12px 12px 0 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+  
+  .timeline-toggle {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--background-color);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 12px 12px 0 0;
+    cursor: pointer;
+  }
+  
+  .timeline-content {
+    padding: 1rem;
+    display: none;
+  }
+  
+  .timeline-container.expanded .timeline-content {
+    display: block;
+  }
+  
+  .time-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Contenedor del slider: fondo gris clarito para toda la línea */
+  .slider-container {
+    position: relative;
+    height: 4px;
+    margin: 1rem 0;
+    background-color: var(--text-muted); /* Gris clarito */
+  }
+
+  /* Contenedor de los ticks (divisores) */
+.slider-ticks {
+    position: absolute;
+    top: -6px; /* Ajusta la posición vertical según necesites */
+    left: 0;
+    right: 0;
+    height: 10px;
+    pointer-events: none;
+  }
+  
+  /* Cada tick se representa con un div de 1px de ancho */
+  .tick {
+    position: absolute;
+    width: 1px;
+    height: 10px;
+    background: #fff; /* Color del tick, puede ajustarse */
+  }
+  
+  /* Track del tramo seleccionado: se mostrará sobre el fondo gris */
+  .slider-track {
+    position: absolute;
+    height: 100%;
+    background: var(--primary-color);
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  /* Los dos sliders se posicionan de forma absoluta y son transparentes */
+  .timeline-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: transparent;
+    -webkit-appearance: none;
+    pointer-events: none;
+    z-index: 2;
+  }
+  
+  /* Permitir la interacción con el thumb */
+  .timeline-slider::-webkit-slider-thumb {
+    pointer-events: auto;
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: 2px solid #333;
+    margin-top: -6px;
+  }
+  
+  /* Feedback del rango seleccionado */
+  .timeline-feedback {
+    text-align: center;
+    font-size: 0.8em;
+    color: #fff;
+  }
+  
+  @media (max-width: 768px) {
+    .stats-panel {
+      top: 6rem;
+      right: 0.5rem;
+      max-width: 200px;
+    }
+    
+    .timeline-container {
+      width: 90%;
+    }
+  }
+
+
+/* Contenedor principal de los filtros */
+.advanced-filters {
+    position: relative;
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  /* Panel emergente de filtros */
+  .filters-panel {
+    position: absolute;
+    top: calc(100% + 1rem);
+    left: calc(0% - 0.5rem);
+    background: var(--background-color);
+    backdrop-filter: blur(12px);
+    border-radius: 1rem; /* 16px ≈ 1rem */
+    padding: 1.25rem;
+    box-shadow: 0 0.5rem 1.875rem rgba(0, 0, 0, 0.15);
+    display: none;
+    z-index: 1001;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  /* Mostrar el panel (por ejemplo, agregando la clase .active) */
+  .filters-panel.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Título principal */
+  .filters-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--text-color, #333);
+  }
+  
+  /* Sección de cada grupo de filtros */
+  .filter-section {
+    margin-bottom: 1.75rem;
+    font-size: 0.8rem
+  }
+  
+  /* Subtítulos (más discretos) */
+  .filter-section h4 {
+    font-size: 1em;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted, #777);
+  }
+  
+  /* Opciones rápidas para fechas */
+  .date-quick-options {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .quick-date {
+    background: var(--quick-date-bg, rgba(255, 255, 255, 0.15));
+    border: 0.063rem solid var(--input-border, #ccc);
+    border-radius: 1rem; /* apariencia tipo pill */
+    padding: 0.5rem 1rem;
+    font-size: 1em;
+    color: var(--text-color, #333);
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  
+  .quick-date:hover {
+    background: var(--quick-date-hover, rgba(255, 255, 255, 0.25));
+    transform: translateY(-0.125rem);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Estado activo para botón de fecha rápida (usa color de acento) */
+  .quick-date.active {
+    background: var(--primary-color, var(--link-color, #00BCD4));
+    color: #fff;
+    border-color: transparent;
+  }
+
+  @keyframes bounce {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  .quick-date.clicked {
+    animation: bounce 0.3s ease;
+  }
+  
+  /* Contenedor de fechas personalizadas */
+  .custom-dates {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Inputs para seleccionar fecha */
+  .date-input {
+    background: var(--form-input-color, #fff);
+    border: 0.063rem solid var(--input-border, #ccc);
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.875rem;
+    color: var(--text-color, #333);
+    font-size: 1em;
+    width: 200px;
+    transition: opacity 0.15s ease;
+    opacity: 1;
+  }
+
+  .date-input::-webkit-calendar-picker-indicator {
+    filter: invert(55%) sepia(100%) saturate(500%) hue-rotate(180deg) brightness(90%);
+  }
+  
+  .date-input:focus {
+    border-color: var(--btn-apply, #00BCD4);
+    outline: none;
+  }
+
+  @keyframes shrink-grow {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(0.95); /* Se reduce al 90% de su tamaño */
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  /* Clase para aplicar la animación a los inputs de fecha */
+  .date-input.animate-shrink {
+    animation: shrink-grow 0.4s ease;
+  }
+  
+  /* Rediseño del filtro de estado: grupo de botones */
+  .status-filters {
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  .status-btn {
+    flex: 1;
+    position: relative;
+    background: var(--input-background, #fff); /* Se unifica el fondo con los demás campos */
+    border: 0.063rem solid var(--input-border, #ccc);
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.875rem;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    font-size: 1em;
+    color: var(--text-color, #333);
+  }
+
+  .status-btn.active::before {
+    content: "✓";
+    position: absolute;
+    left: 0.75rem;  /* Ajusta según el padding del botón */
+    color: var(--primary-color, #00BCD4);
+    font-size: 1em;
+  }
+  
+  .status-btn:hover {
+    background: var(--quick-date-hover, rgba(255, 255, 255, 0.25));
+    transform: translateY(-0.125rem);
+  }
+  
+  .status-btn.active {
+    border: 1px solid var(--primary-color, var(--link-color, #00BCD4));
+    color: var(--primary-color, var(--link-color, #00BCD4));
+  }
+  
+  /* Input para búsqueda de usuario */
+  .user-search {
+    width: 100%;
+    min-height: 2.5em;
+    border: 1px solid var(--input-border, #ccc);
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.875rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    background-color: var(--form-input-color, #fff);
+  }
+
+  .user-search:focus {
+    border-color: var(--btn-apply, #00BCD4);
+    outline: none;
+  }
+
+  .dropdown-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 1.2em;
+    color: var(--text-muted, #777);
+  }
+  
+  /* Acciones: botones de aplicar y limpiar filtros (ancho completo) */
+  .filter-actions {
+    display: flex;
+    flex-direction: column;  /* Botones apilados verticalmente */
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  .btn-apply,
+  .btn-clear {
+    padding: 0.75rem 0.875rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    font-size: 0.875em;
+  }
+  
+  .btn-apply {
+    background: #00BCD4;
+    color: #fff;
+  }
+  
+  .btn-apply:hover {
+    background: #00a0b0;
+    transform: translateY(-0.0625rem);
+  }
+  
+  .btn-clear {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-color, #333);
+  }
+  
+  .btn-clear:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-0.0625rem);
+  }
+  
+  /* Mensaje de feedback */
+  .filter-feedback {
+    margin-top: 1rem;
+    color: var(--text-muted, #777);
+    font-size: 0.9rem;
+    display: none;
+    text-align: center;
+  }
+
+  .icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    font-size: 1em;
+    line-height: 1;
+  }
+  
+  
+  /* Ícono para la búsqueda (lupa) */
+  .icon-search::before {
+    content: "🔍";
+  }
+
+  .user-search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }  
+  
+  /* Ajuste en el input para dejar espacio al ícono */
+  .user-search-container .user-search {
+    width: 100%;
+    padding-left: 2.5rem;  /* Se agrega espacio a la izquierda para el ícono */
+  }
+  
+  /* Posicionamiento absoluto del ícono de búsqueda */
+  .user-search-container .icon-search {
+    position: absolute;
+    left: 0.75rem;
+    pointer-events: none; /* Para que no interfiera en la interacción con el input */
+    font-size: 1em;
+  }
+
+  .filter-close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-color, #333);
+    transition: color 0.3s ease;
+  }
+  
+  .filter-close-button:hover {
+    color: var(--primary-color, #00BCD4);
+  }
+  
+  /* ================== */
+  /* Media queries para responsividad */
+  /* ================== */
+  @media (max-width: 768px) {
+    .filters-panel {
+      width: calc(100% - 2rem);
+      left: 1rem;
+      top: calc(100% + 0.5rem);
+      padding: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    /* Para pantallas pequeñas: se apilan elementos y se ajustan columnas */
+    .custom-dates {
+      grid-template-columns: 1fr;
+    }
+    
+    .advanced-filters {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .filter-actions {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+  }
+
+  .user-multi-select {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1002;
+    background: var(--background-color, #fff);
+    border: 1px solid var(--input-border, #ccc);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Estilo para el input interno de búsqueda */
+  .user-dropdown-search {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.25rem;
+    border: 1px solid var(--input-border, #ccc);
+    border-radius: 0.5rem;
+    font-size: 0.9em;
+    background: var(--form-input-color, #fff);
+    color: var(--text-color);
+  }
+
+  .user-dropdown-search:focus {
+      border-color: var(--btn-apply, #00BCD4);
+      outline: none;
+    }
+  
+  /* Estilos para cada opción de usuario */
+  .user-option {
+    display: flex;
+    align-items: center;
+    padding: 0.7rem 0.5rem;
+    border-bottom: 1px solid var(--input-border, #ccc);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .user-option:last-child {
+    border-bottom: none;
+  }
+  
+  .user-option:hover {
+    background: var(--form-input-color)
+  }
+  
+  .user-option input[type="checkbox"] {
+    margin-right: 1rem;
+    /* Se aplican estilos personalizados al checkbox */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 1.1em; /* un poco más grande */
+    height: 1.1em;
+    border: 1px solid var(--input-border, #ccc); /* borde oscuro */
+    border-radius: 4px;
+    background-color: var(--form-input-color, #fff); /* fondo oscuro */
+    cursor: pointer;
+    position: relative;
+  }
+
+  .user-option input[type="checkbox"]:checked {
+    background-color: var(--primary-color, #00BCD4);
+    border-color: var(--primary-color, #00BCD4);
+  }
+
+  .user-option input[type="checkbox"]:checked::after {
+    content: "\2713";
+    color: #fff;
+    font-size: 1em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Contenedor de información del usuario */
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  /* Nombre completo resaltado */
+  .user-fullname {
+    font-weight: bold;
+    font-size: 0.95em;
+    color: var(--text-color)
+  }
+  
+  /* DNI y rango militar con tipografía más discreta */
+  .user-dni {
+    font-size: 0.95em;
+    color: var(--primary-color, #00BCD4);
+  }
+
+  .user-militaryRank {
+    font-size: 0.95em;
+    color: var(--input-placeholder);
+  }
+
+  .selected-users {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-height: 3.5rem; /* Ajusta para que en wrap se muestren hasta 2 líneas */
+    overflow-y: auto;
+  }
+
+  .selected-users::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Cada tarjeta (badge) de usuario */
+  .selected-user-card {
+    background-color: var(--primary-color, #00BCD4);
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+
+  .placeholder {
+    color: #aaa;
+    margin-left: 0.5rem;
+  }
