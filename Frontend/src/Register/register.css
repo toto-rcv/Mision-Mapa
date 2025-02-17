@@ -122,7 +122,8 @@ label {
   color: var(--secondary-color);
 }
 
-input, select {
+input,
+select {
   width: 100%;
   padding: 12px;
   background-color: var(--input-background);
@@ -137,17 +138,20 @@ input::placeholder {
   color: var(--input-placeholder);
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   outline: none;
   border-color: var(--focus-color);
   box-shadow: 0 0 0 2px rgba(77, 144, 254, 0.2);
 }
 
-input.invalid, select.invalid {
+input.invalid,
+select.invalid {
   border-color: var(--error-color);
 }
 
-input.invalid:focus, select.invalid:focus {
+input.invalid:focus,
+select.invalid:focus {
   box-shadow: 0 0 0 2px rgba(255, 65, 54, 0.2);
 }
 
@@ -176,7 +180,8 @@ select {
   background: none;
   border: none;
   padding: 0;
-  color: #a0a0a0;;
+  color: #a0a0a0;
+  ;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -215,8 +220,13 @@ select {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .password-input-wrapper button:active .eye-icon {
@@ -230,7 +240,7 @@ select {
   margin-top: 4px;
 }
 
-.invalid + .invalid-feedback {
+.invalid+.invalid-feedback {
   display: block;
 }
 
@@ -243,6 +253,11 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+.optionsPower {
+  color: black;
+  border-radius: 20px;
 }
 
 @media (max-width: 480px) {
@@ -259,7 +274,9 @@ input[type="number"] {
     gap: 0;
   }
 
-  input, select, .submit-btn {
+  input,
+  select,
+  .submit-btn {
     font-size: 16px;
   }
 }
@@ -304,7 +321,8 @@ input[type="number"] {
   margin-bottom: 0;
 }
 
-.form-card, .success-message {
+.form-card,
+.success-message {
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
@@ -327,6 +345,7 @@ input[type="number"] {
   0% {
     stroke-dashoffset: 100;
   }
+
   100% {
     stroke-dashoffset: 0;
   }
@@ -421,14 +440,20 @@ input[type="number"] {
 }
 
 @keyframes spin {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 @keyframes checkmark-appear {
   0% {
     transform: translate(-50%, -50%) scale(0);
   }
+
   100% {
     transform: translate(-50%, -50%) scale(1);
   }
@@ -525,7 +550,8 @@ input[type="number"] {
 
 .password-requirements li.valid::before {
   content: '✓';
-  color: #4CAF50; /* Color coherente con el éxito del mensaje final */
+  color: #4CAF50;
+  /* Color coherente con el éxito del mensaje final */
 }
 
 .password-requirements li.invalid {
@@ -537,11 +563,25 @@ input[type="number"] {
 }
 
 @keyframes vibration {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(3px); }
-  50% { transform: translateX(-3px); }
-  75% { transform: translateX(3px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(3px);
+  }
+
+  50% {
+    transform: translateX(-3px);
+  }
+
+  75% {
+    transform: translateX(3px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .error-highlight {

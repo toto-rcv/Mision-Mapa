@@ -7,7 +7,7 @@ const UserStatus = db.UserStatus;
 
 exports.register = async (req, res) => {
   try {
-    const { dni, email, password, firstName, lastName, militaryRank } = req.body;
+    const { dni, email, password, firstName, lastName, militaryRank, powerMilitary } = req.body;
 
     // Validación de correo y DNI únicos
     const existingUser = await User.findOne({ where: { email } });
@@ -32,6 +32,7 @@ exports.register = async (req, res) => {
       firstName,
       lastName,
       militaryRank,
+      powerMilitary,
     });
 
     res.status(201).json({ message: "Usuario registrado exitosamente", user: { dni, email } });
@@ -107,7 +108,7 @@ exports.refreshAccessToken = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     const user = req.user;
-    const userR = await User.findOne({ where: { dni: user.id }, attributes: ["dni", "firstName", "lastName", "militaryRank", "userRank"] });
+    const userR = await User.findOne({ where: { dni: user.id }, attributes: ["dni", "firstName", "lastName", "militaryRank", "userRank","powerMilitary"] });
 
     if (!userR) {
       return res.status(404).json({ message: "Usuario no encontrado" });

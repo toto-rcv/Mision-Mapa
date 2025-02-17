@@ -201,13 +201,12 @@ const UsersApp = (function () {
       <thead>
         <tr>
           <th>DNI</th>
-          <th>Nombre</th>
-          
+          <th>Fuerza Per.</th>
+          <th>Usuario</th>
           <th>Email</th>
-          <th>Rango Militar</th>
           <th>Rol</th>
           <th>Fecha de creación</th>
-          <th>Creador</th>
+          <th>Modificador</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -221,9 +220,10 @@ const UsersApp = (function () {
             row.setAttribute('data-id', user.id);
             row.innerHTML = `
         <td>${user.dni}</td>
-        <td>${user.firstName.trim()} ${user.lastName.trim()} </td>
+        <td>${user.powerMilitary.trim()}</td>
+        <td>${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
         <td>${user.email}</td>
-        <td>${user.militaryRank}</td>
+        
         <td>
           <select class="rank-select" data-id="${user.dni}">
             <option value="POA" ${user.userRank === 'POA' ? 'selected' : ''}>POA</option>
@@ -258,22 +258,27 @@ const UsersApp = (function () {
     function renderPaginationButtons() {
         const container = elements.paginationContainer;
         container.innerHTML = '';
-
+    
         const totalPages = Math.ceil(currentDisplayList.length / usersPerPage);
-
+    
         const prevButton = document.createElement('button');
         prevButton.textContent = 'Anterior';
         prevButton.id = 'prevPage';
         prevButton.disabled = currentPage === 1;
-
+    
         const nextButton = document.createElement('button');
         nextButton.textContent = 'Siguiente';
         nextButton.id = 'nextPage';
         nextButton.disabled = currentPage === totalPages || totalPages === 0;
-
+    
+        const pageInfo = document.createElement('span');
+        pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+        pageInfo.style.margin = '0 10px'; // Espaciado entre botones
+    
         container.appendChild(prevButton);
+        container.appendChild(pageInfo);
         container.appendChild(nextButton);
-
+    
         prevButton.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -281,7 +286,7 @@ const UsersApp = (function () {
                 renderPaginationButtons();
             }
         });
-
+    
         nextButton.addEventListener('click', () => {
             if (currentPage < totalPages) {
                 currentPage++;
@@ -296,12 +301,21 @@ const UsersApp = (function () {
     // ================================
     function setupTableEventListeners() {
         document.querySelectorAll('.status-select').forEach(select => {
+            const currentUser = retrieveUserProfile();
+            if (currentUser.user.userRank === "POA" || currentUser.user.userRank === "DETECCION") {
+                select.style.cursor = 'not-allowed';
+                select.disabled = true;
+            }
+        });
+        document.querySelectorAll('.status-select').forEach(select => {
             select.addEventListener('change', async (event) => {
                 const userId = select.getAttribute('data-id');
                 const newStatus = event.target.value;
                 await updateUserStatus(userId, newStatus);
             });
         });
+
+
 
         document.querySelectorAll('.rank-select').forEach(select => {
             const currentUser = retrieveUserProfile();

@@ -61,9 +61,6 @@ export function getUserId() {
     return user.dni
 }
 
-function retrieveUserProfile() {
-    return JSON.parse(localStorage.getItem('user'));
-}
 
 export async function reloadUserProfile() {
     await getUserProfile();

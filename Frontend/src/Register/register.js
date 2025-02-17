@@ -158,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
             firstName: document.getElementById("name").value,
             lastName: document.getElementById("lastname").value,
             militaryRank: document.getElementById("rankMilitar").value,
+            powerMilitary: document.getElementById("powerMilitary").value,
             dni: document.getElementById("dni").value,
         };
 

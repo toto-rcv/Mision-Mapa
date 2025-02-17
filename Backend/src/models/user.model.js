@@ -62,7 +62,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
-    
+    powerMilitary: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
 
 
   });
