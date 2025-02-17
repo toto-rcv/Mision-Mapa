@@ -9,18 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleConfirmPasswordButton = document.getElementById('toggleConfirmPassword');
     const nameInput = document.getElementById('name');
     const lastnameInput = document.getElementById('lastname');
-    const rangeSelect = document.getElementById('range');
     const dniInput = document.getElementById('dni');
 
     function togglePasswordVisibility(input, button) {
         const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
         input.setAttribute('type', type);
-
-        if (type === 'password') {
-            button.setAttribute('aria-label', 'Mostrar contraseña');
-        } else {
-            button.setAttribute('aria-label', 'Ocultar contraseña');
-        }
+        button.setAttribute('aria-label', type === 'text' ? 'Ocultar contraseña' : 'Mostrar contraseña');
     }
 
     // Toggle password visibility
@@ -35,9 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Validate name and lastname (only letters and spaces)
     function validateNameInput(input) {
-        const regex = /^[A-Za-zÀ-ÿ\s]+$/;
+        const regex = /^[A-Za-zÀ-ÿ\s]*$/;
+
         if (!regex.test(input.value)) {
-            input.setCustomValidity('Solo se permiten letras y espacios');
+            input.setCustomValidity('Solo letras y espacios');
             input.classList.add('invalid');
         } else {
             input.setCustomValidity('');
@@ -56,19 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Format and validate DNI
     function formatDNI(input) {
-        let value = input.value.replace(/\D/g, '');
-        if (value.length > 9) {
-            value = value.slice(0, 9);
-        }
-        const numValue = parseInt(value, 10);
-        if (numValue < 1000000 || numValue > 200000000) {
-            //input.setCustomValidity('Ingrese un número entre 1.000.000 y 200.000.000');
+        const rawValue = input.value.replace(/\./g, '');
+        const isValid = /^(\d{7,8}){0,1}$/.test(rawValue);
+        
+        if (!isValid) {
+            input.setCustomValidity('DNI debe tener 7 u 8 dígitos');
             input.classList.add('invalid');
         } else {
             input.setCustomValidity('');
             input.classList.remove('invalid');
         }
-        return new Intl.NumberFormat('es-AR').format(value);
+        return new Intl.NumberFormat('es-AR').format(rawValue);
     }
 
     dniInput.addEventListener('input', (e) => {
@@ -83,11 +76,79 @@ document.addEventListener('DOMContentLoaded', () => {
         formatDNI(dniInput);
     });
 
+    function validatePasswordMatch() {
+        const match = passwordInput.value === confirmPasswordInput.value;
+
+        if (!match) {
+            confirmPasswordInput.setCustomValidity("Las contraseñas no coinciden");
+        } else {
+            confirmPasswordInput.setCustomValidity("");
+        }
+
+        [passwordInput, confirmPasswordInput].forEach(input => {
+            input.classList.toggle('invalid', !match);
+        });
+    }
+
+    function validatePasswordStrength(password) {
+        const minLength = 8;
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+        
+        return {
+            isValid: password.length >= minLength && 
+                    hasUpperCase && 
+                    hasLowerCase && 
+                    hasNumber && 
+                    hasSymbol,
+            criteria: {
+                length: password.length >= minLength,
+                upper: hasUpperCase,
+                lower: hasLowerCase,
+                number: hasNumber,
+                symbol: hasSymbol
+            }
+        };
+    }
+
+    function updatePasswordRequirements() {
+        const validation = validatePasswordStrength(passwordInput.value);
+        const requirementElements = document.querySelectorAll('[data-criterion]');
+    
+        requirementElements.forEach(element => {
+            const criterion = element.dataset.criterion;
+            const isValid = validation.criteria[criterion];
+            
+            element.classList.remove('valid', 'invalid');
+            element.classList.add(isValid ? 'valid' : 'invalid');
+        });
+
+        passwordInput.setCustomValidity(!validation.isValid ? "La contraseña no cumple los requisitos de seguridad": "");
+        passwordInput.classList.toggle('invalid', !validation.isValid);
+    }
+
+    passwordInput.addEventListener('input', () => {
+        validatePasswordMatch();
+        updatePasswordRequirements();
+    });
+
+    confirmPasswordInput.addEventListener('input', () => { 
+        validatePasswordMatch();
+        updatePasswordRequirements();
+    });
 
     createAccountform.addEventListener('submit', async (event) => {
 
         event.preventDefault();
 
+         if (!registrationForm.checkValidity()) {
+            registrationForm.reportValidity();
+            return;
+        }
+
+        submitButton.disabled = true;
         submitButton.classList.add('loading');
 
         // Crear un objeto con los datos
@@ -97,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
             firstName: document.getElementById("name").value,
             lastName: document.getElementById("lastname").value,
             militaryRank: document.getElementById("rankMilitar").value,
+            powerMilitary: document.getElementById("powerMilitary").value,
             dni: document.getElementById("dni").value,
         };
 
@@ -130,6 +192,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                         // Animate success message in
                         successMessage.classList.add('fade-in');
+
+                        setTimeout(() => {
+                            const progressBar = document.querySelector(".progress-bar")
+                            progressBar.style.width = "100%"
+              
+                            // Redirect after 5 seconds
+                            setTimeout(() => {
+                              redirectToLogin()
+                            }, 10000)
+                          }, 500)
                     }, 500); // Wait for the form fade-out animation to complete
                 }, 1000);
 
@@ -143,3 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+
+function redirectToLogin() {
+    window.location.href = "/login"
+  }

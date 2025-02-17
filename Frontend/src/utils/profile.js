@@ -25,6 +25,9 @@ export async function getUserProfile() {
     }
 }
 
+export function retrieveUserProfile() {
+    return JSON.parse(localStorage.getItem('user'));
+}
 export function loadUserProfile() {
     const { user } = JSON.parse(localStorage.getItem('user'));
 
@@ -35,12 +38,29 @@ export function loadUserProfile() {
     const profileAvatar = document.querySelector('.profile-avatar');
     const profileName = document.querySelector('.profile-name');
     const profileRole = document.querySelector('.profile-role');
+    const profileInfo = document.querySelector('.profile-info');
 
     // Actualiza los elementos del perfil con los datos del usuario
     profileAvatar.textContent = user.firstName.charAt(0).toUpperCase() + user.lastName.charAt(0).toUpperCase(); // Inicial del nombre
     profileName.textContent = `${user.firstName} ${user.lastName}`;
     profileRole.textContent = `Rol: ${user.userRank}`;
+
+    requestAnimationFrame(() => {
+        profileInfo.classList.add('loaded');
+        profileAvatar.classList.add('loaded');
+    });
 }
+
+export function getUserId() {
+    const user = retrieveUserProfile()
+
+    if (!user) {
+        console.error('No se encontraron datos de usuario en el localStorage.');
+    }
+
+    return user.dni
+}
+
 
 export async function reloadUserProfile() {
     await getUserProfile();

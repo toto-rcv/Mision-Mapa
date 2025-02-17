@@ -3,7 +3,9 @@ import { customFetch } from '../utils/auth.js';
 import { showNavItems } from '/static/js/navigation.js';
 import { toProperCase, debounce, formatDate } from '../utils/utils.js';
 
-const SightingsApp = (function() {
+
+
+const SightingsApp = (function () {
     let currentSearch = '';
     let sightingsCurrentPage = 1;
     let touchStartY = 0;
@@ -66,16 +68,22 @@ const SightingsApp = (function() {
         loadAndDisplaySightings()
     }
 
-   // Modal functions
-   function showObservationsModal(sighting) {
-        const modalFields = [
-            'observaciones', 'tipo-motor', 'cantidad-motores', 'color', 
-            'rumbo', 'tipo-aeronave', 'altitud'
-        ];
-        modalFields.forEach(field => {
-            document.getElementById(`modal-${field}`).value = sighting[field] || 'N/A';
+    // Modal functions
+    function showObservationsModal(sighting) {
+        const modalMapping = {
+            observaciones: 'modal-observaciones',
+            tipo_motor: 'modal-tipo-motor',
+            cantidad_motores: 'modal-cantidad-motores',
+            color: 'modal-color',
+            rumbo: 'modal-rumbo',
+            tipo_aeronave: 'modal-tipo-aeronave',
+            altitud_estimada: 'modal-altitud'
+        };
+
+        Object.entries(modalMapping).forEach(([propiedad, modalId]) => {
+            document.getElementById(modalId).value = sighting[propiedad] || 'N/A';
         });
-        document.getElementById('modal-coordenadas').value = `[${sighting.latitud},${sighting.longitud}]`;
+        document.getElementById('modal-coordenadas').value = `[${sighting.latitud}, ${sighting.longitud}]`;
 
         elements.modal.classList.add('active');
         elements.modal.setAttribute('aria-hidden', 'false');
@@ -87,7 +95,7 @@ const SightingsApp = (function() {
         elements.modal.classList.remove("active")
         document.body.style.overflow = ""
         if (window.location.hash === "#modal-open") {
-          history.back()
+            history.back()
         }
     }
 
@@ -127,7 +135,7 @@ const SightingsApp = (function() {
             <thead>
                 <tr>
                     <th>#</th>
-                    <th class="col-ws fecha-header">Fecha <img src="static/img/angles-up-down.svg"/></th>
+                    <th class="col-ws fecha-header">Fecha</th>
                     <th class="ubicacion-cell">Ubicacion</th>
                     <th class="col-medium-screen">Creado por</th>
                     <th class="col-large-screen">Latitud</th>
@@ -210,59 +218,168 @@ const SightingsApp = (function() {
 
         });
 
-        table.querySelectorAll('.delete-btn').forEach(button => {
+
+
+
+        let sightingIdToDelete = null; // Variable global para almacenar el avistamiento a eliminar
+
+        document.querySelectorAll('.delete-btn').forEach(button => {
             if (!button.disabled) {
-                button.addEventListener('click', async (event) => {
-                    const id = event.target.getAttribute('data-id');
-                    const deleted = await deleteSighting(id);
-                    if (deleted) {
-                        event.target.closest('tr').remove();
-                    }
+                button.addEventListener('click', (event) => {
+                    sightingIdToDelete = event.target.getAttribute('data-id'); // Guarda el ID del avistamiento
+
+                    const modal = document.getElementById("modal-confirm-delete");
+
+                    // Muestra el modal
+                    modal.style.display = "block";
                 });
             }
         });
+        // Evento para confirmar la eliminación cuando se presiona "Sí"
+        document.getElementById("confirmDelete").addEventListener('click', async () => {
+            if (sightingIdToDelete) {
+                const deleted = await deleteSighting(sightingIdToDelete);
+                if (deleted) {
+                    document.querySelector(`[data-id='${sightingIdToDelete}']`).closest('tr').remove();
+                } else {
+                    alert("Error al eliminar el avistamiento.");
+                }
+
+                sightingIdToDelete = null; // Limpiar variable
+                document.getElementById("modal-confirm-delete").style.display = "none"; // Ocultar modal
+            }
+        });
+
+        // Evento para cancelar la eliminación
+        document.getElementById("cancelDelete").addEventListener('click', () => {
+            sightingIdToDelete = null;
+            const modal = document.getElementById("modal-confirm-delete");
+            // Muestra el modal
+            modal.style.display = "none";
+        });
+
+        document.getElementById('generarPDF').replaceWith(document.getElementById('generarPDF').cloneNode(true));
+
+        document.getElementById('generarPDF').addEventListener('click', async function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', format: [330, 215] });
+
+            const searchQuery = document.getElementById('search').value.trim();
+            const allSightings = await fetchAllSightings(searchQuery);
+
+            const head = [[
+                'Avist',
+                'Creador',
+                'Fecha',
+                'Ubicacion',
+                'Lat./Lon',
+                'Rumbo',
+                'Alt. Est.',
+                'T.Aeronave',
+                'Color',
+                'T.Motor',
+                'Cant. Motores',
+                'Observaciones'
+            ]];
+
+            const body = allSightings.map(sighting => [
+                sighting.id,
+                `${toProperCase(sighting.usuario.powerMilitary)} ${toProperCase(sighting.usuario.militaryRank)}    ${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}`,
+                formatDate(new Date(sighting.fecha_avistamiento)),
+                sighting.ubicacion,
+                `${sighting.latitud}\n${sighting.longitud}`,
+                sighting.rumbo,
+                sighting.altitud_estimada,
+                sighting.tipo_aeronave,
+                sighting.color,
+                sighting.tipo_motor,
+                sighting.cantidad_motores,
+                sighting.observaciones,
+            ]);
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 10;
+            const title = "Avistamientos";
+            const titleYPosition = 15;  // Posición vertical para el título
+            const tableMarginBottom = 10;  // Margen de 10px entre título y tabla
+
+            // Solo agregar el título en la primera página
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.text(title, pageWidth / 2, titleYPosition, { align: "center" });
+
+            // Definir el inicio de la tabla en la primera página
+            let tableStartY = titleYPosition + tableMarginBottom;
+
+            doc.autoTable({
+                head: head,
+                body: body,
+                startY: tableStartY,  // Ajusta la posición de inicio de la tabla
+                margin: { left: margin, right: margin },
+                tableWidth: pageWidth - margin * 2,
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [22, 100, 133] },
+                rowPageBreak: 'avoid',
+                columnStyles: {
+                    1: { cellWidth: 28 },
+                    3: { cellWidth: 45 },
+                    5: { halign: 'center' }, // Centrar "Rumbo"
+                    6: { halign: 'center' }, // Centrar "Alt. Est."
+                    7: { halign: 'center' }, // Centrar "T.Aeronave"
+                    8: { halign: 'center' }, // Centrar "Color"
+                    9: { halign: 'center' }, // Centrar "T.Motor"
+                    10: { halign: 'center' }, // Centrar "Cant. Motores" },
+                },
+                didDrawPage: function (data) {
+                    // No dibujar el título en las páginas siguientes
+                    if (data.pageCount === 1) {
+                        // Solo agregar el título en la primera página
+                        doc.setFontSize(16);
+                        doc.setFont("helvetica", "bold");
+                        doc.text(title, pageWidth / 2, titleYPosition, { align: "center" });
+                    }
+
+                    // Asegurar que la tabla comience con el margen de 10px en cada página
+                    data.settings.startY = titleYPosition + tableMarginBottom;
+                }
+            });
+
+            // Obtener fecha y hora formateada desde la función importada
+            const now = new Date();
+            const timestamp = formatDate(now)
+                .replace(' ', ' -- ')   // Reemplaza espacio entre fecha y hora con ' -- '
+                .replace(':', '-')     // Reemplaza ':' entre hora y minutos con '-'
+                .replace(/\//g, '-');   // Reemplaza '/' por '-'
+
+            // Nombre del archivo con fecha y hora
+            const fileName = `Tabla_de_Avistamientos_${timestamp}.pdf`;
+
+            doc.save(fileName);
+        });
+
+
+
+
+
+
 
         document.querySelectorAll('.maps-btn').forEach(mapButton => {
             mapButton.addEventListener('click', (event) => {
                 // Buscar el <tr> más cercano al botón
                 const row = mapButton.closest('tr');
-                
+
                 // Obtener el identificador desde el atributo data-id de la fila
                 const recordId = row.getAttribute('data-id');
-                
+
                 // Redirigir a index.html y enviar el identificador como parámetro
                 window.location.href = `index.html?sighting=${recordId}`;
             });
         });
 
-        table.querySelectorAll('.sightings-table th').forEach(header => {
-            header.addEventListener('click', () => handleSort(header));
-        });
+
     }
 
-    function handleSort(header) {
-        const currentSort = header.getAttribute('data-sort');
-        const sortIcon = header.querySelector('img');
-        let newSort;
-        switch (currentSort) {
-            case 'asc':
-                newSort = 'desc';
-                sortIcon.src = 'static/img/angles-down.svg';
-                sortIcon.style.padding = '0';
-                break;
-            case 'desc':
-                newSort = 'none';
-                sortIcon.src = 'static/img/angles-up-down.svg';
-                sortIcon.style = '';
-                break;
-            default:
-                newSort = 'asc';
-                sortIcon.src = 'static/img/angles-up.svg';
-                sortIcon.style.padding = '0';
-        }
-        header.setAttribute('data-sort', newSort);
-        // TODO: Implement actual sorting logic
-    };
+
 
     // Utility functions
     function checkPermissionsAndDisableDeleteButtons() {
@@ -276,6 +393,20 @@ const SightingsApp = (function() {
         }
     };
 
+    // Función para obtener todos los avistamientos recorriendo las páginas
+    async function fetchAllSightings(search = '') {
+        let allSightings = [];
+        let page = 1;
+        let totalPages = 1;
+        do {
+            const data = await loadSightings({ page, limit: 10, search });
+            allSightings = allSightings.concat(data.sightings);
+            totalPages = data.totalPages;
+            page++;
+        } while (page <= totalPages);
+        return allSightings;
+    }
+
     function getSightingById(id) {
         const sightings = JSON.parse(localStorage.getItem("sightings") || "[]")
         return sightings.find((sighting) => sighting.id === Number.parseInt(id, 10))
@@ -284,18 +415,18 @@ const SightingsApp = (function() {
     function adjustColumnsForSmallScreens() {
         const isSmallScreen = window.innerWidth <= 768
         const tableRows = document.querySelectorAll(".sightings-table tbody tr")
-    
+
         tableRows.forEach((row) => {
-          row.classList.toggle("small-screen", isSmallScreen)
-          const cells = row.querySelectorAll("td")
-          cells.forEach((cell, index) => {
-            if (isSmallScreen) {
-              cell.style.display =
-                index === 1 || index === 2 || index === 3 || cell.classList.contains("actions-cell") ? "flex" : "none"
-            } else {
-              cell.style.display = ""
-            }
-          })
+            row.classList.toggle("small-screen", isSmallScreen)
+            const cells = row.querySelectorAll("td")
+            cells.forEach((cell, index) => {
+                if (isSmallScreen) {
+                    cell.style.display =
+                        index === 1 || index === 2 || index === 3 || cell.classList.contains("actions-cell") ? "flex" : "none"
+                } else {
+                    cell.style.display = ""
+                }
+            })
         })
     }
 

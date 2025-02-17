@@ -1,4 +1,5 @@
 const { Op } = require('sequelize');
+const eventEmitter = require('../utils/eventEmitter');
 const { SightingNotFoundError, InsufficientPermissionsError, SightingAlreadyDeletedError } = require('../errors/customErrors');
 
 const db = require("../models");
@@ -9,6 +10,8 @@ const createSighting = async (req, res) => {
     try {
         const newSighting = await Sighting.create(req.body);
         const {id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo,tipo_aeronave,tipo_motor,cantidad_motores,color,observaciones  } = newSighting;
+        
+        eventEmitter.emit('NEW_SIGHTING', newSighting);
         res.status(201).json({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo,tipo_aeronave,tipo_motor,cantidad_motores,color,observaciones });
     } catch (error) {
         console.error("Error al crear avistamiento:", error);
@@ -49,6 +52,7 @@ const getAllSightings = async (req, res) => {
 };
 const validateSighting = async (id) => {
     const sighting = await Sighting.findByPk(id);
+    eventEmitter.emit('VALIDATE_SIGHTING', sighting)
     if (!sighting) {
         throw new SightingNotFoundError();
     }
@@ -174,8 +178,8 @@ const getAllMarkers = async (req, res) => {
 
 const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}) => {
     const commonInclude = [
-        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni"] },
-        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni"] },
+        { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni", "powerMilitary", "militaryRank"] },
+        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni", ] },
     ];
 
     const commonAttributes = { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] };
@@ -204,7 +208,7 @@ const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}
     return { sightings, totalRecords };
 };
 
-const validateRedSighting = async (req, res) => {
+const markSightingAsSeen = async (req, res) => {
     try {
         const { id } = req.params;
         const sighting = await Sighting.findByPk(id);
@@ -221,6 +225,8 @@ const validateRedSighting = async (req, res) => {
         sighting.validado_en = new Date();
         await sighting.save();
 
+        eventEmitter.emit('VALIDATE_SIGHTING', id);
+
         res.status(200).json({ message: "Avistamiento validado exitosamente" });
     } catch (error) {
         console.error("Error al validar avistamiento:", error);
@@ -232,4 +238,5 @@ const validateRedSighting = async (req, res) => {
     }
 };
 
-module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, validateRedSighting };
+
+module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, markSightingAsSeen };

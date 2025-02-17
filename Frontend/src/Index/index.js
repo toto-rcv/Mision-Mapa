@@ -1,6 +1,7 @@
-import { reloadUserProfile } from '/utils/profile.js';
+import { reloadUserProfile, getUserId } from '/utils/profile.js';
 import { customFetch } from '/utils/auth.js';
 import { showNavItems } from '/static/js/navigation.js';
+import getSocketClient from '/utils/socket.js';
 
 // Initialize UI elements
 const registerButton = document.getElementById('register-button');
@@ -22,6 +23,7 @@ let currentFilters = {
     statuses: ['pending', 'validated'],
     userIds: []
 };
+
 
 const mapContainer = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap contributors'}).addTo(mapContainer);
@@ -651,7 +653,8 @@ function updateMarkersCount(count) {
 async function buscarUbicacion(nombreLugar) {
     try {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(nombreLugar)}&addressdetails=1`);
-        const resultados = await response.json();
+        let resultados = await response.json();
+        resultados = resultados.filter(m => m.address.country === 'Argentina')
 
         if (resultados.length > 0) {
             const { lat, lon, addresstype } = resultados[0]; // Tomar el primer resultado
@@ -721,12 +724,18 @@ const debouncedBuscarUbicacion = debounce((event) => {
     }
 }, 300);
 
-async function setMarkerAsSeen(sightingId) {
+function setMarkerColor(marker) {
+    marker.leafletObject.setIcon(blueIconMarker);
+    marker.isRed = false;
+}
+
+async function setMarkerAsSeen(sightingId, authorId, currentUserId) {
+    console.log("Intento de marcar: ", currentUserId, authorId)
+    if (currentUserId === authorId) return;
 
     const marker = markers.find(m => m.id === sightingId);
     if (marker) {
-        marker.leafletObject.setIcon(blueIconMarker);
-        marker.isRed = false;
+        setMarkerColor(marker)
         updateRedMarkersModal();
     }
 
@@ -753,7 +762,7 @@ function placeMarkersOnMap(sightings) {
 
     // Itera sobre los datos y agrega marcadores al mapa
     sightings.forEach(sighting => {
-        const { id, validador} = sighting;
+        const { id, validador } = sighting;
 
         addMarker(
             id,
@@ -825,12 +834,38 @@ function updateRedMarkersModal() {
     showNotificationOverlay();
 }
 
+async function setSocketEvents() {
+    const socket = await getSocketClient();
+    if (socket) {
+        socket.on('NEW_SIGHTING', (sighting) => {
+            if (userId !== sighting.usuario_id) {
+                addMarker(sighting.id, sighting);
+            }
+        });
+
+        socket.on('VALIDATE_SIGHTING', (sightingId) => {
+
+            const marker = markers.find(m => m.id == sightingId);
+
+            if (marker) {
+                setMarkerColor(marker)
+                updateRedMarkersModal();
+            }
+        });
+
+    } else {
+        console.error("No se pudo obtener la instancia del SocketClient. Problemas de autenticación.");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
 
     await reloadUserProfile();
     const userProfile = JSON.parse(localStorage.getItem("user"));
     const userPermissions = userProfile.permissions || {};
     showNavItems(userPermissions);
+
+    userId = getUserId();
 
     // Search functionality
     const searchInput = document.querySelector('.search-input');
@@ -858,6 +893,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             showForm(false);
         }
     }
+
+    setSocketEvents();
 
 });
 
@@ -909,7 +946,7 @@ function handleMarkerClick(marker, sighting) {
     }
 
     if (marker.isRed) {
-        setMarkerAsSeen(marker.id);
+        setMarkerAsSeen(marker.id, marker.sighting.usuario_id, userId);
     }
 
     mapContainer.setView(marker.leafletObject.getLatLng(), 10);
