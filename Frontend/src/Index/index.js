@@ -851,7 +851,8 @@ async function setSocketEvents() {
     const socket = await getSocketClient();
     if (socket) {
         socket.on('NEW_SIGHTING', (sighting) => {
-            if (userId !== sighting.usuario_id) {
+            console.log(sighting)
+            if (userId !== sighting.usuario_id && matchesFilters(sighting)) {
                 addMarker(sighting.id, sighting);
             }
         });
@@ -861,6 +862,9 @@ async function setSocketEvents() {
             const marker = markers.find(m => m.id == sightingId);
 
             if (marker) {
+                if (!matchesFilters(marker.sighting)) {
+                    marker.leafletObject.remove()
+                }
                 setMarkerColor(marker)
                 updateRedMarkersModal();
             }
@@ -1376,3 +1380,24 @@ document.addEventListener('click', function(event) {
       dropdown.style.display = 'none';
     }
   });
+
+function matchesFilters(sighting) {
+    console.log(currentFilters)
+    console.log(sighting)
+    // Verificar filtro de fecha
+    const sightingDate = new Date(sighting.fecha_avistamiento);
+    if (currentFilters.startDate && sightingDate < currentFilters.startDate) return false;
+    if (currentFilters.endDate && sightingDate > currentFilters.endDate) return false;
+  
+    // Determinar el estado del avistamiento
+    if (currentFilters.statuses && currentFilters.statuses.length) {
+        if (!currentFilters.statuses.includes(sighting.status)) return false;
+    }
+  
+    // Verificar filtro de usuario
+    if (currentFilters.userIds && currentFilters.userIds.length) {
+      if (!currentFilters.userIds.includes(sighting.usuario_id)) return false;
+    }
+  
+    return true;
+}

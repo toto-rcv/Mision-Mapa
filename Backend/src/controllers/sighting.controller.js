@@ -8,11 +8,16 @@ const User = db.User;
 
 const createSighting = async (req, res) => {
     try {
-        const newSighting = await Sighting.create(req.body);
+        let newSighting = await Sighting.create(req.body);
+
         const {id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo,tipo_aeronave,tipo_motor,cantidad_motores,color,observaciones  } = newSighting;
+        const response = {id,
+            fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo, tipo_aeronave,
+            tipo_motor,cantidad_motores,color,observaciones,
+            status: 'pending', usuario_id: req.user.id};
+        eventEmitter.emit('NEW_SIGHTING', response);
         
-        eventEmitter.emit('NEW_SIGHTING', newSighting);
-        res.status(201).json({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo,tipo_aeronave,tipo_motor,cantidad_motores,color,observaciones });
+        res.status(201).json(response);
     } catch (error) {
         console.error("Error al crear avistamiento:", error);
         res.status(500).json({ message: "Error interno del servidor" });
@@ -205,7 +210,25 @@ const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}
         ...options,
     });
 
-    return { sightings, totalRecords };
+    // Agregamos el campo "status" a cada avistamiento
+    const computedSightings = sightings.map(sighting => {
+        let status;
+        if (sighting.validado_por === null && sighting.eliminado_por === null) {
+            status = "pending";
+        } else if (sighting.validado_por !== null && sighting.eliminado_por === null) {
+            status = "validated";
+        } else if (sighting.eliminado_por !== null) {
+            status = "rejected";
+        }
+
+        return {
+        ...sighting.toJSON(),
+        status,
+        };
+    });
+
+  return { sightings: computedSightings, totalRecords };
+
 };
 
 const markSightingAsSeen = async (req, res) => {
