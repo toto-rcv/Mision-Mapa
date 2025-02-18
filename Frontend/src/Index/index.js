@@ -234,22 +234,35 @@ elements.endDateInput.addEventListener("change", function() {
 elements.filtersClearButton.addEventListener("click", function() {
     currentFilters = {
         startDate: new Date(Date.now() - 30 * 86400000),
-        endDate: new Date(),
+        endDate: null,
         statuses: ['pending', 'validated'],
-        users: []
+        userIds: []
     };
+
+    setDefaultDateRange(30);
 
     // Actualizar UI
     document.querySelectorAll('.status-btn').forEach(btn => {
         btn.classList.toggle('active', currentFilters.statuses.includes(btn.dataset.value));
     });
 
+    document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+      checkbox.checked = false;
+    });
+  
+    const selectedContainer = document.getElementById('selected-users');
+    selectedContainer.innerHTML = '';
+    const placeholder = document.getElementById('user-placeholder');
+    if (placeholder) {
+      placeholder.style.display = 'block';
+    }
+
     applyFilters();
   });
 
 elements.quickDateButtons.forEach(btn => {
     btn.addEventListener("click", function() {
-      // Agrega la clase para disparar el efecto bounce
+
       btn.classList.add("clicked");
       // Remueve la clase después de la duración de la animación (300ms)
       setTimeout(() => {
@@ -257,7 +270,6 @@ elements.quickDateButtons.forEach(btn => {
       }, 300);
 
       animateShrink(elements.startDateInput);
-      animateShrink(elements.endDateInput);
     })
 })
 
@@ -628,8 +640,7 @@ function loadUsers() {
             <input type="checkbox" value="${user.dni}" class="user-checkbox">
             <div class="user-info">
                 <span class="user-militaryRank">${user.militaryRank}</span>
-                <span class="user-fullname">
-                ${user.fullName} <span class="user-dni">(${user.dni})</span>
+                <span class="user-fullname">${user.fullName} <span class="user-dni">(${user.dni})</span>
                 </span>
             </div>
           `;
@@ -1190,24 +1201,22 @@ function initFilters() {
 }
 
 function setDefaultDateRange(days) {
-    const endDate = new Date();
+    const now = new Date();
     const startDate = new Date();
-    startDate.setDate(endDate.getDate() - days);
+    startDate.setDate(now.getDate() - days);
   
     startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(0, 0, 0, 0);
   
     currentFilters.startDate = startDate;
-    currentFilters.endDate = endDate;
+    currentFilters.endDate = null;
 
     const formatLocalDate = (date) => {
-      // Ajustamos la fecha restando el offset en milisegundos
       const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
       return localDate.toISOString().slice(0, 16);
     };
   
     elements.startDateInput.value = formatLocalDate(startDate);
-    elements.endDateInput.value = formatLocalDate(endDate);
+    elements.endDateInput.value = '';
 }
   
   // Manejadores de Eventos
@@ -1292,11 +1301,37 @@ function handleUserSelection(e) {
     selectedCheckboxes.forEach(cb => {
       const option = cb.closest('.user-option');
       const fullName = option.querySelector('.user-fullname').textContent;
+      const dni = cb.value;
       
+      const badgeText = `${abbreviateName(fullName)} (${dni})`;
+
       // Crear la tarjeta (badge)
       const badge = document.createElement('div');
       badge.classList.add('selected-user-card');
-      badge.textContent = fullName;
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = badgeText;
+      badge.appendChild(nameSpan);
+
+      const removeBtn = document.createElement('span');
+      removeBtn.classList.add('remove-badge');
+      removeBtn.textContent = '×';
+
+      removeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+
+        currentFilters.userIds = currentFilters.userIds.filter(id => id !== dni);
+        cb.checked = false;
+
+        badge.remove();
+   
+        if (selectedContainer.children.length === 0) {
+          placeholder.style.display = 'block';
+        }
+      });
+
+      badge.appendChild(removeBtn);
+
       
       selectedContainer.appendChild(badge);
     });
@@ -1319,6 +1354,15 @@ function filterUserOptions() {
       }
     });
 }
+
+function abbreviateName(fullName) {
+    if (!fullName) return "";
+    const parts = fullName.trim().split(' ');
+    if (parts.length === 1) return fullName;
+    const firstInitial = parts[0].charAt(0);
+    const lastName = parts[1];
+    return `${firstInitial}. ${lastName}`;
+  }
 
 document.getElementById('user-dropdown-search').addEventListener('input', filterUserOptions);
 

@@ -1470,6 +1470,9 @@ textarea::-webkit-scrollbar-thumb:hover {
   
   /* Cada tarjeta (badge) de usuario */
   .selected-user-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background-color: var(--primary-color, #00BCD4);
     color: #fff;
     padding: 0.25rem 0.5rem;
@@ -1481,4 +1484,15 @@ textarea::-webkit-scrollbar-thumb:hover {
   .placeholder {
     color: #aaa;
     margin-left: 0.5rem;
+  }
+
+  .selected-user-card .remove-badge {
+    margin-left: 0.5em;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1em;
+  }
+  
+  .selected-user-card .remove-badge:hover {
+    color: #ccc;
   }
