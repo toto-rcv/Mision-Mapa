@@ -16,7 +16,6 @@ let formEditMode = false;
 let markers = [];
 let minTimestamp, maxTimestamp;
 
-// Estado de los filtros (se elimina la propiedad userId)
 let currentFilters = {
     startDate: null,
     endDate: null,
@@ -183,7 +182,8 @@ function formatCoordinates(value) {
 }
 
 // Event Listeners
-registerButton.addEventListener('click', () => {
+elements.registerButton.addEventListener('click', async () => {
+    await clearFilters();
     hideNotificationOverlay();
     showOverlay();
 });
@@ -233,34 +233,7 @@ elements.endDateInput.addEventListener("change", function() {
     currentFilters.endDate = elements.endDateInput.value ? new Date(elements.endDateInput.value) : null;
 });
 
-elements.filtersClearButton.addEventListener("click", function() {
-    currentFilters = {
-        startDate: new Date(Date.now() - 30 * 86400000),
-        endDate: null,
-        statuses: ['pending', 'validated'],
-        userIds: []
-    };
-
-    setDefaultDateRange(30);
-
-    // Actualizar UI
-    document.querySelectorAll('.status-btn').forEach(btn => {
-        btn.classList.toggle('active', currentFilters.statuses.includes(btn.dataset.value));
-    });
-
-    document.querySelectorAll('.user-checkbox').forEach(checkbox => {
-      checkbox.checked = false;
-    });
-  
-    const selectedContainer = document.getElementById('selected-users');
-    selectedContainer.innerHTML = '';
-    const placeholder = document.getElementById('user-placeholder');
-    if (placeholder) {
-      placeholder.style.display = 'block';
-    }
-
-    applyFilters();
-  });
+elements.filtersClearButton.addEventListener("click", clearFilters);
 
 elements.quickDateButtons.forEach(btn => {
     btn.addEventListener("click", function() {
@@ -743,7 +716,7 @@ function setMarkerColor(marker) {
 }
 
 async function setMarkerAsSeen(sightingId, authorId, currentUserId) {
-    console.log("Intento de marcar: ", currentUserId, authorId)
+
     if (currentUserId === authorId) return;
 
     const marker = markers.find(m => m.id === sightingId);
@@ -851,9 +824,11 @@ async function setSocketEvents() {
     const socket = await getSocketClient();
     if (socket) {
         socket.on('NEW_SIGHTING', (sighting) => {
-            console.log(sighting)
+
             if (userId !== sighting.usuario_id && matchesFilters(sighting)) {
                 addMarker(sighting.id, sighting);
+                updateRedMarkersModal();
+                updateMarkersCount(markers.length);
             }
         });
 
@@ -861,7 +836,9 @@ async function setSocketEvents() {
 
             const marker = markers.find(m => m.id == sightingId);
 
-            if (marker) {
+            if (marker && marker.sighting) {
+                marker.sighting.status = 'validated'
+
                 if (!matchesFilters(marker.sighting)) {
                     marker.leafletObject.remove()
                 }
@@ -891,11 +868,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     initFilters();
 
     const sightings = await loadMarkers(currentFilters);
-    /*
-    processTimestamps(sightings);
-    placeMarkersOnMap(sightings);
-    filterMarkersByDateRange();
-    */
     updateSightingsComponents(sightings);
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -1243,6 +1215,35 @@ async function applyFilters() {
     updateSightingsComponents(sightings);
     showFilterFeedback(sightings ? sightings.length : 0);
 }
+
+async function clearFilters() {
+    currentFilters = {
+        startDate: new Date(Date.now() - 30 * 86400000),
+        endDate: null,
+        statuses: ['pending', 'validated'],
+        userIds: []
+    };
+
+    setDefaultDateRange(30);
+
+    // Actualizar UI
+    document.querySelectorAll('.status-btn').forEach(btn => {
+        btn.classList.toggle('active', currentFilters.statuses.includes(btn.dataset.value));
+    });
+
+    document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+      checkbox.checked = false;
+    });
+  
+    const selectedContainer = document.getElementById('selected-users');
+    selectedContainer.innerHTML = '';
+    const placeholder = document.getElementById('user-placeholder');
+    if (placeholder) {
+      placeholder.style.display = 'block';
+    }
+
+    await applyFilters();
+}
   
 function updateMarkersVisibility(visibleMarkers) {
     markers.forEach(marker => {
@@ -1382,8 +1383,7 @@ document.addEventListener('click', function(event) {
   });
 
 function matchesFilters(sighting) {
-    console.log(currentFilters)
-    console.log(sighting)
+
     // Verificar filtro de fecha
     const sightingDate = new Date(sighting.fecha_avistamiento);
     if (currentFilters.startDate && sightingDate < currentFilters.startDate) return false;

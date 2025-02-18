@@ -52,7 +52,7 @@ export function loadUserProfile() {
 }
 
 export function getUserId() {
-    const user = retrieveUserProfile()
+    const {user} = retrieveUserProfile()
 
     if (!user) {
         console.error('No se encontraron datos de usuario en el localStorage.');
