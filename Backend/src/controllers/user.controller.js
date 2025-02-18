@@ -28,28 +28,40 @@ const getAllUsers = async (req, res) => {
 
 const getMinimalUsers = async (req, res) => {
     try {
-        const users = await User.findAll({
-            attributes: ['dni', 'firstName', 'lastName', 'militaryRank', 'email'],
-            order: [
-                ['firstName', 'ASC'],
-                ['lastName', 'ASC']  
-              ]
-          });
-      
-          const minimalUsers = users.map(user => {
-            return {
-              dni: user.dni,
-              fullName: `${user.firstName} ${user.lastName}`,
-              militaryRank: user.militaryRank,
-              email: user.email
-            };
-          });
-      
-          return res.status(200).json({ users: minimalUsers });
+        let users;
 
+        switch (req.role) {
+            case 'POA':
+                users = await User.findAll({
+                    where: { dni: req.user.id },
+                    attributes: ['dni', 'firstName', 'lastName', 'militaryRank', 'email']
+                });
+                break;
+            case 'DETECCION':
+            case 'JEFE DE DETECCION':
+                users = await User.findAll({
+                    attributes: ['dni', 'firstName', 'lastName', 'militaryRank', 'email'],
+                    order: [
+                        ['firstName', 'ASC'],
+                        ['lastName', 'ASC']  
+                    ]
+                });
+                break;
+            default:
+                return res.status(403).json({ message: "Acceso no autorizado" });
+        }
+
+        const minimalUsers = users.map(user => ({
+            dni: user.dni,
+            fullName: `${user.firstName} ${user.lastName}`,
+            militaryRank: user.militaryRank,
+            email: user.email
+        }));
+
+        return res.status(200).json({ users: minimalUsers });
     } catch (error) {
         console.error("Error al obtener los usuarios:", error);
-        res.status(500).json({ message: "Error interno del servidor" });
+        return res.status(500).json({ message: "Error interno del servidor" });
     }
 }
 
