@@ -24,6 +24,8 @@ let currentFilters = {
     userIds: []
 };
 
+let userId;
+
 
 const mapContainer = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap contributors'}).addTo(mapContainer);
