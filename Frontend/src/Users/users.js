@@ -227,8 +227,8 @@ const UsersApp = (function () {
             row.setAttribute('data-id', user.id);
             row.innerHTML = `
         <td data-label="D.N.I:" >${formatDNI(user.dni)}</td>
-        <td data-label="Fuerza Per.:" >${user.powerMilitary.trim()}</td>
-        <td data-label="Usuario:">${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
+        <td class="userForze" data-label="Fuerza Per.:" >${user.powerMilitary.trim()}</td>
+        <td class="userName" data-label="Usuario:">${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
         <td data-label="Email:">${user.email}</td>
         
         <td data-label="Rol-Usuario:">
@@ -259,6 +259,7 @@ const UsersApp = (function () {
         setupTableEventListeners();
     }
 
+    
     // ================================
     // RENDERIZACIÓN DE LOS BOTONES DE PAGINACIÓN
     // ================================
