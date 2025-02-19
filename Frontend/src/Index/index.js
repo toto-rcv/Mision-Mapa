@@ -2,6 +2,7 @@ import { reloadUserProfile, getUserId } from '/utils/profile.js';
 import { customFetch } from '/utils/auth.js';
 import { showNavItems } from '/static/js/navigation.js';
 import getSocketClient from '/utils/socket.js';
+import { formatDNI } from '/utils/utils.js';
 
 // Initialize UI elements
 const registerButton = document.getElementById('register-button');
@@ -615,7 +616,7 @@ function loadUsers() {
             <input type="checkbox" value="${user.dni}" class="user-checkbox">
             <div class="user-info">
                 <span class="user-militaryRank">${user.militaryRank}</span>
-                <span class="user-fullname">${user.fullName} <span class="user-dni">(${user.dni})</span>
+                <span class="user-fullname">${user.fullName} <span class="user-dni">(${formatDNI(user.dni)})</span>
                 </span>
             </div>
           `;
@@ -1310,7 +1311,7 @@ function handleUserSelection(e) {
       const fullName = option.querySelector('.user-fullname').textContent;
       const dni = cb.value;
       
-      const badgeText = `${abbreviateName(fullName)} (${dni})`;
+      const badgeText = `${abbreviateName(fullName)} (${formatDNI(dni)})`;
 
       // Crear la tarjeta (badge)
       const badge = document.createElement('div');
@@ -1352,7 +1353,7 @@ function filterUserOptions() {
     const options = document.querySelectorAll('.user-option');
     options.forEach(option => {
       const fullName = option.querySelector('.user-fullname').textContent.toLowerCase();
-      const dni = option.querySelector('.user-dni').textContent.toLowerCase();
+      const dni = option.querySelector('.user-dni').textContent.toLowerCase().replace(/\./g, '');
       // Se verifica si el término de búsqueda coincide con el nombre o el DNI
       if (fullName.includes(searchTerm) || dni.includes(searchTerm)) {
         option.style.display = '';

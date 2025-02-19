@@ -4,7 +4,7 @@
 import { reloadUserProfile, retrieveUserProfile } from '/utils/profile.js';
 import { showNavItems } from '/static/js/navigation.js';
 import { customFetch } from '/utils/auth.js';
-import { debounce, formatDate } from '/utils/utils.js';
+import { debounce, formatDate, formatDNI } from '/utils/utils.js';
 
 // ================================
 // VARIABLES GLOBALES
@@ -226,7 +226,7 @@ const UsersApp = (function () {
             const row = document.createElement('tr');
             row.setAttribute('data-id', user.id);
             row.innerHTML = `
-        <td data-label="D.N.I:" >${user.dni}</td>
+        <td data-label="D.N.I:" >${formatDNI(user.dni)}</td>
         <td data-label="Fuerza Per.:" >${user.powerMilitary.trim()}</td>
         <td data-label="Usuario:">${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
         <td data-label="Email:">${user.email}</td>
