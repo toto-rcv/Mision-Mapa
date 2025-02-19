@@ -14,7 +14,6 @@ export function debounce(fn, delay = 1000) {
     };
 };
 
-
 export function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const monthIndex = date.getMonth();
@@ -29,4 +28,8 @@ export function formatDate(date) {
     }).format(date);
 
     return `${formattedDate} ${formattedTime}`;
+}
+
+export function formatDNI(dni) {
+    return dni.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }

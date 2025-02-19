@@ -1,10 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-
   const User = sequelize.define("User", {
     dni: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER, // Cambiado de STRING a INTEGER
       allowNull: false,
-      primaryKey: true, // DNI como clave primaria
+      primaryKey: true, 
       unique: true
     },
     email: {
@@ -34,14 +33,13 @@ module.exports = (sequelize, DataTypes) => {
     userRank: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: 'POA', // Valor por defecto
+      defaultValue: 'POA'
     },
     status: {
       type: DataTypes.INTEGER,
-
       allowNull: true,
       references: {
-        model: "user_statuses", // La tabla referenciada para `status`
+        model: "user_statuses", // Tabla referenciada
         key: "id",
       },
     },
@@ -54,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       references: {
         model: "Users", // Referencia a la misma tabla de usuarios
-        key: "id",
+        key: "dni",   // Ahora la clave primaria es `dni`
       },
     },
     confirmUpdate: {
@@ -66,24 +64,21 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     }
-
-
   });
 
-
-  // Restricción para evitar múltiples DNIs con un mismo correo
+  // Hook para validar que se proporcionen DNI y email
   User.addHook("beforeValidate", (user) => {
     if (!user.dni || !user.email) throw new Error("DNI y Email son obligatorios");
   });
 
   User.associate = (models) => {
     User.belongsTo(models.User, {
-      as: "updatedBy", // Usuario que actualizó el estado
+      as: "updatedBy",
       foreignKey: "status_updated_by",
     });
 
     User.belongsTo(models.UserStatus, {
-      as: "statusDetail", // Detalle del estado
+      as: "statusDetail",
       foreignKey: "status",
     });
   };
