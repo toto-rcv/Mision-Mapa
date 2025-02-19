@@ -365,20 +365,66 @@ form input {
 }
 
 /* ==========================================================================
-     Media Queries
+     Media Queries (ordenadas de mayor a menor)
      ========================================================================== */
+
+/* Media Query para max-width: 1600px */
+@media (max-width: 1600px) {
+  .register-container {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 1200px) {
+
+  .users-table td:nth-child(7) {
+    display: none;
+  }
+
+  .users-table th:nth-child(7){
+    display: none;
+  }
+  .users-table th:nth-child(6){
+    display: none;
+  } 
+  .users-table td:nth-child(6) {
+    display: none;
+  }
+  .users-table td:nth-child(2) {
+    display: none;
+  }
+  .users-table th:nth-child(2) {
+    display: none;
+  }
+  .userName {
+    max-width: unset;
+    min-width: unset;
+    width: auto;
+    white-space: normal !important;
+ }
+ .userForze{
+  max-width: unset;
+  min-width: unset;
+  width: auto;
+  white-space: normal !important;
+ }
+}
+
+/* Media Query para max-width: 768px */
 @media (max-width: 768px) {
   #registro {
     background: none;
     box-shadow: none;
   }
-  
-  #filter-modal{
+
+  #filter-modal {
     transform: translate(-150%, 20%);
   }
+
   .hide-on-mobile {
     display: none !important;
   }
+
   .users-table td {
     white-space: pre-line;
   }
@@ -504,12 +550,7 @@ form input {
   }
 }
 
-@media (max-width: 1600px) {
-  .register-container {
-    font-size: 0.8rem;
-  }
-}
-
+/* Media Query para max-width: 468px */
 @media (max-width: 468px) {
   .filters {
     display: flex;
@@ -560,8 +601,6 @@ form input {
     width: 100px;
   }
 
-  
-
   td:first-child {
     padding-bottom: 2px;
   }
@@ -571,7 +610,6 @@ form input {
     top: 20px;
     transform: translate(-120%, 20%);
     z-index: 9999;
-    /* Sobre todos los elementos */
     border-radius: 5px;
   }
 
@@ -579,8 +617,7 @@ form input {
     justify-content: center;
   }
 
-  .title{
+  .title {
     font-size: none !important;
-
   }
 }
