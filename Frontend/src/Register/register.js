@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lastName: document.getElementById("lastname").value,
             militaryRank: document.getElementById("rankMilitar").value,
             powerMilitary: document.getElementById("powerMilitary").value,
-            dni: document.getElementById("dni").value,
+            dni: document.getElementById("dni").value.replace(/\./g, ''),
         };
 
         try {
@@ -207,10 +207,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else {
                 const error = await response.json();
+                submitButton.classList.remove('loading');
                 alert('Error: ' + error.message);
             }
         } catch (err) {
             console.error('Error al conectar con el servidor:', err);
+            submitButton.classList.remove('loading');
             alert('Error al conectar con el servidor.');
         }
     });

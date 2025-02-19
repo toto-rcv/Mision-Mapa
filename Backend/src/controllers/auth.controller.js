@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     // Crear el usuario
-    const newUser = await User.create({
+    await User.create({
       dni,
       email,
       password: hashedPassword,

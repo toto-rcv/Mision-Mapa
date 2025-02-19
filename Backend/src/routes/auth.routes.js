@@ -10,5 +10,4 @@ router.post("/refresh-token", validateRefreshToken, refreshAccessToken);
 
 router.get("/profile", validateAccessToken, getProfile);
 
-
 module.exports = router;
