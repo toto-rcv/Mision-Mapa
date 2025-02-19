@@ -1,544 +1,508 @@
-/* Estilos para el contenedor del mapa */
-#registro {
-  border-radius: 8px;
-  background-color: #26252a;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.users-table {
-  border-collapse: collapse;
-  border-radius: 8px;
-  color: white;
-  /*table-layout: fixed;*/
-  overflow: hidden;
-  width: 100%;
-  flex: 1;
-}
-
-.users-table th img {
-  vertical-align: middle;
-  height: 1.5em;
-  margin-left: 5px;
-  padding: 3px;
-}
-
-.users-table thead th {
-  background-color: #1d4c54;
-  padding: 1rem 0.5rem;
-  white-space: nowrap;
-  border-bottom: 1px solid #3d3d3d;
-  font-weight: 400;
-  text-align: left;
-}
-
-.users-table td {
-  padding: 0.5rem;
-  border-bottom: 1px solid #3d3d3d;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.users-table tbody tr:nth-child(even) {
-  background-color: #24242b;
-}
-
-.users-table tbody tr:nth-child(odd) {
-  background-color: #1e1e24;
-}
-
-.users-table tbody tr:hover {
-  background-color: #2e2e38;
-  cursor: pointer;
-}
-
-.users-table td:first-child {
-  font-weight: bold;
-  color: #00bcd4;
-  padding-left: 1rem;
-}
-
-.users-table th:first-child {
-  padding-left: 1rem;
-}
-
-.ubicacion-cell {
-  max-width: 350px;
-  min-width: 350px;
-  width: 350px;
-  white-space: normal !important;
-}
-
-.users-table td.actions-cell {
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-
-
-td.actions-cell>button {
-  margin-right: 10px;
-}
-
-td.actions-cell>button:last-child {
-  margin-right: 0px;
-}
-
-
-
-
-
-
-
-
-
-
-.delete-btn {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-.delete-btn:hover {
-  background-color: #ff1a1a;
-}
-
-.delete-btn:disabled {
-  background-color: gray;
-  cursor: not-allowed;
-}
-
-#modal-confirm-delete.active {
-  display: block;
-}
-.modal {
-  position: fixed;
-  /* Hace que el modal esté fijo en la pantalla */
-  top: 50%;
-  /* Coloca el modal en el centro vertical */
-  left: 50%;
-  /* Coloca el modal en el centro horizontal */
-  transform: translate(-50%, -50%);
-  /* Ajusta para que el modal quede completamente centrado */
-  border-radius: 20px;
-  color: white;
-  background-color: var(--form-background-color);
-  border: 2px solid var(--link-color);
-  padding: 20px;
-  /* Puedes ajustar el padding según el diseño que desees */
-  z-index: 1000;
-  /* Asegura que el modal esté por encima de otros elementos */
-}
-
-.modal p {
-  font-size: small;
-  text-align: center;
-}
-
-.buttons-confirm {
-  display: flex;
-  justify-content: space-evenly;
-  padding-top: 10px;
-}
-
-.button-confirm-delete {
-  background-color: #00BCD4;
-  /* Color inicial */
-  color: white;
-  border-radius: 10px;
-  width: 40px;
-  height: 40px;
-  transition: background-color 0.3s ease;
-  /* Transición suave */
-}
-
-.button-confirm-delete:hover {
-  background-color: red;
-  /* Color al pasar el mouse */
-}
-
-
-.rank-select {
-  background-color: transparent;
-  color: #00bcd4;
-  border: 1px solid #00bcd4;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 14px;
-
-}
-
-.status-select {
-  background-color: transparent;
-  color: #00bcd4;
-  border: 1px solid #00bcd4;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 14px;
-  text-align: center;
-}
-
-select option {
-  background-color: #1e1e24;
-  border-color: black;
-  color: #00bcd4;
-  text-align: left;
-}
-
-
-h2 {
-  text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.search-input {
-  padding: 10px;
-  width: 40%;
-  /* Ajusta el ancho según sea necesario */
-  border: 1px solid #00BCD4;
-  border-radius: 4px;
-  background-color: #1e1e24;
-  color: white;
-}
-
-/* Estilos para el modal de filtro */
-#filter-modal {
-  display: none;
-  position: absolute;
-  background-color: var(--background-color);
-  border: 3px solid var(--primary-color);
-  padding: 1rem;
-  z-index: 1000;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-
-}
-
-#filter-modal.active {
-  display: block;
-  border-radius: 5px;
-}
-
-#filter-modal.active label {
-  width: 200px;
-}
-
-#filter-modal.active h3 {
-  text-align: center;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid white;
-}
-
-/* Estilos para cada opción de filtro */
-.filter-option {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.7rem;
-}
-
-.filter-option label {
-  margin-left: 0.5rem;
-}
-
-/* Contenedor para los botones de acción del modal */
-.filter-actions {
-  margin-top: 1rem;
-}
-
-/* Estilos para los botones dentro del modal */
-#filter-modal button {
-  margin-right: 0.5rem;
-  margin-bottom: 10px;
-}
-
-/* Estilo para el botón de opciones de filtro */
-#filter-options-btn {
-  color: white;
-  cursor: pointer;
-  padding: 0 1rem;
-  border-radius: 5px;
-  background: var(--form-background-color);
-  border: 2px solid var(--primary-color);
-}
-
-#filter-options-btn:hover {
-  background-color: #00BCD4;
-}
-
-form button{
-  background-color: var(--input-border);
-}
-
-#filter-confirm-btn:hover{
-  background-color: var(--link-color);
-}
-
-#cancel-filter-btn:hover{
-  background-color:var(--error-color);
-}
-form input {
-  width: 25px;
-}
-
-.register-container {
-  background: #1A1A1C;
-  padding: 1rem;
-  flex: 1;
-  display: flex;
-  font-size: 0.95rem;
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.pagination button {
-
-  background-color: transparent;
-  color: #00bcd4;
-  border: 1px solid #00bcd4;
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-}
-
-.filters {
-  padding: 1rem;
-  display: flex;
-  gap: 10px;
-}
-
-.users-list {
-  flex: 1;
-}
-
-.mobile-only {
-  display: none;
-
-}
-
-.users-search {
-  position: relative;
-  width: 40%;
-}
-
-.search-input {
-  padding: 0.75rem;
-  padding-left: 2rem;
-  width: 100%; /* Ocupa todo el ancho del contenedor */
-  border: 1px solid #555; /* Borde más sutil */
-  background-color: #333; /* Fondo más oscuro */
-  color: white;
-  transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s; /* Transiciones suaves */
-  outline: none; /* Quita el borde azul al hacer foco */
-  border-radius: 5px;
-  background-color: #1e1e24;
-  color: white;
-}
-
-.search-input:focus {
-  border-color: #00BCD4; /* Color del borde al hacer foco (tu color original) */
-  background-color: #444; /* Fondo ligeramente más claro al hacer foco */
-  box-shadow: 0 0 5px rgba(0, 188, 212, 0.5); /* Sombra sutil */
-}
-
-.search-icon {
-  position: absolute; /* Posicionamos el ícono */
-  left: 10px; /* Distancia desde el borde izquierdo */
-  top: 50%;  /* Centrado verticalmente */
-  transform: translateY(-50%); /* Ajuste fino para centrar verticalmente */
-  color: #888; /* Color del ícono */
-  pointer-events: none; /* Evita que el ícono interfiera con clics en el input */
-  transition: color 0.3s;
-}
-
-.search-input:focus + .search-icon {
-  color: #00BCD4; /* Cambia el color del ícono al hacer foco */
-}
-
-/* Estilos para el placeholder (opcional) */
-.search-input::placeholder {
-  color: #aaa;
-}
-.search-table{
-    margin-top:1rem;
-}
-
-.clear-button {
-  position: absolute;
-  right: 10px; /* Ajusta según sea necesario */
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #888;
-  cursor: pointer;
-  padding: 5px; /* Para que sea más fácil hacer clic */
-  font-size: 14px; /* Ajusta según tu diseño */
-  z-index: 2; /* Asegúrate de que esté encima del input */
-  transition: color 0.2s;
-  display:none; /*Se oculta por defecto*/
-}
-.search-input:not(:placeholder-shown) + .search-icon + .clear-button{
-    display:block; /*Se muestra si hay texto*/
-}
-
-.clear-button:hover,
-.clear-button:focus {
-  color: #00BCD4; /* Cambia el color al hacer hover/focus */
-  outline: none;
-}
-
-
-@media (max-width: 768px) {
-
-  #registro {
-    background: none;
-    box-shadow: none;
-  }
-
-  .main-content {
-    margin-top: 70px;
-  }
-
-  .users-table thead {
-    display: none;
-    /* Ocultar encabezados de tabla en móviles */
-  }
-
-  .users-table tbody tr {
+/* ==========================================================================
+   Contenedor principal y estructura básica
+   ========================================================================== */
+   #registro {
+    border-radius: 8px;
+    background-color: #26252a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex: 1;
     display: flex;
     flex-direction: column;
-    margin-bottom: 0.5rem;
-    border: 1px solid #3d3d3d;
-    border-radius: 8px;
-    padding: 1rem;
-    background-color: #1e1e24;
   }
-
-  .users-table tbody td {
-    width: 100%;
-    padding: 5px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-align: right;
-    font-size: 1em;
-    border: none;
-  }
-
-  .users-table tbody td::before {
-    content: attr(data-label);
-    display: inline-block;
-    font-weight: bold;
-    margin-right: 1rem;
-    color: #00bcd4;
-  }
-
-
-  form {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-
-  .form-group {
-    width: calc(50% - 0.5rem);
-  }
-
+  
   .register-container {
     background: #1A1A1C;
     padding: 1rem;
     flex: 1;
     display: flex;
-    margin-bottom: 60px;
+    font-size: 0.95rem;
   }
-
-  .form-group.full-width {
-    width: 100%;
-
-  }
-
-
-
-
-  .mobile-only {
-    display: flex;
-
-  }
-
-  .users-table thead {
-    display: none;
-    /* Ocultar encabezados de tabla en móviles */
-  }
-
-  .users-table td.actions-cell {
-    width: unset;
-    margin-top: 0.75rem;
-    padding-block: 0;
-  }
-
-  .ubicacion-cell {
-    max-width: unset;
-    min-width: unset;
-    width: unset;
-  }
-
-  .pagination {
-    padding: 0;
-    padding-block: 1rem;
-  }
-
+  
   .filters {
-    padding: 0;
-    padding-block: 1rem;
+    padding: 1rem;
+    display: flex;
+    gap: 10px;
   }
-
-  .search-input {
+  
+  /* ==========================================================================
+     Tabla de usuarios
+     ========================================================================== */
+  .users-table {
+    border-collapse: collapse;
+    border-radius: 8px;
+    color: white;
+    overflow: hidden;
     width: 100%;
-    font-size: 1em;
-    height: unset;
+    flex: 1;
+  }
+  
+  .users-table th,
+  .users-table td {
+    padding: 0.5rem;
+    text-align: left;
+    white-space: nowrap;
+  }
+  
+  .users-table th {
+    background-color: #1d4c54;
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid #3d3d3d;
+    font-weight: 400;
+  }
+  
+  .users-table th:first-child,
+  .users-table td:first-child {
+    padding-left: 1rem;
+  }
+  
+  .users-table th img {
+    vertical-align: middle;
+    height: 1.5em;
+    margin-left: 5px;
+    padding: 3px;
+  }
+  
+  .users-table td {
+    border-bottom: 1px solid #3d3d3d;
+  }
+  
+  .users-table tbody tr:nth-child(even) {
+    background-color: #24242b;
+  }
+  
+  .users-table tbody tr:nth-child(odd) {
+    background-color: #1e1e24;
+  }
+  
+  .users-table tbody tr:hover {
+    background-color: #2e2e38;
+    cursor: pointer;
+  }
+  
+  .users-table td:first-child {
+    font-weight: bold;
+    color: #00bcd4;
+  }
+  
+  .users-table td.actions-cell {
+    /* Estilo global para acciones en desktop */
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  
+  .users-table td.actions-cell > button {
+    margin-right: 10px;
+  }
+  
+  .users-table td.actions-cell > button:last-child {
+    margin-right: 0;
+  }
+  
+  /* ==========================================================================
+     Botón de eliminación
+     ========================================================================== */
+  .delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .delete-btn:hover {
+    background-color: #ff1a1a;
+  }
+  
+  .delete-btn:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+  }
+  
+  /* ==========================================================================
+     Modal de confirmación
+     ========================================================================== */
+  #modal-confirm-delete.active {
+    display: block;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    color: white;
+    background-color: var(--form-background-color);
+    border: 2px solid var(--link-color);
+    padding: 20px;
+    z-index: 1000;
+  }
+  
+  .modal p {
+    font-size: small;
+    text-align: center;
+  }
+  
+  .buttons-confirm {
+    display: flex;
+    justify-content: space-evenly;
+    padding-top: 10px;
+  }
+  
+  .button-confirm-delete {
+    background-color: #00BCD4;
+    color: white;
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button-confirm-delete:hover {
+    background-color: red;
+  }
+  
+  /* ==========================================================================
+     Selects de rango y estado
+     ========================================================================== */
+  .rank-select,
+  .status-select {
+    background-color: transparent;
+    color: #00bcd4;
+    border: 1px solid #00bcd4;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .status-select {
+    text-align: center;
+  }
+  
+  select option {
+    background-color: #1e1e24;
+    border-color: black;
+    color: #00bcd4;
+    text-align: left;
+  }
+  
+  /* ==========================================================================
+     Encabezados generales
+     ========================================================================== */
+  h2 {
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* ==========================================================================
+     Modal de filtro
+     ========================================================================== */
+  #filter-modal {
+    display: none;
+    position: absolute;
+    background-color: var(--background-color);
+    border: 3px solid var(--primary-color);
+    padding: 1rem;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  #filter-modal.active {
+    display: block;
+    border-radius: 5px;
+  }
+  
+  #filter-modal.active label {
+    width: 200px;
+  }
+  
+  #filter-modal.active h3 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid white;
+  }
+  
+  .filter-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.7rem;
+  }
+  
+  .filter-option label {
+    margin-left: 0.5rem;
+  }
+  
+  .filter-actions {
+    margin-top: 1rem;
+  }
+  
+  #filter-modal button {
+    margin-right: 0.5rem;
+    margin-bottom: 10px;
+  }
+  
+  /* Botón para abrir el filtro */
+  #filter-options-btn {
+    color: white;
+    cursor: pointer;
+    padding: 0 1rem;
+    border-radius: 5px;
+    background: var(--form-background-color);
+    border: 2px solid var(--primary-color);
+  }
+  
+  #filter-options-btn:hover {
+    background-color: #00BCD4;
+  }
+  
+  /* Botones del filtro */
+  #filter-confirm-btn:hover {
+    background-color: var(--link-color);
+  }
+  
+  #cancel-filter-btn:hover {
+    background-color: var(--error-color);
+  }
+  
+  /* Formularios dentro del filtro */
+  form button {
+    background-color: var(--input-border);
+  }
+  
+  form input {
+    width: 25px;
+  }
+  
+  /* ==========================================================================
+     Buscador de usuarios
+     ========================================================================== */
+  .users-search {
+    position: relative;
+    width: 40%;
+  }
+  
+  .search-input {
+    padding: 0.75rem;
+    padding-left: 2rem;
+    width: 100%;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #1e1e24;
+    color: white;
+    transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+    outline: none;
+  }
+  
+  .search-input:focus {
+    border-color: #00BCD4;
+    background-color: #444;
+    box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+  }
+  
+  .search-input::placeholder {
+    color: #aaa;
+  }
+  
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    pointer-events: none;
+    transition: color 0.3s;
+  }
+  
+  .search-input:focus + .search-icon {
+    color: #00BCD4;
+  }
+  
+  .clear-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 14px;
+    z-index: 2;
+    transition: color 0.2s;
+    display: none;
+  }
+  
+  .search-input:not(:placeholder-shown) + .search-icon + .clear-button {
+    display: block;
+  }
+  
+  .clear-button:hover,
+  .clear-button:focus {
+    color: #00BCD4;
+  }
+  
+  /* ==========================================================================
+     Paginación
+     ========================================================================== */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 1rem;
     padding: 1rem;
   }
-}
-
-@media (max-width: 1600px) {
-
-  .register-container {
-    font-size: 0.8rem;
+  
+  .pagination button {
+    background-color: transparent;
+    color: #00bcd4;
+    border: 1px solid #00bcd4;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
   }
+  
+  /* ==========================================================================
+     Media Queries
+     ========================================================================== */
+  /* Reglas comunes para pantallas menores a 768px */
+  @media (max-width: 768px) {
+    #registro {
+      background: none;
+      box-shadow: none;
+    }
+    
+    .main-content {
+      margin-top: 70px;
+    }
+    
+    .users-table thead {
+      display: none;
+    }
+    
+    .users-table tbody tr {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0.5rem;
+      border: 1px solid #3d3d3d;
+      border-radius: 8px;
+      padding: 1rem;
+      background-color: #1e1e24;
+    }
+    
+    .users-table tbody td {
+      width: 100%;
+      padding: 2px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: right;
+      font-size: 15px;
+      border: none;
+      order: 1;
+      padding-bottom: 5px;
+    }
+    
+    .users-table tbody td:nth-child(1),
+    .users-table tbody td:nth-child(1)::before {
+      padding-bottom: 2px;
+    }
+    
+    .users-table tbody td::before {
+      content: attr(data-label);
+      display: inline-block;
+      font-weight: bold;
+      margin-right: 1rem;
+      color: #00bcd4;
+    }
+    
+    .users-search i {
+      display: none;
+    }
+    
+    .users-table tbody td.actions-cell {
+      order: 100;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .form-group {
+      width: calc(50% - 0.5rem);
+    }
+    
+    .register-container {
+      margin-bottom: 60px;
+    }
+    
+    .form-group.full-width {
+      width: 100%;
+    }
+    
+    .pagination {
+      padding: 0;
+      padding-block: 1rem;
+    }
+    
+    .filters {
+      justify-content: space-around;
+      padding: 0;
+      padding-block: 1rem;
+    }
+    
+    .search-input {
+      width: 160%;
+      font-size: 1em;
+      padding: 1rem;
+    }
+    
+    .hide-on-mobile {
+      display: none !important;
+    }
 
-  .col-large-screen {
-    display: none;
+    #filter-modal {
+      transform: translate(-150%, 20%);
+    }
   }
-
-}
-
-@media (max-width: 1280px) {
-
-  .col-medium-screen {
-    display: none;
+  
+  /* Reglas adicionales para pantallas menores a 468px */
+  @media (max-width: 468px) {
+    .filters {
+      justify-content: space-between;
+    }
+    
+    .search-input {
+      width: 200%;
+    }
+    
+    .delete-btn {
+      width: 100px;
+    }
+    
+    /* Ajuste específico para celdas en pantallas muy pequeñas */
+    td:first-child {
+      padding-bottom: 2px;
+    }
+    
+    #filter-modal {
+      display: block;
+      top: 20px;
+      transform: translate(-126%, 21%);
+      z-index: 9999;
+      border-radius: 5px;
+    }
+    
+    form {
+      justify-content: center;
+    }
   }
-
-  .ubicacion-cell {
-    max-width: unset;
-    min-width: unset;
-    width: auto;
-  }
-
-  .users-table td.col-ws {
-    white-space: pre-line;
-  }
-}
+  

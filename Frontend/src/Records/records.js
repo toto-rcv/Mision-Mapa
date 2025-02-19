@@ -250,6 +250,7 @@ const SightingsApp = (function () {
             }
         });
 
+        
         // Evento para cancelar la eliminación
         document.getElementById("cancelDelete").addEventListener('click', () => {
             sightingIdToDelete = null;

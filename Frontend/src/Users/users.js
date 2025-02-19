@@ -4,7 +4,7 @@
 import { reloadUserProfile, retrieveUserProfile } from '/utils/profile.js';
 import { showNavItems } from '/static/js/navigation.js';
 import { customFetch } from '/utils/auth.js';
-import { debounce,formatDate } from '/utils/utils.js';
+import { debounce, formatDate } from '/utils/utils.js';
 
 // ================================
 // VARIABLES GLOBALES
@@ -101,7 +101,7 @@ const UsersApp = (function () {
     // ================================
     function setupFilterModal() {
         let filterBtn = document.getElementById('filter-options-btn');
-        
+
 
         let filterModal = document.getElementById('filter-modal');
         if (!filterModal) {
@@ -186,6 +186,13 @@ const UsersApp = (function () {
         });
     }
 
+    document.addEventListener("scroll", function () {
+        const modal = document.getElementById("filter-modal");
+        if (modal && modal.style.display !== "none") {
+          modal.style.display = "none";
+        }
+      });
+
     // ================================
     // RENDERIZACIÓN DE LA TABLA DE USUARIOS (con paginación)
     // ================================
@@ -219,28 +226,28 @@ const UsersApp = (function () {
             const row = document.createElement('tr');
             row.setAttribute('data-id', user.id);
             row.innerHTML = `
-        <td>${user.dni}</td>
-        <td>${user.powerMilitary.trim()}</td>
-        <td>${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
-        <td>${user.email}</td>
+        <td data-label="D.N.I:" >${user.dni}</td>
+        <td data-label="Fuerza Per.:" >${user.powerMilitary.trim()}</td>
+        <td data-label="Usuario:">${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
+        <td data-label="Email:">${user.email}</td>
         
-        <td>
+        <td data-label="Rol-Usuario:">
           <select class="rank-select" data-id="${user.dni}">
             <option value="POA" ${user.userRank === 'POA' ? 'selected' : ''}>POA</option>
             <option value="DETECCION" ${user.userRank === 'DETECCION' ? 'selected' : ''}>DETECCION</option>
             <option value="JEFE DE DETECCION" ${user.userRank === 'JEFE DE DETECCION' ? 'selected' : ''}>JEFE DE DETECCION</option>
           </select>
         </td>
-        <td>${formatDate(new Date(user.createdAt))}</td>
-        <td>${user.confirmUpdate}</td>
-        <td>
+        <td class="hide-on-mobile">${formatDate(new Date(user.createdAt))}</td>
+        <td class="hide-on-mobile">${user.confirmUpdate}</td>
+        <td data-label="Estado del Usuario:">
           <select class="status-select" data-id="${user.dni}">
             <option value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Active</option>
             <option value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Inactive</option>
           </select>
         </td>
-        <td class="actions-cell">
-          <button class="delete-btn" data-id="${user.dni}">X</button>
+        <td  class="actions-cell">
+          <button class="delete-btn" data-id="${user.dni}">Eliminar</button>
         </td>
       `;
             tbody.appendChild(row);
@@ -258,27 +265,27 @@ const UsersApp = (function () {
     function renderPaginationButtons() {
         const container = elements.paginationContainer;
         container.innerHTML = '';
-    
+
         const totalPages = Math.ceil(currentDisplayList.length / usersPerPage);
-    
+
         const prevButton = document.createElement('button');
         prevButton.textContent = 'Anterior';
         prevButton.id = 'prevPage';
         prevButton.disabled = currentPage === 1;
-    
+
         const nextButton = document.createElement('button');
         nextButton.textContent = 'Siguiente';
         nextButton.id = 'nextPage';
         nextButton.disabled = currentPage === totalPages || totalPages === 0;
-    
+
         const pageInfo = document.createElement('span');
         pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
         pageInfo.style.margin = '0 10px'; // Espaciado entre botones
-    
+
         container.appendChild(prevButton);
         container.appendChild(pageInfo);
         container.appendChild(nextButton);
-    
+
         prevButton.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -286,7 +293,7 @@ const UsersApp = (function () {
                 renderPaginationButtons();
             }
         });
-    
+
         nextButton.addEventListener('click', () => {
             if (currentPage < totalPages) {
                 currentPage++;
