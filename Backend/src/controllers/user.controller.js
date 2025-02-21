@@ -4,7 +4,7 @@ const User = db.User;
 const UserStatus = db.UserStatus;
 const getAllUsers = async (req, res) => {
     try {
-      
+
 
         const users = await User.findAll({
             include: [{
@@ -12,11 +12,12 @@ const getAllUsers = async (req, res) => {
                 attributes: ['status'],
                 as: 'statusDetail',
                 required: true,
-                where:{
-                    status : {[Op.in]: ["active","pending"]} },
+                where: {
+                    status: { [Op.in]: ["active", "pending", "blocked"] }
+                },
 
             }],
-           
+
         });
 
         res.status(200).json(users);
@@ -43,7 +44,7 @@ const getMinimalUsers = async (req, res) => {
                     attributes: ['dni', 'firstName', 'lastName', 'militaryRank', 'email'],
                     order: [
                         ['firstName', 'ASC'],
-                        ['lastName', 'ASC']  
+                        ['lastName', 'ASC']
                     ]
                 });
                 break;
@@ -82,8 +83,8 @@ const updateUserStatus = async (req, res) => {
         }
         user.status = statusId.id;
         user.confirmUpdate = req.user.id;
-       
-        
+
+
         await user.save();
 
         res.status(200).json({ message: 'Estado del usuario actualizado exitosamente' });
@@ -93,7 +94,7 @@ const updateUserStatus = async (req, res) => {
     }
 };
 
-const updateUserRank = async (req, res) => { 
+const updateUserRank = async (req, res) => {
     try {
         const { id } = req.params;
         const { userRank } = req.body;
@@ -118,7 +119,7 @@ const updateUserRank = async (req, res) => {
 const getDeleteUser = async (req, res) => {
     try {
         const { id } = req.params;
-        
+
         const user = await User.findByPk(id);
         if (!user) {
             return res.status(404).json({ message: "Usuario no encontrado" });
@@ -145,4 +146,4 @@ const getDeleteUser = async (req, res) => {
 
 
 
-module.exports = { getAllUsers, updateUserStatus, getDeleteUser,getMinimalUsers, updateUserRank };
+module.exports = { getAllUsers, updateUserStatus, getDeleteUser, getMinimalUsers, updateUserRank };

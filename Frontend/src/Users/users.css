@@ -363,6 +363,29 @@ form input {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+/* ==========================================================================
+     Boton de para saber filtrar por estado
+     ========================================================================== */
+
+.buttons-for-status{
+  padding: 0px 0px 5px 15px;
+}
+
+.button-status{
+ background-color: var(--background-color);
+ border-radius: 5px;
+ border: 1px solid var(--link-color);
+ width: 100px;
+ height: 40px;
+ color: white;
+ margin-right: 30px
+}
+
+.button-status:hover{
+  color: black;
+  background-color: var(--link-color);
+
+}
 
 /* ==========================================================================
      Media Queries (ordenadas de mayor a menor)

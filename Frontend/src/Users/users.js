@@ -18,7 +18,8 @@ const UsersApp = (function () {
     let userIdToDelete = null;
     let usersList = []; // Todos los usuarios del backend
     let currentDisplayList = []; // Lista de usuarios que se muestran (después de filtro)
-    let currentFilter = null; // Sin filtro activo por defecto
+    let currentFilter = null; // Filtro de búsqueda (nombre, email, dni)
+    let currentStatusFilter = 'all'; // Filtro de estado: puede ser "active", "pending", "blocked" o "all"
     let currentPage = 1; // Página actual
     const usersPerPage = 10; // Máximo de usuarios por página
 
@@ -102,32 +103,31 @@ const UsersApp = (function () {
     function setupFilterModal() {
         let filterBtn = document.getElementById('filter-options-btn');
 
-
         let filterModal = document.getElementById('filter-modal');
         if (!filterModal) {
             filterModal = document.createElement('div');
             filterModal.id = 'filter-modal';
             filterModal.innerHTML = `
-        <h3>Opciones de Filtrado</h3>
-        <form id="filter-form">
-          <div class="filter-option">
-            <label for="filter-fullName">Nombre y Apellido</label>
-            <input type="radio" id="filter-fullName" name="filterOption" value="fullName" ${currentFilter === 'fullName' ? 'checked' : ''}>
-          </div>
-          <div class="filter-option">
-            <label for="filter-email">Email</label>
-            <input type="radio" id="filter-email" name="filterOption" value="email" ${currentFilter === 'email' ? 'checked' : ''}>
-          </div>
-          <div class="filter-option">
-            <label for="filter-dni">DNI</label>
-            <input type="radio" id="filter-dni" name="filterOption" value="dni" ${currentFilter === 'dni' ? 'checked' : ''}>
-          </div>
-          <div class="filter-actions">
-            <button type="button" id="filter-confirm-btn">Confirmar</button>
-            <button type="button" id="cancel-filter-btn">Cancelar Filtro</button>
-          </div>
-        </form>
-      `;
+                <h3>Opciones de Filtrado</h3>
+                <form id="filter-form">
+                  <div class="filter-option">
+                    <label for="filter-fullName">Nombre y Apellido</label>
+                    <input type="radio" id="filter-fullName" name="filterOption" value="fullName" ${currentFilter === 'fullName' ? 'checked' : ''}>
+                  </div>
+                  <div class="filter-option">
+                    <label for="filter-email">Email</label>
+                    <input type="radio" id="filter-email" name="filterOption" value="email" ${currentFilter === 'email' ? 'checked' : ''}>
+                  </div>
+                  <div class="filter-option">
+                    <label for="filter-dni">DNI</label>
+                    <input type="radio" id="filter-dni" name="filterOption" value="dni" ${currentFilter === 'dni' ? 'checked' : ''}>
+                  </div>
+                  <div class="filter-actions">
+                    <button type="button" id="filter-confirm-btn">Confirmar</button>
+                    <button type="button" id="cancel-filter-btn">Cancelar Filtro</button>
+                  </div>
+                </form>
+            `;
             document.body.appendChild(filterModal);
         }
 
@@ -191,13 +191,67 @@ const UsersApp = (function () {
         if (modal && modal.style.display !== "none") {
           modal.style.display = "none";
         }
-      });
+    });
+
+    // ================================
+    // FILTRADO POR ESTADO DE USUARIO
+    // (Activos, Pendientes, Blockeados y Todos)
+    // ================================
+    function setupStatusButtons() {
+        const statusButtons = document.querySelectorAll('.button-status');
+        statusButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                let selectedStatus;
+                // Mapear el texto del botón al estado correspondiente
+                switch (button.textContent.trim().toLowerCase()) {
+                    case 'todos':
+                        selectedStatus = 'all';
+                        break;
+                    case 'activos':
+                        selectedStatus = 'active';
+                        break;
+                    case 'pendientes':
+                        selectedStatus = 'pending';
+                        break;
+                    case 'blockeados':
+                        selectedStatus = 'blocked';
+                        break;
+                    default:
+                        selectedStatus = 'all';
+                }
+                currentStatusFilter = selectedStatus;
+                let filteredUsers;
+                if (selectedStatus === 'all' || selectedStatus === null) {
+                    filteredUsers = usersList;
+                } else {
+                    filteredUsers = usersList.filter(user => {
+                        return user.statusDetail && user.statusDetail.status === selectedStatus;
+                    });
+                }
+    
+                // Si hay un valor en el input de búsqueda, combinar ambos filtros
+                const searchValue = elements.searchInput.value.trim().toLowerCase();
+                if (searchValue) {
+                    filteredUsers = filteredUsers.filter(user =>
+                        user.firstName.toLowerCase().includes(searchValue) ||
+                        user.lastName.toLowerCase().includes(searchValue) ||
+                        user.email.toLowerCase().includes(searchValue) ||
+                        user.dni.toString().includes(searchValue)
+                    );
+                }
+                currentDisplayList = filteredUsers;
+                currentPage = 1;
+                renderTable(currentDisplayList);
+                renderPaginationButtons();
+            });
+        });
+    }
 
     // ================================
     // RENDERIZACIÓN DE LA TABLA DE USUARIOS (con paginación)
     // ================================
     function renderTable(users) {
-        // Se muestran sólo los usuarios de la página actual
+        // Se muestran solo los usuarios de la página actual
         const startIndex = (currentPage - 1) * usersPerPage;
         const endIndex = startIndex + usersPerPage;
         const usersToDisplay = users.slice(startIndex, endIndex);
@@ -205,51 +259,51 @@ const UsersApp = (function () {
         const table = document.createElement('table');
         table.classList.add('users-table');
         table.innerHTML = `
-      <thead>
-        <tr>
-          <th>DNI</th>
-          <th>Fuerza Per.</th>
-          <th>Usuario</th>
-          <th>Email</th>
-          <th>Rol</th>
-          <th>Fecha de creación</th>
-          <th>Modificador</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    `;
+            <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Fuerza Per.</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Fecha de creación</th>
+                    <th>Modificador</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        `;
 
         const tbody = table.querySelector('tbody');
         usersToDisplay.forEach(user => {
             const row = document.createElement('tr');
             row.setAttribute('data-id', user.id);
             row.innerHTML = `
-        <td data-label="D.N.I:" >${formatDNI(user.dni)}</td>
-        <td class="userForze" data-label="Fuerza Per.:" >${user.powerMilitary.trim()}</td>
-        <td class="userName" data-label="Usuario:">${user.militaryRank.trim()} ,  ${user.firstName.trim()} ${user.lastName.trim()} </td>
-        <td data-label="Email:">${user.email}</td>
-        
-        <td data-label="Rol-Usuario:">
-          <select class="rank-select" data-id="${user.dni}">
-            <option value="POA" ${user.userRank === 'POA' ? 'selected' : ''}>POA</option>
-            <option value="DETECCION" ${user.userRank === 'DETECCION' ? 'selected' : ''}>DETECCION</option>
-            <option value="JEFE DE DETECCION" ${user.userRank === 'JEFE DE DETECCION' ? 'selected' : ''}>JEFE DE DETECCION</option>
-          </select>
-        </td>
-        <td class="hide-on-mobile">${formatDate(new Date(user.createdAt))}</td>
-        <td class="hide-on-mobile">${user.confirmUpdate}</td>
-        <td data-label="Estado del Usuario:">
-          <select class="status-select" data-id="${user.dni}">
-            <option value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Active</option>
-            <option value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Inactive</option>
-          </select>
-        </td>
-        <td  class="actions-cell">
-          <button class="delete-btn" data-id="${user.dni}">Eliminar</button>
-        </td>
-      `;
+                <td data-label="D.N.I:" >${formatDNI(user.dni)}</td>
+                <td class="userForze" data-label="Fuerza Per.:" >${user.powerMilitary.trim()}</td>
+                <td class="userName" data-label="Usuario:">${user.militaryRank.trim()} , ${user.firstName.trim()} ${user.lastName.trim()}</td>
+                <td data-label="Email:">${user.email}</td>
+                <td data-label="Rol-Usuario:">
+                    <select class="rank-select" data-id="${user.dni}">
+                        <option value="POA" ${user.userRank === 'POA' ? 'selected' : ''}>POA</option>
+                        <option value="DETECCION" ${user.userRank === 'DETECCION' ? 'selected' : ''}>DETECCION</option>
+                        <option value="JEFE DE DETECCION" ${user.userRank === 'JEFE DE DETECCION' ? 'selected' : ''}>JEFE DE DETECCION</option>
+                    </select>
+                </td>
+                <td class="hide-on-mobile">${formatDate(new Date(user.createdAt))}</td>
+                <td class="hide-on-mobile">${user.confirmUpdate}</td>
+                <td data-label="Estado del Usuario:">
+                    <select class="status-select" data-id="${user.dni}">
+                        <option value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Activo</option>
+                        <option value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+                        <option value="blocked" ${user.statusDetail.status === 'blocked' ? 'selected' : ''}>Blockeado</option>
+                    </select>
+                </td>
+                <td class="actions-cell">
+                    <button class="delete-btn" data-id="${user.dni}">Eliminar</button>
+                </td>
+            `;
             tbody.appendChild(row);
         });
 
@@ -259,7 +313,6 @@ const UsersApp = (function () {
         setupTableEventListeners();
     }
 
-    
     // ================================
     // RENDERIZACIÓN DE LOS BOTONES DE PAGINACIÓN
     // ================================
@@ -308,6 +361,7 @@ const UsersApp = (function () {
     // EVENTOS DE LA TABLA
     // ================================
     function setupTableEventListeners() {
+        // Configurar eventos para status-select: al cambiar el estado, se actualiza la tabla
         document.querySelectorAll('.status-select').forEach(select => {
             const currentUser = retrieveUserProfile();
             if (currentUser.user.userRank === "POA" || currentUser.user.userRank === "DETECCION") {
@@ -319,11 +373,21 @@ const UsersApp = (function () {
             select.addEventListener('change', async (event) => {
                 const userId = select.getAttribute('data-id');
                 const newStatus = event.target.value;
+                // Actualizamos el status en el backend
                 await updateUserStatus(userId, newStatus);
+                // Re-obtenemos la lista actualizada de usuarios
+                const updatedUsers = await getAllUsers();
+                usersList = updatedUsers;
+                // Si hay un filtro de estado activo (distinto de "all"), se aplica
+                if (currentStatusFilter && currentStatusFilter !== 'all') {
+                    currentDisplayList = updatedUsers.filter(user => user.statusDetail && user.statusDetail.status === currentStatusFilter);
+                } else {
+                    currentDisplayList = updatedUsers;
+                }
+                renderTable(currentDisplayList);
+                renderPaginationButtons();
             });
         });
-
-
 
         document.querySelectorAll('.rank-select').forEach(select => {
             const currentUser = retrieveUserProfile();
@@ -341,11 +405,10 @@ const UsersApp = (function () {
             });
         });
 
-        // Al hacer click en el botón "X", se asigna el ID del usuario y se muestra el modal de eliminación
+        // Al hacer click en el botón "Eliminar", se asigna el ID del usuario y se muestra el modal de eliminación
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', (event) => {
                 userIdToDelete = event.target.getAttribute('data-id');
-                // Mostramos el modal de eliminación
                 elements.modalConfirmDelete.style.display = 'block';
             });
         });
@@ -358,6 +421,7 @@ const UsersApp = (function () {
         setupDeleteModalListeners();
         setupSearchListener();
         setupFilterModal();
+        setupStatusButtons(); // Configuración para filtrar por estado (incluyendo "Todos")
         await reloadUserProfile();
         const userProfile = JSON.parse(localStorage.getItem("user"));
         const userPermissions = userProfile.permissions || {};
