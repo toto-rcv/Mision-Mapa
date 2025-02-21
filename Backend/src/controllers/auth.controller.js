@@ -43,9 +43,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  //controlar que el estado del usuario sea activo
-  
-  
+
   const user = await User.findOne({ where: { email },
   include: {
     model: UserStatus,
@@ -93,7 +91,14 @@ exports.refreshAccessToken = async (req, res) => {
   const user = req.user; // Datos decodificados del Refresh Token
 
   const dni = user.id
-  const userR = await User.findOne({ where: { dni } });
+  const userR = await User.findOne({ where: { dni },
+    include: {
+      model: UserStatus,
+      where: {status: 'active'},
+      required: true,
+      as: 'statusDetail'
+      }
+    });
   if (!userR) return res.status(401).json({ message: "Credenciales incorrenctas" });
 
   // Generar un nuevo Access Token
