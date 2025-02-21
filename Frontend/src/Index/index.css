@@ -5,14 +5,13 @@
     font-family: "Inter", sans-serif;
 }
 
-
-
 .leaflet-control-attribution.leaflet-control {
     font-size: 0px;
 }
 
 body {
-    height: 100vh;
+    height: 100svh;
+    height: calc(var(--vh, 1vh) * 100);
     display: flex;
     flex-direction: column;
     background-color: var(--background-color);
@@ -31,7 +30,6 @@ body {
 .main-content {
     flex-grow: 1;
     display: flex;
-    flex-direction: row;
 }
 
 /* Map Container Styles */
@@ -44,14 +42,13 @@ body {
     position: absolute;
     top: 1rem;
     left: 1rem;
-    z-index: 1000;
+    z-index: 6;
     display: flex;
     gap: 0.5rem;
     background-color: var(--background-color);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 12px;
-    
     padding: 0.5rem;
 }
 
@@ -136,7 +133,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    z-index: 1000;
+    z-index: 2;
 }
 
 .register-button span {
@@ -164,7 +161,7 @@ body {
     position: absolute;
     left: 1rem;
     bottom: 2rem;
-    z-index: 1000;
+    z-index: 3;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -500,6 +497,10 @@ form button:hover {
 /* Responsive styles */
 @media (max-width: 480px) {
 
+  .main-content {
+    flex-direction: column-reverse;
+  }
+
     .search-input {
         width: 100%;
     }
@@ -538,7 +539,7 @@ form button:hover {
     position: absolute;
     top: 2rem;
     right: 1rem;
-    z-index: 1000;
+    z-index: 4;
     padding: 0 16px;
     animation: fadeIn 0.25s ease-out;
     font-size: 0.95em;
@@ -617,14 +618,24 @@ form button:hover {
 
 @media (max-width: 480px) {
     .marker-alert {
-        padding: 0 12px;
-        left: 0rem;
-        top: 7rem;
-        width: 100%;
+        padding: 0;
+        left: 1rem;
+        right: 1rem;
+        top: 6rem;
+        font-size: 1rem;
     }
 
     .marker-alert-content {
         width: 100%;
+        padding: 0.9rem;
+    }
+
+    .marker-alert-info {
+      font-size: 0.9em;
+    }
+
+    .marker-alert-help {
+      display: none;
     }
 }
 
@@ -633,21 +644,12 @@ form button:hover {
 
     /* Header styles */
     .header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
         height: 70px;
         padding: 0.5rem 1rem;
         background-color: rgba(38, 37, 42, 1);
         backdrop-filter: none;
         z-index: 1005;
         gap: 1rem;
-
-    }
-
-    .title {
-        font-size: 1.25rem;
     }
 
     .markers-count {
@@ -656,28 +658,17 @@ form button:hover {
 
     /* Search bar styles */
     .search-container {
-        position: fixed;
         padding: 0.5rem;
-        top: 80px;
+        top: 1rem;
         width: calc(100% - 2rem);
         margin: 0;
         backdrop-filter: blur(10px);
     }
 
     .search-input {
-        font-size: 0.95rem;
+        font-size: 0.9em;
         width: calc(100% - 1rem);
         padding: 0.85em 1em;
-    }
-
-    /* Map container adjustments */
-    .map-container {
-        margin-top: 56px;
-        /* Header bar height */
-        margin-bottom: 56px;
-        /* Bottom navigation height */
-        height: calc(100vh - 120px);
-        /* Adjust for header and bottom nav */
     }
 
     /* FAB button styles */
@@ -787,6 +778,15 @@ form button:hover {
     .control-button {
         width: 2rem;
         height: 2rem;
+    }
+
+    .filter-button {
+      padding: 0.8rem;
+    }
+
+    .filter-button svg {
+      width: 20px;
+      height: 20px;
     }
 
 }
@@ -899,7 +899,7 @@ textarea::-webkit-scrollbar-thumb:hover {
     width: 70%;
     background: var(--background-color);
     border-radius: 12px 12px 0 0;
-    z-index: 1000;
+    z-index: 5;
     transition: all 0.3s ease;
     font-size: 1rem;
   }
