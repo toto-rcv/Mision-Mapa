@@ -5,6 +5,10 @@ const UserStatus = db.UserStatus;
 const getAllUsers = async (req, res) => {
     try {
 
+        const { status } = req.query; // Obtener el parámetro status de la URL
+
+        // Construir el filtro de estado dinámicamente
+        const statusFilter = status ? { status } : { status: { [Op.in]: ["active", "pending", "blocked"] } };
 
         const users = await User.findAll({
             include: [{
@@ -12,11 +16,10 @@ const getAllUsers = async (req, res) => {
                 attributes: ['status'],
                 as: 'statusDetail',
                 required: true,
-                where: {
-                    status: { [Op.in]: ["active", "pending", "blocked"] }
-                },
+                where: statusFilter
 
             }],
+
 
         });
 

@@ -452,9 +452,6 @@ form input {
     white-space: pre-line;
   }
 
-  .main-content {
-    margin-top: 70px;
-  }
 
   .users-table thead {
     display: none;
@@ -503,9 +500,6 @@ form input {
     width: calc(50% - 0.5rem);
   }
 
-  .register-container {
-    margin-bottom: 60px;
-  }
 
   .form-group.full-width {
     width: 100%;

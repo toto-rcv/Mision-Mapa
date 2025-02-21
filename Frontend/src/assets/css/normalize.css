@@ -12,3 +12,7 @@
         scroll-behavior: auto !important;
     }
 }
+
+body{
+    height: calc(var(--vh, 1vh) * 100);
+}

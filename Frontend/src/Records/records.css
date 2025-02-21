@@ -11,6 +11,7 @@
   flex-direction: column;
 }
 
+
 .sightings-table {
   border-collapse: collapse;
   border-radius: 8px;
@@ -368,9 +369,6 @@ textarea.modal-input {
     box-shadow: none;
   }
 
-  .main-content {
-    margin-top: 70px;
-  }
 
   .sightings-table thead {
     display: none;
@@ -438,7 +436,6 @@ textarea.modal-input {
     padding: 1rem;
     flex: 1;
     display: flex;
-    margin-bottom: 60px;
   }
 
   .form-group.full-width {

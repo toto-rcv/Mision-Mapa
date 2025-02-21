@@ -714,6 +714,10 @@ form button:hover {
         transform: translateX(0);
     }
 
+
+    .main-content {
+      flex-direction: column-reverse;
+    }
     .form-panel {
         position: fixed;
         top: auto;
