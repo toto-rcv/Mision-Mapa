@@ -1,10 +1,3 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", sans-serif;
-}
-
 .leaflet-control-attribution.leaflet-control {
   font-size: 0px;
 }
@@ -26,16 +19,22 @@ body {
   color: var(--text-muted);
 }
 
-/* Main Content Styles */
-.main-content {
-  flex-grow: 1;
-  display: flex;
-}
-
 /* Map Container Styles */
 .map-container {
   flex: 1;
   position: relative;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  background-color: #2a2a2a;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
 }
 
 .search-container {
@@ -104,18 +103,6 @@ body {
   stroke: var(--primary-color, #00BCD4);
 }
 
-#map {
-  height: 100%;
-  width: 100%;
-  background-color: #2a2a2a;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1;
-}
-
 .register-button {
   position: absolute;
   bottom: 2rem;
@@ -137,7 +124,6 @@ body {
 }
 
 .register-button span {
-  /* Update 4 */
   background-color: white;
   color: #00C2D1;
   width: 30px;
@@ -168,7 +154,6 @@ body {
 }
 
 .control-button {
-  /* Update 2 */
   width: 32px;
   height: 32px;
   background-color: var(--primary-color);
@@ -205,7 +190,6 @@ body {
 
 .modal.open {
   display: block;
-  /* Visible cuando se activa */
 }
 
 .modal-content {
@@ -246,8 +230,7 @@ form button:hover {
   background-color: #0056b3;
 }
 
-.overlay,
-.quantityOverlay {
+.overlay {
   position: absolute;
   top: 2rem;
   right: 1rem;
@@ -264,18 +247,15 @@ form button:hover {
   /* Added border radius */
 }
 
-.overlay h2,
-.quantityOverlay h2 {
+.overlay h2 {
   font-size: 1.15em;
   font-weight: 500;
   margin-bottom: 15px;
 }
 
-.overlay p,
-.quantityOverlay p {
+.overlay p {
   padding: 40px;
   border-radius: 3px;
-  /* Added border radius */
   text-align: center;
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.8em;
@@ -497,47 +477,6 @@ form button:hover {
   transform: translateY(0);
 }
 
-/* Responsive styles */
-@media (max-width: 480px) {
-
-  .main-content {
-    flex-direction: column-reverse;
-  }
-
-  .search-input {
-    width: 100%;
-  }
-
-  .register-button {
-    font-size: 14px;
-    padding: 12px 24px;
-  }
-
-  .form-panel {
-    top: auto;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    border-radius: 12px 12px 0 0;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  .form-row {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .coordinates {
-    display: none;
-  }
-
-  .btn {
-    width: 100%;
-  }
-}
-
 .marker-alert {
   position: absolute;
   top: 2rem;
@@ -622,6 +561,131 @@ form button:hover {
   animation: borderPulse 2s infinite;
 }
 
+.btn-apply,
+.btn-clear {
+  padding: 0.75rem 0.875rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  font-size: 0.875em;
+}
+
+.btn-apply {
+  background: #00BCD4;
+  color: #fff;
+}
+
+.btn-apply:hover {
+  background: #00a0b0;
+  transform: translateY(-0.0625rem);
+}
+
+.btn-clear {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-color, #333);
+}
+
+.btn-clear:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-0.0625rem);
+}
+
+/* Inputs para seleccionar fecha */
+.date-input {
+  background: var(--form-input-color, #fff);
+  border: 0.063rem solid var(--input-border, #ccc);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  color: var(--text-color, #333);
+  font-size: 1em;
+  width: 200px;
+  transition: opacity 0.15s ease;
+  opacity: 1;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  filter: invert(55%) sepia(100%) saturate(500%) hue-rotate(180deg) brightness(90%);
+}
+
+.date-input:focus {
+  border-color: var(--btn-apply, #00BCD4);
+  outline: none;
+}
+
+@keyframes shrink-grow {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95); /* Se reduce al 90% de su tamaño */
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Clase para aplicar la animación a los inputs de fecha */
+.date-input.animate-shrink {
+  animation: shrink-grow 0.4s ease;
+}
+
+/* Input para búsqueda de usuario */
+.user-search {
+  width: 100%;
+  min-height: 2.5em;
+  border: 1px solid var(--input-border, #ccc);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  background-color: var(--form-input-color, #fff);
+}
+
+.user-search:focus {
+  border-color: var(--btn-apply, #00BCD4);
+  outline: none;
+}
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  font-size: 1em;
+  line-height: 1;
+}
+
+
+/* Ícono para la búsqueda (lupa) */
+.icon-search::before {
+  content: "🔍";
+}
+
+.user-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}  
+
+/* Ajuste en el input para dejar espacio al ícono */
+.user-search-container .user-search {
+  width: 100%;
+  padding-left: 2.5rem;  /* Se agrega espacio a la izquierda para el ícono */
+}
+
+/* Posicionamiento absoluto del ícono de búsqueda */
+.user-search-container .icon-search {
+  position: absolute;
+  left: 0.75rem;
+  pointer-events: none; /* Para que no interfiera en la interacción con el input */
+  font-size: 1em;
+}
+
 @media (max-width: 480px) {
   .marker-alert {
     padding: 0;
@@ -642,162 +706,6 @@ form button:hover {
 
   .marker-alert-help {
     display: none;
-  }
-}
-
-/* Mobile-specific styles */
-@media (max-width: 768px) {
-
-
-  .markers-count {
-    display: none;
-  }
-
-  /* Search bar styles */
-  .search-container {
-    padding: 0.5rem;
-    top: 1rem;
-    width: calc(100% - 2rem);
-    margin: 0;
-    backdrop-filter: blur(10px);
-  }
-
-  .search-input {
-    font-size: 0.9em;
-    width: calc(100% - 1rem);
-    padding: 0.85em 1em;
-  }
-
-  /* FAB button styles */
-  .register-button {
-    width: 66px;
-    height: 66px;
-    padding: 0.5rem 1rem;
-    border-radius: 35px;
-    right: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    bottom: 70px;
-  }
-
-  .register-button span {
-    margin: 0;
-    width: 24px;
-    height: 24px;
-  }
-
-  .register-button span i {
-    font-size: 1rem;
-  }
-
-  .register-button span:not(i) {
-    display: none;
-  }
-
-  .overlay {
-    position: fixed;
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 56px;
-    width: 100%;
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .overlay.visible {
-    transform: translateX(0);
-  }
-
-
-  .main-content {
-    flex-direction: column-reverse;
-  }
-
-  .form-panel {
-    position: fixed;
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 60px;
-    max-height: 80vh;
-    width: 100%;
-    max-width: none;
-    border-radius: 0;
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .form-panel {
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100%;
-    max-height: 90vh;
-    height: 82vh;
-    border-radius: 12px;
-  }
-
-  .form-panel.visible {
-    transform: translateY(0);
-  }
-
-  /* Form adjustments for mobile */
-  .form-row {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .form-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .form-group {
-    margin-bottom: 1rem;
-  }
-
-  .form-buttons {
-    padding-block: 1rem;
-    margin: 0;
-    gap: 0.5rem;
-  }
-
-  .btn {
-    flex-grow: 1;
-    padding: 1.15em;
-    font-size: 1em;
-  }
-
-  /* Map controls */
-  .map-controls {
-    bottom: 3rem;
-    left: 1rem;
-    gap: 0.5rem;
-  }
-
-  .control-button {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .filter-button {
-    padding: 0.8rem;
-  }
-
-  .filter-button svg {
-    width: 20px;
-    height: 20px;
-  }
-
-}
-
-/* Ensure the form doesn't get too small on very small screens */
-@media (max-width: 1280px) and (min-height: 720px) {
-  .form-panel {
-    width: 90%;
-
   }
 }
 
@@ -889,8 +797,6 @@ textarea::-webkit-scrollbar-thumb {
 textarea::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.5);
 }
-
-
 
 /* Timeline */
 .timeline-container {
@@ -1006,27 +912,14 @@ textarea::-webkit-scrollbar-thumb:hover {
   color: #fff;
 }
 
-@media (max-width: 768px) {
-  .stats-panel {
-    top: 6rem;
-    right: 0.5rem;
-    max-width: 200px;
-  }
-
-  .timeline-container {
-    width: 90%;
-  }
-}
-
-
 /* Contenedor principal de los filtros */
 .advanced-filters {
-  position: relative;
-  display: flex;
-  flex-grow: 1;
-  gap: 0.75rem;
-}
-
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+    gap: 0.75rem;
+  }
+  
 /* Panel emergente de filtros */
 .filters-panel {
   position: absolute;
@@ -1034,22 +927,21 @@ textarea::-webkit-scrollbar-thumb:hover {
   left: calc(0% - 0.5rem);
   background: var(--background-color);
   backdrop-filter: blur(12px);
-  border-radius: 1rem;
-  /* 16px ≈ 1rem */
+  border-radius: 1rem; /* 16px ≈ 1rem */
   padding: 1.25rem;
   box-shadow: 0 0.5rem 1.875rem rgba(0, 0, 0, 0.15);
   display: none;
-  z-index: 1001;
+  z-index: 10;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
-
+  
 /* Mostrar el panel (por ejemplo, agregando la clase .active) */
 .filters-panel.active {
   display: block;
   opacity: 1;
   transform: translateY(0);
 }
-
+  
 /* Título principal */
 .filters-title {
   font-size: 1.25rem;
@@ -1057,13 +949,13 @@ textarea::-webkit-scrollbar-thumb:hover {
   margin-bottom: 1rem;
   color: var(--text-color, #333);
 }
-
+  
 /* Sección de cada grupo de filtros */
 .filter-section {
   margin-bottom: 1.75rem;
   font-size: 0.8rem
 }
-
+  
 /* Subtítulos (más discretos) */
 .filter-section h4 {
   font-size: 1em;
@@ -1071,7 +963,7 @@ textarea::-webkit-scrollbar-thumb:hover {
   margin-bottom: 0.5rem;
   color: var(--text-muted, #777);
 }
-
+  
 /* Opciones rápidas para fechas */
 .date-quick-options {
   display: flex;
@@ -1079,19 +971,18 @@ textarea::-webkit-scrollbar-thumb:hover {
   margin-bottom: 1rem;
   flex-wrap: wrap;
 }
-
+  
 .quick-date {
   background: var(--quick-date-bg, rgba(255, 255, 255, 0.15));
   border: 0.063rem solid var(--input-border, #ccc);
-  border-radius: 1rem;
-  /* apariencia tipo pill */
+  border-radius: 1rem; /* apariencia tipo pill */
   padding: 0.5rem 1rem;
   font-size: 1em;
   color: var(--text-color, #333);
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
-
+  
 .quick-date:hover {
   background: var(--quick-date-hover, rgba(255, 255, 255, 0.25));
   transform: translateY(-0.125rem);
@@ -1105,20 +996,6 @@ textarea::-webkit-scrollbar-thumb:hover {
   border-color: transparent;
 }
 
-@keyframes bounce {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.1);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
 .quick-date.clicked {
   animation: bounce 0.3s ease;
 }
@@ -1130,48 +1007,6 @@ textarea::-webkit-scrollbar-thumb:hover {
   grid-template-columns: repeat(2, 1fr);
 }
 
-/* Inputs para seleccionar fecha */
-.date-input {
-  background: var(--form-input-color, #fff);
-  border: 0.063rem solid var(--input-border, #ccc);
-  border-radius: 0.5rem;
-  padding: 0.75rem 0.875rem;
-  color: var(--text-color, #333);
-  font-size: 1em;
-  width: 200px;
-  transition: opacity 0.15s ease;
-  opacity: 1;
-}
-
-.date-input::-webkit-calendar-picker-indicator {
-  filter: invert(55%) sepia(100%) saturate(500%) hue-rotate(180deg) brightness(90%);
-}
-
-.date-input:focus {
-  border-color: var(--btn-apply, #00BCD4);
-  outline: none;
-}
-
-@keyframes shrink-grow {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(0.95);
-    /* Se reduce al 90% de su tamaño */
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* Clase para aplicar la animación a los inputs de fecha */
-.date-input.animate-shrink {
-  animation: shrink-grow 0.4s ease;
-}
-
 /* Rediseño del filtro de estado: grupo de botones */
 .status-filters {
   display: flex;
@@ -1181,8 +1016,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 .status-btn {
   flex: 1;
   position: relative;
-  background: var(--input-background, #fff);
-  /* Se unifica el fondo con los demás campos */
+  background: var(--input-background, #fff); /* Se unifica el fondo con los demás campos */
   border: 0.063rem solid var(--input-border, #ccc);
   border-radius: 0.5rem;
   padding: 0.75rem 0.875rem;
@@ -1195,8 +1029,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 .status-btn.active::before {
   content: "✓";
   position: absolute;
-  left: 0.75rem;
-  /* Ajusta según el padding del botón */
+  left: 0.75rem;  /* Ajusta según el padding del botón */
   color: var(--primary-color, #00BCD4);
   font-size: 1em;
 }
@@ -1209,26 +1042,6 @@ textarea::-webkit-scrollbar-thumb:hover {
 .status-btn.active {
   border: 1px solid var(--primary-color, var(--link-color, #00BCD4));
   color: var(--primary-color, var(--link-color, #00BCD4));
-}
-
-/* Input para búsqueda de usuario */
-.user-search {
-  width: 100%;
-  min-height: 2.5em;
-  border: 1px solid var(--input-border, #ccc);
-  border-radius: 0.5rem;
-  padding: 0.75rem 0.875rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-  background-color: var(--form-input-color, #fff);
-}
-
-.user-search:focus {
-  border-color: var(--btn-apply, #00BCD4);
-  outline: none;
 }
 
 .dropdown-icon {
@@ -1244,41 +1057,9 @@ textarea::-webkit-scrollbar-thumb:hover {
 /* Acciones: botones de aplicar y limpiar filtros (ancho completo) */
 .filter-actions {
   display: flex;
-  flex-direction: column;
-  /* Botones apilados verticalmente */
+  flex-direction: column;  /* Botones apilados verticalmente */
   gap: 0.75rem;
   margin-top: 1rem;
-}
-
-.btn-apply,
-.btn-clear {
-  padding: 0.75rem 0.875rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  border: none;
-  transition: background 0.3s ease, transform 0.2s ease;
-  width: 100%;
-  font-size: 0.875em;
-}
-
-.btn-apply {
-  background: #00BCD4;
-  color: #fff;
-}
-
-.btn-apply:hover {
-  background: #00a0b0;
-  transform: translateY(-0.0625rem);
-}
-
-.btn-clear {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--text-color, #333);
-}
-
-.btn-clear:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-0.0625rem);
 }
 
 /* Mensaje de feedback */
@@ -1288,43 +1069,6 @@ textarea::-webkit-scrollbar-thumb:hover {
   font-size: 0.9rem;
   display: none;
   text-align: center;
-}
-
-.icon {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  vertical-align: middle;
-  font-size: 1em;
-  line-height: 1;
-}
-
-
-/* Ícono para la búsqueda (lupa) */
-.icon-search::before {
-  content: "🔍";
-}
-
-.user-search-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-/* Ajuste en el input para dejar espacio al ícono */
-.user-search-container .user-search {
-  width: 100%;
-  padding-left: 2.5rem;
-  /* Se agrega espacio a la izquierda para el ícono */
-}
-
-/* Posicionamiento absoluto del ícono de búsqueda */
-.user-search-container .icon-search {
-  position: absolute;
-  left: 0.75rem;
-  pointer-events: none;
-  /* Para que no interfiera en la interacción con el input */
-  font-size: 1em;
 }
 
 .filter-close-button {
@@ -1343,16 +1087,35 @@ textarea::-webkit-scrollbar-thumb:hover {
 .filter-close-button:hover {
   color: var(--primary-color, #00BCD4);
 }
+ 
+  @media (max-width: 480px) {
+    /* Para pantallas pequeñas: se apilan elementos y se ajustan columnas */
+    .custom-dates {
+      grid-template-columns: 1fr;
+    }
+    
+    .advanced-filters {
+      gap: 0.5rem;
+    }
+    
+    .filter-actions {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+  }
 
-/* ================== */
-/* Media queries para responsividad */
-/* ================== */
-@media (max-width: 768px) {
-  .filters-panel {
-    width: calc(100% - 2rem);
-    left: 1rem;
-    top: calc(100% + 0.5rem);
-    padding: 1rem;
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }
 
@@ -1522,4 +1285,217 @@ textarea::-webkit-scrollbar-thumb:hover {
 
 .selected-user-card .remove-badge:hover {
   color: #ccc;
+}
+
+@media (max-width: 480px) {
+
+  .search-input {
+    width: 100%;
+  }
+
+  .register-button {
+    font-size: 14px;
+    padding: 12px 24px;
+  }
+
+  .form-panel {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .coordinates {
+    display: none;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+
+  .markers-count {
+      display: none;
+  }
+
+  /* Search bar styles */
+  .search-container {
+      padding: 0.5rem;
+      top: 1rem;
+      width: calc(100% - 2rem);
+      margin: 0;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+  }
+
+  .search-input {
+      font-size: 0.9em;
+      width: calc(100% - 1rem);
+      padding: 0.85em 1em;
+  }
+
+  /* FAB button styles */
+  .register-button {
+      width: 66px;
+      height: 66px;
+      padding: 0.5rem 1rem;
+      border-radius: 35px;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      bottom: 3rem;
+  }
+
+  .register-button span {
+      margin: 0;
+      width: 24px;
+      height: 24px;
+  }
+
+  .register-button span i {
+      font-size: 1rem;
+  }
+
+  .register-button span:not(i) {
+      display: none;
+  }
+
+  .overlay {
+      position: fixed;
+      top: auto;
+      left: 0;
+      right: 0;
+      bottom: 56px;
+      width: 100%;
+      transform: translateY(100%);
+      transition: transform 0.3s ease-in-out;
+  }
+
+  .overlay.visible {
+      transform: translateX(0);
+  }
+
+  .form-panel {
+      position: fixed;
+      top: auto;
+      left: 0;
+      right: 0;
+      bottom: 60px;
+      max-height: 80vh;
+      width: 100%;
+      max-width: none;
+      border-radius: 0;
+      transform: translateY(100%);
+      transition: transform 0.3s ease-in-out;
+  }
+
+  .form-panel {
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      max-height: 90vh;
+      height: 82vh;
+      border-radius: 12px;
+  }
+
+  .form-panel.visible {
+      transform: translateY(0);
+  }
+
+  /* Form adjustments for mobile */
+  .form-row {
+      flex-direction: column;
+      gap: 0.5rem;
+  }
+
+  .form-content {
+      display: flex;
+      flex-direction: column;
+  }
+
+  .form-group {
+      margin-bottom: 1rem;
+  }
+
+  .form-buttons {
+      padding-block: 1rem;
+      margin: 0;
+      gap: 0.5rem;
+  }
+
+  .btn {
+      flex-grow: 1;
+      padding: 1.15em;
+      font-size: 1em;
+  }
+
+  /* Map controls */
+  .map-controls {
+      bottom: 3rem;
+      left: 1rem;
+      gap: 0.5rem;
+  }
+
+  .control-button {
+      width: 2rem;
+      height: 2rem;
+  }
+
+  .filter-button {
+    padding: 0.8rem;
+  }
+
+  .filter-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .btn-apply,
+  .btn-clear {
+    padding: 0.95rem;
+  }
+
+  .date-input {
+    padding: 0.875rem 1rem;
+    width: 100%;
+  }
+
+  .user-search {
+    padding: 0.875rem 1rem;
+  }
+
+  .stats-panel {
+    top: 6rem;
+    right: 0.5rem;
+    max-width: 200px;
+  }
+
+  .timeline-container {
+    width: 90%;
+  }
+
+  .filters-panel {
+    width: auto;
+    backdrop-filter: none;
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    right: 0;
+    padding-bottom: 2rem;
+  }
 }
