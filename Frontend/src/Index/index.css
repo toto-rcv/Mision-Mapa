@@ -616,6 +616,131 @@ form button:hover {
     animation: borderPulse 2s infinite;
 }
 
+.btn-apply,
+.btn-clear {
+  padding: 0.75rem 0.875rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  font-size: 0.875em;
+}
+
+.btn-apply {
+  background: #00BCD4;
+  color: #fff;
+}
+
+.btn-apply:hover {
+  background: #00a0b0;
+  transform: translateY(-0.0625rem);
+}
+
+.btn-clear {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-color, #333);
+}
+
+.btn-clear:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-0.0625rem);
+}
+
+/* Inputs para seleccionar fecha */
+.date-input {
+  background: var(--form-input-color, #fff);
+  border: 0.063rem solid var(--input-border, #ccc);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  color: var(--text-color, #333);
+  font-size: 1em;
+  width: 200px;
+  transition: opacity 0.15s ease;
+  opacity: 1;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  filter: invert(55%) sepia(100%) saturate(500%) hue-rotate(180deg) brightness(90%);
+}
+
+.date-input:focus {
+  border-color: var(--btn-apply, #00BCD4);
+  outline: none;
+}
+
+@keyframes shrink-grow {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95); /* Se reduce al 90% de su tamaño */
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Clase para aplicar la animación a los inputs de fecha */
+.date-input.animate-shrink {
+  animation: shrink-grow 0.4s ease;
+}
+
+/* Input para búsqueda de usuario */
+.user-search {
+  width: 100%;
+  min-height: 2.5em;
+  border: 1px solid var(--input-border, #ccc);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  background-color: var(--form-input-color, #fff);
+}
+
+.user-search:focus {
+  border-color: var(--btn-apply, #00BCD4);
+  outline: none;
+}
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  font-size: 1em;
+  line-height: 1;
+}
+
+
+/* Ícono para la búsqueda (lupa) */
+.icon-search::before {
+  content: "🔍";
+}
+
+.user-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}  
+
+/* Ajuste en el input para dejar espacio al ícono */
+.user-search-container .user-search {
+  width: 100%;
+  padding-left: 2.5rem;  /* Se agrega espacio a la izquierda para el ícono */
+}
+
+/* Posicionamiento absoluto del ícono de búsqueda */
+.user-search-container .icon-search {
+  position: absolute;
+  left: 0.75rem;
+  pointer-events: none; /* Para que no interfiera en la interacción con el input */
+  font-size: 1em;
+}
+
 @media (max-width: 480px) {
     .marker-alert {
         padding: 0;
@@ -648,7 +773,7 @@ form button:hover {
         padding: 0.5rem 1rem;
         background-color: rgba(38, 37, 42, 1);
         backdrop-filter: none;
-        z-index: 1005;
+        z-index: 10;
         gap: 1rem;
     }
 
@@ -662,7 +787,8 @@ form button:hover {
         top: 1rem;
         width: calc(100% - 2rem);
         margin: 0;
-        backdrop-filter: blur(10px);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
 
     .search-input {
@@ -682,7 +808,7 @@ form button:hover {
         align-items: center;
         justify-content: center;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        bottom: 70px;
+        bottom: 3rem;
     }
 
     .register-button span {
@@ -789,6 +915,19 @@ form button:hover {
       height: 20px;
     }
 
+    .btn-apply,
+    .btn-clear {
+      padding: 0.95rem;
+    }
+
+    .date-input {
+      padding: 0.875rem 1rem;
+      width: 100%;
+    }
+
+    .user-search {
+      padding: 0.875rem 1rem;
+    }
 }
 
 /* Ensure the form doesn't get too small on very small screens */
@@ -1033,7 +1172,7 @@ textarea::-webkit-scrollbar-thumb:hover {
     padding: 1.25rem;
     box-shadow: 0 0.5rem 1.875rem rgba(0, 0, 0, 0.15);
     display: none;
-    z-index: 1001;
+    z-index: 10;
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
   
@@ -1115,45 +1254,6 @@ textarea::-webkit-scrollbar-thumb:hover {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  /* Inputs para seleccionar fecha */
-  .date-input {
-    background: var(--form-input-color, #fff);
-    border: 0.063rem solid var(--input-border, #ccc);
-    border-radius: 0.5rem;
-    padding: 0.75rem 0.875rem;
-    color: var(--text-color, #333);
-    font-size: 1em;
-    width: 200px;
-    transition: opacity 0.15s ease;
-    opacity: 1;
-  }
-
-  .date-input::-webkit-calendar-picker-indicator {
-    filter: invert(55%) sepia(100%) saturate(500%) hue-rotate(180deg) brightness(90%);
-  }
-  
-  .date-input:focus {
-    border-color: var(--btn-apply, #00BCD4);
-    outline: none;
-  }
-
-  @keyframes shrink-grow {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(0.95); /* Se reduce al 90% de su tamaño */
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  
-  /* Clase para aplicar la animación a los inputs de fecha */
-  .date-input.animate-shrink {
-    animation: shrink-grow 0.4s ease;
-  }
-  
   /* Rediseño del filtro de estado: grupo de botones */
   .status-filters {
     display: flex;
@@ -1190,26 +1290,6 @@ textarea::-webkit-scrollbar-thumb:hover {
     border: 1px solid var(--primary-color, var(--link-color, #00BCD4));
     color: var(--primary-color, var(--link-color, #00BCD4));
   }
-  
-  /* Input para búsqueda de usuario */
-  .user-search {
-    width: 100%;
-    min-height: 2.5em;
-    border: 1px solid var(--input-border, #ccc);
-    border-radius: 0.5rem;
-    padding: 0.75rem 0.875rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    cursor: pointer;
-    position: relative;
-    background-color: var(--form-input-color, #fff);
-  }
-
-  .user-search:focus {
-    border-color: var(--btn-apply, #00BCD4);
-    outline: none;
-  }
 
   .dropdown-icon {
     position: absolute;
@@ -1229,37 +1309,6 @@ textarea::-webkit-scrollbar-thumb:hover {
     margin-top: 1rem;
   }
   
-  .btn-apply,
-  .btn-clear {
-    padding: 0.75rem 0.875rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    border: none;
-    transition: background 0.3s ease, transform 0.2s ease;
-    width: 100%;
-    font-size: 0.875em;
-  }
-  
-  .btn-apply {
-    background: #00BCD4;
-    color: #fff;
-  }
-  
-  .btn-apply:hover {
-    background: #00a0b0;
-    transform: translateY(-0.0625rem);
-  }
-  
-  .btn-clear {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--text-color, #333);
-  }
-  
-  .btn-clear:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-0.0625rem);
-  }
-  
   /* Mensaje de feedback */
   .filter-feedback {
     margin-top: 1rem;
@@ -1267,41 +1316,6 @@ textarea::-webkit-scrollbar-thumb:hover {
     font-size: 0.9rem;
     display: none;
     text-align: center;
-  }
-
-  .icon {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    vertical-align: middle;
-    font-size: 1em;
-    line-height: 1;
-  }
-  
-  
-  /* Ícono para la búsqueda (lupa) */
-  .icon-search::before {
-    content: "🔍";
-  }
-
-  .user-search-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }  
-  
-  /* Ajuste en el input para dejar espacio al ícono */
-  .user-search-container .user-search {
-    width: 100%;
-    padding-left: 2.5rem;  /* Se agrega espacio a la izquierda para el ícono */
-  }
-  
-  /* Posicionamiento absoluto del ícono de búsqueda */
-  .user-search-container .icon-search {
-    position: absolute;
-    left: 0.75rem;
-    pointer-events: none; /* Para que no interfiera en la interacción con el input */
-    font-size: 1em;
   }
 
   .filter-close-button {
@@ -1326,10 +1340,14 @@ textarea::-webkit-scrollbar-thumb:hover {
   /* ================== */
   @media (max-width: 768px) {
     .filters-panel {
-      width: calc(100% - 2rem);
-      left: 1rem;
-      top: calc(100% + 0.5rem);
-      padding: 1rem;
+      width: auto;
+      backdrop-filter: none;
+      position: fixed;
+      bottom: 0;
+      top: auto;
+      left: 0;
+      right: 0;
+      padding-bottom: 2rem;
     }
   }
   
