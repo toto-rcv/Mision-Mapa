@@ -13,9 +13,9 @@
 .register-container {
   background: #1A1A1C;
   padding: 1rem;
-  flex: 1;
+  flex-grow: 1;
   display: flex;
-  font-size: 0.95rem;
+  overflow: hidden;
 }
 
 .filters {
@@ -31,9 +31,9 @@
   border-collapse: collapse;
   border-radius: 8px;
   color: white;
-  overflow: hidden;
   width: 100%;
-  flex: 1;
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
 .users-table th,
@@ -363,29 +363,34 @@ form input {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
 /* ==========================================================================
      Boton de para saber filtrar por estado
      ========================================================================== */
 
-.buttons-for-status{
-  padding: 0px 0px 5px 15px;
+.buttons-for-status {
+  padding: 0px 0px 5px 6%;
 }
 
-.button-status{
- background-color: var(--background-color);
- border-radius: 5px;
- border: 1px solid var(--link-color);
- width: 100px;
- height: 40px;
- color: white;
- margin-right: 30px
+.buttons-for-status button:first-child {
+  border-left: 1px solid var(--link-color);
 }
 
-.button-status:hover{
-  color: black;
-  background-color: var(--link-color);
+.button-status {
+  background-color: var(--background-color);
+  border: none;
+  border-right: 1px solid var(--link-color);
+  width: 100px;
+  height: 40px;
+  color: white;
+}
+
+.button-status:hover {
+  color: var(--link-color);
 
 }
+
+
 
 /* ==========================================================================
      Media Queries (ordenadas de mayor a menor)
@@ -404,33 +409,39 @@ form input {
     display: none;
   }
 
-  .users-table th:nth-child(7){
+  .users-table th:nth-child(7) {
     display: none;
   }
-  .users-table th:nth-child(6){
+
+  .users-table th:nth-child(6) {
     display: none;
-  } 
+  }
+
   .users-table td:nth-child(6) {
     display: none;
   }
+
   .users-table td:nth-child(2) {
     display: none;
   }
+
   .users-table th:nth-child(2) {
     display: none;
   }
+
   .userName {
     max-width: unset;
     min-width: unset;
     width: auto;
     white-space: normal !important;
- }
- .userForze{
-  max-width: unset;
-  min-width: unset;
-  width: auto;
-  white-space: normal !important;
- }
+  }
+
+  .userForze {
+    max-width: unset;
+    min-width: unset;
+    width: auto;
+    white-space: normal !important;
+  }
 }
 
 /* Media Query para max-width: 768px */
@@ -452,12 +463,14 @@ form input {
     white-space: pre-line;
   }
 
-  .main-content {
-    margin-top: 70px;
-  }
 
   .users-table thead {
     display: none;
+  }
+
+  .main-content {
+    height: 100%;
+    overflow: hidden;
   }
 
   .users-table tbody tr {
@@ -503,9 +516,6 @@ form input {
     width: calc(50% - 0.5rem);
   }
 
-  .register-container {
-    margin-bottom: 60px;
-  }
 
   .form-group.full-width {
     width: 100%;
@@ -571,6 +581,10 @@ form input {
   .hide-on-mobile {
     display: none !important;
   }
+
+  .buttons-for-status {
+    padding: 0px 0px 5px 18%;
+  }
 }
 
 /* Media Query para max-width: 468px */
@@ -580,9 +594,18 @@ form input {
     justify-content: space-between;
   }
 
+  .button-status {
+    width: 70px;
+    height: 20px;
+    font-size: 10px;
+    margin: 0px;
+  }
+
   .search-input {
     width: 200%;
   }
+
+
 
   .users-table tbody tr {
     display: flex;
@@ -592,7 +615,7 @@ form input {
   .users-table tbody td {
     order: 1;
     padding-bottom: 5px;
-    font-size: 15px;
+    font-size: 12px;
   }
 
   .users-table tbody td:nth-child(1),
@@ -643,4 +666,6 @@ form input {
   .title {
     font-size: none !important;
   }
+
+
 }

@@ -12,6 +12,22 @@ import { debounce, formatDate, formatDNI } from '/utils/utils.js';
 const accessToken = localStorage.getItem('accessToken');
 
 // ================================
+// ACTUALIZAR ALTURA DEL VIEWPORT
+// ================================
+function actualizarAlturaViewport() {
+    // Si está disponible, usa visualViewport.height; de lo contrario, usa innerHeight
+    const alturaVisible = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty('--vh', `${alturaVisible * 0.01}px`);
+}
+
+// Actualiza la altura al cargar la página y al redimensionar
+actualizarAlturaViewport();
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', actualizarAlturaViewport);
+}
+window.addEventListener('resize', actualizarAlturaViewport);
+
+// ================================
 // MÓDULO UsersApp
 // ================================
 const UsersApp = (function () {
@@ -200,7 +216,7 @@ const UsersApp = (function () {
     function setupStatusButtons() {
         const statusButtons = document.querySelectorAll('.button-status');
         statusButtons.forEach(button => {
-            button.addEventListener('click', () => {
+            button.addEventListener('click', async () => {
                 let selectedStatus;
                 // Mapear el texto del botón al estado correspondiente
                 switch (button.textContent.trim().toLowerCase()) {
@@ -220,26 +236,21 @@ const UsersApp = (function () {
                         selectedStatus = 'all';
                 }
                 currentStatusFilter = selectedStatus;
-                let filteredUsers;
-                if (selectedStatus === 'all' || selectedStatus === null) {
-                    filteredUsers = usersList;
-                } else {
-                    filteredUsers = usersList.filter(user => {
-                        return user.statusDetail && user.statusDetail.status === selectedStatus;
-                    });
-                }
-    
-                // Si hay un valor en el input de búsqueda, combinar ambos filtros
+                // Se obtiene la lista filtrada desde el backend según el estado
+                let updatedUsers = await getAllUsers(selectedStatus);
+
+                // Si hay un valor en el input de búsqueda, se aplica ese filtro adicional
                 const searchValue = elements.searchInput.value.trim().toLowerCase();
                 if (searchValue) {
-                    filteredUsers = filteredUsers.filter(user =>
+                    updatedUsers = updatedUsers.filter(user =>
                         user.firstName.toLowerCase().includes(searchValue) ||
                         user.lastName.toLowerCase().includes(searchValue) ||
                         user.email.toLowerCase().includes(searchValue) ||
                         user.dni.toString().includes(searchValue)
                     );
                 }
-                currentDisplayList = filteredUsers;
+                usersList = updatedUsers;
+                currentDisplayList = updatedUsers;
                 currentPage = 1;
                 renderTable(currentDisplayList);
                 renderPaginationButtons();
@@ -373,17 +384,12 @@ const UsersApp = (function () {
             select.addEventListener('change', async (event) => {
                 const userId = select.getAttribute('data-id');
                 const newStatus = event.target.value;
-                // Actualizamos el status en el backend
+                // Actualizamos el estado en el backend
                 await updateUserStatus(userId, newStatus);
-                // Re-obtenemos la lista actualizada de usuarios
-                const updatedUsers = await getAllUsers();
+                // Se vuelve a obtener la lista de usuarios usando el filtro actual
+                const updatedUsers = await getAllUsers(currentStatusFilter);
                 usersList = updatedUsers;
-                // Si hay un filtro de estado activo (distinto de "all"), se aplica
-                if (currentStatusFilter && currentStatusFilter !== 'all') {
-                    currentDisplayList = updatedUsers.filter(user => user.statusDetail && user.statusDetail.status === currentStatusFilter);
-                } else {
-                    currentDisplayList = updatedUsers;
-                }
+                currentDisplayList = updatedUsers;
                 renderTable(currentDisplayList);
                 renderPaginationButtons();
             });
@@ -433,7 +439,7 @@ const UsersApp = (function () {
 
         showNavItems(userPermissions);
 
-        // Al cargar, obtenemos todos los usuarios y actualizamos la lista que se mostrará
+        // Al cargar, obtenemos todos los usuarios (sin filtro) y actualizamos la lista que se mostrará
         usersList = await getAllUsers();
         currentDisplayList = usersList; // Inicialmente se muestran todos
         currentPage = 1;
@@ -489,9 +495,14 @@ async function updateUserRank(userId, newRank) {
     }
 }
 
-async function getAllUsers() {
+async function getAllUsers(statusFilter = 'all') {
     try {
-        const response = await customFetch('/api/users', {
+        let url = '/api/users';
+        // Si el filtro es distinto de "all", se añade como query param
+        if (statusFilter !== 'all') {
+            url += `?status=${statusFilter}`;
+        }
+        const response = await customFetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
