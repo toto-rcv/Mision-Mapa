@@ -95,6 +95,7 @@
         background-color: var(--background-color);
         backdrop-filter: blur(10px);
         z-index: 1000;
+        flex-shrink: 0;
     }
 
     .sidebar-item {

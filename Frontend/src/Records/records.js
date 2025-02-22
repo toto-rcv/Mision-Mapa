@@ -184,9 +184,9 @@ const SightingsApp = (function () {
         const paginationControls = document.createElement('div');
         paginationControls.classList.add('pagination-controls');
         paginationControls.innerHTML = `
-            <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Anterior</button>
+            <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
             <span>Página ${currentPage} de ${totalPages}</span>
-            <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente &raquo;</button>
+            <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente</button>
         `;
 
         elements.paginationContainer.innerHTML = '';

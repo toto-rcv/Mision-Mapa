@@ -12,6 +12,22 @@ import { debounce, formatDate, formatDNI } from '/utils/utils.js';
 const accessToken = localStorage.getItem('accessToken');
 
 // ================================
+// ACTUALIZAR ALTURA DEL VIEWPORT
+// ================================
+function actualizarAlturaViewport() {
+    // Si está disponible, usa visualViewport.height; de lo contrario, usa innerHeight
+    const alturaVisible = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty('--vh', `${alturaVisible * 0.01}px`);
+}
+
+// Actualiza la altura al cargar la página y al redimensionar
+actualizarAlturaViewport();
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', actualizarAlturaViewport);
+}
+window.addEventListener('resize', actualizarAlturaViewport);
+
+// ================================
 // MÓDULO UsersApp
 // ================================
 const UsersApp = (function () {

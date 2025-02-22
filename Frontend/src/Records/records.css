@@ -303,7 +303,7 @@ textarea.modal-input {
 .pagination-controls {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
   gap: 1rem;
 }
 
@@ -321,8 +321,9 @@ textarea.modal-input {
   color: white;
 }
 
-.generarPDF:hover{
-  background-color: var(--primary-color);;
+.generarPDF:hover {
+  background-color: var(--primary-color);
+  ;
 }
 
 .table-container {
@@ -368,7 +369,6 @@ textarea.modal-input {
     background: none;
     box-shadow: none;
   }
-
 
   .sightings-table thead {
     display: none;
@@ -434,8 +434,9 @@ textarea.modal-input {
   .register-container {
     background: #1A1A1C;
     padding: 1rem;
-    flex: 1;
+    flex-grow: 1;
     display: flex;
+    overflow: hidden;
   }
 
   .form-group.full-width {
@@ -481,11 +482,22 @@ textarea.modal-input {
   }
 
   .search-input {
-    width: 100%;
+    width: 80%;
     font-size: 1em;
     height: unset;
     padding: 1rem;
   }
+
+  .main-content {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .table-container {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+
 }
 
 @media (max-width: 1600px) {
@@ -514,5 +526,18 @@ textarea.modal-input {
 
   .sightings-table td.col-ws {
     white-space: pre-line;
+  }
+}
+
+@media (max-width:468px) {
+
+  .generarPDF{
+    font-size: 11px;
+    width: 60px;
+  }
+
+
+  .search-input {
+    width: 75%; 
   }
 }

@@ -1,497 +1,500 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
 }
 
 .leaflet-control-attribution.leaflet-control {
-    font-size: 0px;
+  font-size: 0px;
 }
 
 body {
-    height: 100svh;
-    height: calc(var(--vh, 1vh) * 100);
-    display: flex;
-    flex-direction: column;
-    background-color: var(--background-color);
-    color: var(--text-color);
+  height: 100svh;
+  height: calc(var(--vh, 1vh) * 100);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 .markers-count {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.875rem;
-    color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
 }
 
 /* Main Content Styles */
 .main-content {
-    flex-grow: 1;
-    display: flex;
+  flex-grow: 1;
+  display: flex;
 }
 
 /* Map Container Styles */
 .map-container {
-    flex: 1;
-    position: relative;
+  flex: 1;
+  position: relative;
 }
 
 .search-container {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    z-index: 6;
-    display: flex;
-    gap: 0.5rem;
-    background-color: var(--background-color);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 0.5rem;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 6;
+  display: flex;
+  gap: 0.5rem;
+  background-color: var(--background-color);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 0.5rem;
 }
 
 .search-input {
-    width: 300px;
-    padding: 12px;
-    background-color: var(--input-background);
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
-    color: var(--text-color);
-    font-size: 14px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+  width: 300px;
+  padding: 12px;
+  background-color: var(--input-background);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .search-input::placeholder {
-    color: var(--input-placeholder);
+  color: var(--input-placeholder);
 }
 
 .search-input:focus {
-    outline: none;
-    border-color: var(--focus-color);
-    box-shadow: 0 0 0 3px rgba(77, 144, 254, 0.2);
+  outline: none;
+  border-color: var(--focus-color);
+  box-shadow: 0 0 0 3px rgba(77, 144, 254, 0.2);
 }
 
 .filter-button {
-    padding: 0.95em;
-    background-color: var(--input-background);
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
-    color: var(--text-color);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s, border-color 0.2s;
+  padding: 0.95em;
+  background-color: var(--input-background);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
 .filter-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .filter-button:focus {
-    outline: none;
-    border-color: var(--focus-color);
-    box-shadow: 0 0 0 3px rgba(77, 144, 254, 0.2);
+  outline: none;
+  border-color: var(--focus-color);
+  box-shadow: 0 0 0 3px rgba(77, 144, 254, 0.2);
 }
 
 .filter-button.active {
-    border-color: var(--primary-color, #00BCD4);
-  }
-  
+  border-color: var(--primary-color, #00BCD4);
+}
+
 .filter-button.active svg {
-    stroke: var(--primary-color, #00BCD4);
+  stroke: var(--primary-color, #00BCD4);
 }
 
 #map {
-    height: 100%;
-    width: 100%;
-    background-color: #2a2a2a;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
+  height: 100%;
+  width: 100%;
+  background-color: #2a2a2a;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
 }
 
 .register-button {
-    position: absolute;
-    bottom: 2rem;
-    right: 2rem;
-    padding: 0.5em;
-    padding-right: 0.75em;
-    background-color: #00C2D1;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    z-index: 2;
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 0.5em;
+  padding-right: 0.75em;
+  background-color: #00C2D1;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 2;
 }
 
 .register-button span {
-    /* Update 4 */
-    background-color: white;
-    color: #00C2D1;
-    width: 30px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* Update 4 */
+  background-color: white;
+  color: #00C2D1;
+  width: 30px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .register-button:hover {
-    background-color: #00acc1;
+  background-color: #00acc1;
 }
 
 .register-button:active {
-    transform: translateY(1px);
+  transform: translateY(1px);
 }
 
 /* Custom Map Controls */
 .map-controls {
-    position: absolute;
-    left: 1rem;
-    bottom: 2rem;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+  position: absolute;
+  left: 1rem;
+  bottom: 2rem;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .control-button {
-    /* Update 2 */
-    width: 32px;
-    height: 32px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s;
+  /* Update 2 */
+  width: 32px;
+  height: 32px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s;
 }
 
 .control-button:hover {
-    background-color: #00acc1;
+  background-color: #00acc1;
 }
 
 .modal {
-    position: absolute;
-    top: 19%;
-    left: 85%;
-    transform: translate(-50%, -20%);
-    background-color: white;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    padding: 15px;
-    width: 300px;
-    color: black;
-    display: none;
+  position: absolute;
+  top: 19%;
+  left: 85%;
+  transform: translate(-50%, -20%);
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  padding: 15px;
+  width: 300px;
+  color: black;
+  display: none;
 }
 
 .modal.open {
-    display: block;
-    /* Visible cuando se activa */
+  display: block;
+  /* Visible cuando se activa */
 }
 
 .modal-content {
-    position: relative;
+  position: relative;
 }
 
 .close-button {
-    display: flex;
-    font-size: 18px;
-    cursor: pointer;
-    color: #333;
-    justify-content: flex-end;
+  display: flex;
+  font-size: 18px;
+  cursor: pointer;
+  color: #333;
+  justify-content: flex-end;
 }
 
 form label {
-    display: block;
-    margin: 10px 0 5px;
+  display: block;
+  margin: 10px 0 5px;
 }
 
 form input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
 form button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 form button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
-.overlay, .quantityOverlay {
-    position: absolute;
-    top: 2rem;
-    right: 1rem;
-    /* Changed from 2rem to 1rem */
-    width: 400px;
-    background-color: var(--form-background-color);
-    color: white;
-    padding: 30px;
-    display: none;
-    flex-direction: column;
-    z-index: 1000;
-    border-radius: 5px;
-    font-size: 1rem;
-    /* Added border radius */
+.overlay,
+.quantityOverlay {
+  position: absolute;
+  top: 2rem;
+  right: 1rem;
+  /* Changed from 2rem to 1rem */
+  width: 400px;
+  background-color: var(--form-background-color);
+  color: white;
+  padding: 30px;
+  display: none;
+  flex-direction: column;
+  z-index: 1000;
+  border-radius: 5px;
+  font-size: 1rem;
+  /* Added border radius */
 }
 
-.overlay h2, .quantityOverlay h2 {
-    font-size: 1.15em;
-    font-weight: 500;
-    margin-bottom: 15px;
+.overlay h2,
+.quantityOverlay h2 {
+  font-size: 1.15em;
+  font-weight: 500;
+  margin-bottom: 15px;
 }
 
-.overlay p, .quantityOverlay p {
-    padding: 40px;
-    border-radius: 3px;
-    /* Added border radius */
-    text-align: center;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.8em;
-    border: 1px solid var(--input-border);
+.overlay p,
+.quantityOverlay p {
+  padding: 40px;
+  border-radius: 3px;
+  /* Added border radius */
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8em;
+  border: 1px solid var(--input-border);
 }
 
 /* Form Panel Styles */
 .form-panel {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 1rem;
-    width: 100%;
-    max-width: max(30%, 500px);
-    max-height: 90vh;
-    overflow-y: auto;
-    background-color: var(--background-color);
-    color: white;
-    padding: 1.5rem;
-    display: none;
-    z-index: 1000;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 1rem;
+  width: 100%;
+  max-width: max(30%, 500px);
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: var(--background-color);
+  color: white;
+  padding: 1.5rem;
+  display: none;
+  z-index: 1000;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .form-header {
-    position: relative;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0 0 1rem 0;
-    letter-spacing: -0.01em;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.01em;
 }
 
 .form-subtitle {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .id-date-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .sighting-id {
-    color: #00BCD4;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+  color: #00BCD4;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .timestamp {
-    color: #8A8A8A;
-    font-size: 0.75rem;
-    font-weight: 500;
+  color: #8A8A8A;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .coordinates {
-    text-align: right;
-    font-size: 0.75rem;
-    color: #8A8A8A;
-    display: flex;
-    flex-direction: column;
-    gap: 0.125rem;
+  text-align: right;
+  font-size: 0.75rem;
+  color: #8A8A8A;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
 }
 
 .coordinates label {
-    color: rgba(255, 255, 255, 0.6);
-    font-weight: 500;
-    margin-right: 0.25rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  margin-right: 0.25rem;
 }
 
 .coordinates span {
-    color: white;
-    font-weight: 500;
+  color: white;
+  font-weight: 500;
 }
 
 .close-button {
-    position: absolute;
-    top: -0.5rem;
-    right: -0.5rem;
-    background: none;
-    border: none;
-    color: #8A8A8A;
-    cursor: pointer;
-    font-size: 1.5rem;
-    padding: 0.5rem;
-    transition: color 0.2s;
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  background: none;
+  border: none;
+  color: #8A8A8A;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  transition: color 0.2s;
 }
 
 .close-button:hover {
-    color: white;
+  color: white;
 }
 
 .form-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0;
 }
 
 .form-row {
-    display: flex;
-    gap: 1.25rem;
+  display: flex;
+  gap: 1.25rem;
 }
 
 .form-column {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5rem;
 }
 
 .form-group:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .form-group label {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .form-group input,
 .form-group textarea {
-    background-color: rgba(26, 26, 26, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: white;
-    padding: 0.875rem 1rem;
-    font-size: 0.875rem;
-    width: 100%;
-    transition: all 0.2s;
+  background-color: rgba(26, 26, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  width: 100%;
+  transition: all 0.2s;
 }
 
 .form-group input::placeholder,
 .form-group textarea::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .form-group input:hover,
 .form-group textarea:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
-    outline: none;
-    border-color: #00BCD4;
-    background-color: rgba(26, 26, 26, 0.8);
-    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+  outline: none;
+  border-color: #00BCD4;
+  background-color: rgba(26, 26, 26, 0.8);
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
 }
 
 .form-group input:read-only {
-    color: rgba(255, 255, 255, 0.6);
-    cursor: not-allowed;
-    background-color: rgba(26, 26, 26, 0.4);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: not-allowed;
+  background-color: rgba(26, 26, 26, 0.4);
 }
 
 .form-group textarea {
-    resize: vertical;
-    min-height: 100px;
+  resize: vertical;
+  min-height: 100px;
 }
 
 .form-buttons {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 2rem;
-    gap: 1rem;
-    flex-wrap: wrap
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap
 }
 
 .btn {
-    padding: 1.25em 1em;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    width: min-content;
-    flex-grow: 1;
+  padding: 1.25em 1em;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: min-content;
+  flex-grow: 1;
 }
 
 .btn-cancel {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .btn-cancel:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .btn-save {
-    background-color: #00BCD4;
-    color: white;
+  background-color: #00BCD4;
+  color: white;
 }
 
 .btn-save:hover {
-    background-color: #00ACC1;
-    transform: translateY(-1px);
+  background-color: #00ACC1;
+  transform: translateY(-1px);
 }
 
 .btn-save:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 /* Responsive styles */
@@ -501,1001 +504,1022 @@ form button:hover {
     flex-direction: column-reverse;
   }
 
-    .search-input {
-        width: 100%;
-    }
+  .search-input {
+    width: 100%;
+  }
 
-    .register-button {
-        font-size: 14px;
-        padding: 12px 24px;
-    }
+  .register-button {
+    font-size: 14px;
+    padding: 12px 24px;
+  }
 
-    .form-panel {
-        top: auto;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        border-radius: 12px 12px 0 0;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
+  .form-panel {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
 
-    .form-row {
-        flex-direction: column;
-        gap: 1rem;
-    }
+  .form-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-    .coordinates {
-        display: none;
-    }
+  .coordinates {
+    display: none;
+  }
 
-    .btn {
-       width: 100%;
-    }
+  .btn {
+    width: 100%;
+  }
 }
 
 .marker-alert {
-    position: absolute;
-    top: 2rem;
-    right: 1rem;
-    z-index: 4;
-    padding: 0 16px;
-    animation: fadeIn 0.25s ease-out;
-    font-size: 0.95em;
+  position: absolute;
+  top: 2rem;
+  right: 1rem;
+  z-index: 4;
+  padding: 0 16px;
+  animation: fadeIn 0.25s ease-out;
+  font-size: 0.95em;
 }
 
 .marker-alert-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--background-color);
-    color: var(--text-color);
-    padding: 1rem;
-    padding-right: 1.5rem;
-    border-radius: 12px;
-    min-width: 280px;
-    max-width: 400px;
-    border-left: 4px solid var(--marker-alert-accent);
-  }
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--background-color);
+  color: var(--text-color);
+  padding: 1rem;
+  padding-right: 1.5rem;
+  border-radius: 12px;
+  min-width: 280px;
+  max-width: 400px;
+  border-left: 4px solid var(--marker-alert-accent);
+}
 
 .marker-alert-icon {
-    fill: var(--marker-alert-accent);
-    flex-shrink: 0;
+  fill: var(--marker-alert-accent);
+  flex-shrink: 0;
 }
 
 .marker-alert-info {
-    flex-grow: 1;
-    display: flex;
-    gap: 0.5em;
-    flex-direction: column;
+  flex-grow: 1;
+  display: flex;
+  gap: 0.5em;
+  flex-direction: column;
 }
 
 .marker-alert-help {
-    margin: 0;
-    font-size: 0.9em;
-    line-height: 1.4;
-    opacity: 0.9;
+  margin: 0;
+  font-size: 0.9em;
+  line-height: 1.4;
+  opacity: 0.9;
 }
 
 .marker-alert-count {
-    font-weight: 600;
-    color: var(--marker-alert-accent);
+  font-weight: 600;
+  color: var(--marker-alert-accent);
 }
 
 .marker-alert-highlight {
-    color: var(--marker-alert-accent);
-    font-weight: 500;
+  color: var(--marker-alert-accent);
+  font-weight: 500;
 }
 
 /* Subtle attention-grabbing animation */
 @keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: translateX(-25%) translateY(0);
-    }
-    100% {
-      opacity: 1;
-      transform: translateX(0) translateY(0);
-    }
+  0% {
+    opacity: 0;
+    transform: translateX(-25%) translateY(0);
   }
 
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}
+
 @keyframes borderPulse {
-    0% {
-        border-left-color: var(--marker-alert-accent);
-    }
-    50% {
-        border-left-color: rgba(255, 68, 68, 0.5);
-    }
-    100% {
-        border-left-color: var(--marker-alert-accent);
-    }
+  0% {
+    border-left-color: var(--marker-alert-accent);
+  }
+
+  50% {
+    border-left-color: rgba(255, 68, 68, 0.5);
+  }
+
+  100% {
+    border-left-color: var(--marker-alert-accent);
+  }
 }
 
 .marker-alert-content {
-    animation: borderPulse 2s infinite;
+  animation: borderPulse 2s infinite;
 }
 
 @media (max-width: 480px) {
-    .marker-alert {
-        padding: 0;
-        left: 1rem;
-        right: 1rem;
-        top: 6rem;
-        font-size: 1rem;
-    }
+  .marker-alert {
+    padding: 0;
+    left: 1rem;
+    right: 1rem;
+    top: 6rem;
+    font-size: 1rem;
+  }
 
-    .marker-alert-content {
-        width: 100%;
-        padding: 0.9rem;
-    }
+  .marker-alert-content {
+    width: 100%;
+    padding: 0.9rem;
+  }
 
-    .marker-alert-info {
-      font-size: 0.9em;
-    }
+  .marker-alert-info {
+    font-size: 0.9em;
+  }
 
-    .marker-alert-help {
-      display: none;
-    }
+  .marker-alert-help {
+    display: none;
+  }
 }
 
 /* Mobile-specific styles */
 @media (max-width: 768px) {
 
-    /* Header styles */
-    .header {
-        height: 70px;
-        padding: 0.5rem 1rem;
-        background-color: rgba(38, 37, 42, 1);
-        backdrop-filter: none;
-        z-index: 1005;
-        gap: 1rem;
-    }
 
-    .markers-count {
-        display: none;
-    }
+  .markers-count {
+    display: none;
+  }
 
-    /* Search bar styles */
-    .search-container {
-        padding: 0.5rem;
-        top: 1rem;
-        width: calc(100% - 2rem);
-        margin: 0;
-        backdrop-filter: blur(10px);
-    }
+  /* Search bar styles */
+  .search-container {
+    padding: 0.5rem;
+    top: 1rem;
+    width: calc(100% - 2rem);
+    margin: 0;
+    backdrop-filter: blur(10px);
+  }
 
-    .search-input {
-        font-size: 0.9em;
-        width: calc(100% - 1rem);
-        padding: 0.85em 1em;
-    }
+  .search-input {
+    font-size: 0.9em;
+    width: calc(100% - 1rem);
+    padding: 0.85em 1em;
+  }
 
-    /* FAB button styles */
-    .register-button {
-        width: 66px;
-        height: 66px;
-        padding: 0.5rem 1rem;
-        border-radius: 35px;
-        right: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        bottom: 70px;
-    }
+  /* FAB button styles */
+  .register-button {
+    width: 66px;
+    height: 66px;
+    padding: 0.5rem 1rem;
+    border-radius: 35px;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    bottom: 70px;
+  }
 
-    .register-button span {
-        margin: 0;
-        width: 24px;
-        height: 24px;
-    }
+  .register-button span {
+    margin: 0;
+    width: 24px;
+    height: 24px;
+  }
 
-    .register-button span i {
-        font-size: 1rem;
-    }
+  .register-button span i {
+    font-size: 1rem;
+  }
 
-    .register-button span:not(i) {
-        display: none;
-    }
+  .register-button span:not(i) {
+    display: none;
+  }
 
-    .overlay {
-        position: fixed;
-        top: auto;
-        left: 0;
-        right: 0;
-        bottom: 56px;
-        width: 100%;
-        transform: translateY(100%);
-        transition: transform 0.3s ease-in-out;
-    }
+  .overlay {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 56px;
+    width: 100%;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+  }
 
-    .overlay.visible {
-        transform: translateX(0);
-    }
+  .overlay.visible {
+    transform: translateX(0);
+  }
 
 
-    .main-content {
-      flex-direction: column-reverse;
-    }
-    .form-panel {
-        position: fixed;
-        top: auto;
-        left: 0;
-        right: 0;
-        bottom: 60px;
-        max-height: 80vh;
-        width: 100%;
-        max-width: none;
-        border-radius: 0;
-        transform: translateY(100%);
-        transition: transform 0.3s ease-in-out;
-    }
+  .main-content {
+    flex-direction: column-reverse;
+  }
 
-    .form-panel {
-        top: 50%;
-        transform: translateY(-50%);
-        width: 100%;
-        max-height: 90vh;
-        height: 82vh;
-        border-radius: 12px;
-    }
+  .form-panel {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    max-height: 80vh;
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+  }
 
-    .form-panel.visible {
-        transform: translateY(0);
-    }
+  .form-panel {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    max-height: 90vh;
+    height: 82vh;
+    border-radius: 12px;
+  }
 
-    /* Form adjustments for mobile */
-    .form-row {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
+  .form-panel.visible {
+    transform: translateY(0);
+  }
 
-    .form-content {
-        display: flex;
-        flex-direction: column;
-    }
+  /* Form adjustments for mobile */
+  .form-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
-    .form-group {
-        margin-bottom: 1rem;
-    }
+  .form-content {
+    display: flex;
+    flex-direction: column;
+  }
 
-    .form-buttons {
-        padding-block: 1rem;
-        margin: 0;
-        gap: 0.5rem;
-    }
+  .form-group {
+    margin-bottom: 1rem;
+  }
 
-    .btn {
-        flex-grow: 1;
-        padding: 1.15em;
-        font-size: 1em;
-    }
+  .form-buttons {
+    padding-block: 1rem;
+    margin: 0;
+    gap: 0.5rem;
+  }
 
-    /* Map controls */
-    .map-controls {
-        bottom: 3rem;
-        left: 1rem;
-        gap: 0.5rem;
-    }
+  .btn {
+    flex-grow: 1;
+    padding: 1.15em;
+    font-size: 1em;
+  }
 
-    .control-button {
-        width: 2rem;
-        height: 2rem;
-    }
+  /* Map controls */
+  .map-controls {
+    bottom: 3rem;
+    left: 1rem;
+    gap: 0.5rem;
+  }
 
-    .filter-button {
-      padding: 0.8rem;
-    }
+  .control-button {
+    width: 2rem;
+    height: 2rem;
+  }
 
-    .filter-button svg {
-      width: 20px;
-      height: 20px;
-    }
+  .filter-button {
+    padding: 0.8rem;
+  }
+
+  .filter-button svg {
+    width: 20px;
+    height: 20px;
+  }
 
 }
 
 /* Ensure the form doesn't get too small on very small screens */
 @media (max-width: 1280px) and (min-height: 720px) {
-    .form-panel {
-        width: 90%;
+  .form-panel {
+    width: 90%;
 
-    }
+  }
 }
 
 .form-select {
-    background-color: rgba(26, 26, 26, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: white;
-    padding: 0.875rem 1rem;
-    font-size: 0.875rem;
-    width: 100%;
-    transition: all 0.2s;
-    appearance: none;
-    background-color: rgba(26, 26, 26, 0.6);
+  background-color: rgba(26, 26, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  width: 100%;
+  transition: all 0.2s;
+  appearance: none;
+  background-color: rgba(26, 26, 26, 0.6);
 }
 
 .form-select:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .form-select:focus {
-    outline: none;
-    border-color: #00BCD4;
-    background-color: rgba(26, 26, 26, 0.8);
-    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+  outline: none;
+  border-color: #00BCD4;
+  background-color: rgba(26, 26, 26, 0.8);
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
 }
 
 .form-select option {
-    background-color: #26252A;
-    color: white;
+  background-color: #26252A;
+  color: white;
 }
 
 /* For Firefox */
 .form-select:-moz-focusring {
-    color: transparent;
-    text-shadow: 0 0 0 white;
+  color: transparent;
+  text-shadow: 0 0 0 white;
 }
 
 /* For IE/Edge */
 .form-select::-ms-expand {
-    display: none;
+  display: none;
 }
 
 .form-select option[value=""] {
-    color: var(--input-placeholder);
+  color: var(--input-placeholder);
 }
 
 /* Remove spinners from number input */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input[type="number"] {
-    appearance: textfield;
+  appearance: textfield;
 }
 
 .invalid-feedback {
-    display: none;
-    color: var(--error-color);
-    margin-top: 5px;
-    font-size: 11px;
+  display: none;
+  color: var(--error-color);
+  margin-top: 5px;
+  font-size: 11px;
 }
 
 .invalid+.invalid-feedback {
-    display: block;
+  display: block;
 }
 
 textarea {
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.1);
 }
 
 textarea::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 textarea::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 textarea::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
 }
 
 textarea::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 
 
 /* Timeline */
 .timeline-container {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70%;
-    background: var(--background-color);
-    border-radius: 12px 12px 0 0;
-    z-index: 5;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-  }
-  
-  .timeline-toggle {
-    position: absolute;
-    top: -35px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--background-color);
-    border: none;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 12px 12px 0 0;
-    cursor: pointer;
-  }
-  
-  .timeline-content {
-    padding: 1rem;
-    display: none;
-  }
-  
-  .timeline-container.expanded .timeline-content {
-    display: block;
-  }
-  
-  .time-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8em;
-    color: var(--text-muted);
-    margin-bottom: 0.5rem;
-  }
-  
-  /* Contenedor del slider: fondo gris clarito para toda la línea */
-  .slider-container {
-    position: relative;
-    height: 4px;
-    margin: 1rem 0;
-    background-color: var(--text-muted); /* Gris clarito */
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  background: var(--background-color);
+  border-radius: 12px 12px 0 0;
+  z-index: 5;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.timeline-toggle {
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--background-color);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 12px 12px 0 0;
+  cursor: pointer;
+}
+
+.timeline-content {
+  padding: 1rem;
+  display: none;
+}
+
+.timeline-container.expanded .timeline-content {
+  display: block;
+}
+
+.time-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+/* Contenedor del slider: fondo gris clarito para toda la línea */
+.slider-container {
+  position: relative;
+  height: 4px;
+  margin: 1rem 0;
+  background-color: var(--text-muted);
+  /* Gris clarito */
+}
+
+/* Contenedor de los ticks (divisores) */
+.slider-ticks {
+  position: absolute;
+  top: -6px;
+  /* Ajusta la posición vertical según necesites */
+  left: 0;
+  right: 0;
+  height: 10px;
+  pointer-events: none;
+}
+
+/* Cada tick se representa con un div de 1px de ancho */
+.tick {
+  position: absolute;
+  width: 1px;
+  height: 10px;
+  background: #fff;
+  /* Color del tick, puede ajustarse */
+}
+
+/* Track del tramo seleccionado: se mostrará sobre el fondo gris */
+.slider-track {
+  position: absolute;
+  height: 100%;
+  background: var(--primary-color);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Los dos sliders se posicionan de forma absoluta y son transparentes */
+.timeline-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: transparent;
+  -webkit-appearance: none;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Permitir la interacción con el thumb */
+.timeline-slider::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: 2px solid #333;
+  margin-top: -6px;
+}
+
+/* Feedback del rango seleccionado */
+.timeline-feedback {
+  text-align: center;
+  font-size: 0.8em;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .stats-panel {
+    top: 6rem;
+    right: 0.5rem;
+    max-width: 200px;
   }
 
-  /* Contenedor de los ticks (divisores) */
-.slider-ticks {
-    position: absolute;
-    top: -6px; /* Ajusta la posición vertical según necesites */
-    left: 0;
-    right: 0;
-    height: 10px;
-    pointer-events: none;
+  .timeline-container {
+    width: 90%;
   }
-  
-  /* Cada tick se representa con un div de 1px de ancho */
-  .tick {
-    position: absolute;
-    width: 1px;
-    height: 10px;
-    background: #fff; /* Color del tick, puede ajustarse */
-  }
-  
-  /* Track del tramo seleccionado: se mostrará sobre el fondo gris */
-  .slider-track {
-    position: absolute;
-    height: 100%;
-    background: var(--primary-color);
-    z-index: 1;
-    pointer-events: none;
-  }
-  
-  /* Los dos sliders se posicionan de forma absoluta y son transparentes */
-  .timeline-slider {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: transparent;
-    -webkit-appearance: none;
-    pointer-events: none;
-    z-index: 2;
-  }
-  
-  /* Permitir la interacción con el thumb */
-  .timeline-slider::-webkit-slider-thumb {
-    pointer-events: auto;
-    -webkit-appearance: none;
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    background: #fff;
-    cursor: pointer;
-    border: 2px solid #333;
-    margin-top: -6px;
-  }
-  
-  /* Feedback del rango seleccionado */
-  .timeline-feedback {
-    text-align: center;
-    font-size: 0.8em;
-    color: #fff;
-  }
-  
-  @media (max-width: 768px) {
-    .stats-panel {
-      top: 6rem;
-      right: 0.5rem;
-      max-width: 200px;
-    }
-    
-    .timeline-container {
-      width: 90%;
-    }
-  }
+}
 
 
 /* Contenedor principal de los filtros */
 .advanced-filters {
-    position: relative;
-    display: flex;
-    flex-grow: 1;
-    gap: 0.75rem;
+  position: relative;
+  display: flex;
+  flex-grow: 1;
+  gap: 0.75rem;
+}
+
+/* Panel emergente de filtros */
+.filters-panel {
+  position: absolute;
+  top: calc(100% + 1rem);
+  left: calc(0% - 0.5rem);
+  background: var(--background-color);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  /* 16px ≈ 1rem */
+  padding: 1.25rem;
+  box-shadow: 0 0.5rem 1.875rem rgba(0, 0, 0, 0.15);
+  display: none;
+  z-index: 1001;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Mostrar el panel (por ejemplo, agregando la clase .active) */
+.filters-panel.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Título principal */
+.filters-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--text-color, #333);
+}
+
+/* Sección de cada grupo de filtros */
+.filter-section {
+  margin-bottom: 1.75rem;
+  font-size: 0.8rem
+}
+
+/* Subtítulos (más discretos) */
+.filter-section h4 {
+  font-size: 1em;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-muted, #777);
+}
+
+/* Opciones rápidas para fechas */
+.date-quick-options {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.quick-date {
+  background: var(--quick-date-bg, rgba(255, 255, 255, 0.15));
+  border: 0.063rem solid var(--input-border, #ccc);
+  border-radius: 1rem;
+  /* apariencia tipo pill */
+  padding: 0.5rem 1rem;
+  font-size: 1em;
+  color: var(--text-color, #333);
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.quick-date:hover {
+  background: var(--quick-date-hover, rgba(255, 255, 255, 0.25));
+  transform: translateY(-0.125rem);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estado activo para botón de fecha rápida (usa color de acento) */
+.quick-date.active {
+  background: var(--primary-color, var(--link-color, #00BCD4));
+  color: #fff;
+  border-color: transparent;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(1);
   }
-  
-  /* Panel emergente de filtros */
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.quick-date.clicked {
+  animation: bounce 0.3s ease;
+}
+
+/* Contenedor de fechas personalizadas */
+.custom-dates {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Inputs para seleccionar fecha */
+.date-input {
+  background: var(--form-input-color, #fff);
+  border: 0.063rem solid var(--input-border, #ccc);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  color: var(--text-color, #333);
+  font-size: 1em;
+  width: 200px;
+  transition: opacity 0.15s ease;
+  opacity: 1;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  filter: invert(55%) sepia(100%) saturate(500%) hue-rotate(180deg) brightness(90%);
+}
+
+.date-input:focus {
+  border-color: var(--btn-apply, #00BCD4);
+  outline: none;
+}
+
+@keyframes shrink-grow {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.95);
+    /* Se reduce al 90% de su tamaño */
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Clase para aplicar la animación a los inputs de fecha */
+.date-input.animate-shrink {
+  animation: shrink-grow 0.4s ease;
+}
+
+/* Rediseño del filtro de estado: grupo de botones */
+.status-filters {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.status-btn {
+  flex: 1;
+  position: relative;
+  background: var(--input-background, #fff);
+  /* Se unifica el fondo con los demás campos */
+  border: 0.063rem solid var(--input-border, #ccc);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  font-size: 1em;
+  color: var(--text-color, #333);
+}
+
+.status-btn.active::before {
+  content: "✓";
+  position: absolute;
+  left: 0.75rem;
+  /* Ajusta según el padding del botón */
+  color: var(--primary-color, #00BCD4);
+  font-size: 1em;
+}
+
+.status-btn:hover {
+  background: var(--quick-date-hover, rgba(255, 255, 255, 0.25));
+  transform: translateY(-0.125rem);
+}
+
+.status-btn.active {
+  border: 1px solid var(--primary-color, var(--link-color, #00BCD4));
+  color: var(--primary-color, var(--link-color, #00BCD4));
+}
+
+/* Input para búsqueda de usuario */
+.user-search {
+  width: 100%;
+  min-height: 2.5em;
+  border: 1px solid var(--input-border, #ccc);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  background-color: var(--form-input-color, #fff);
+}
+
+.user-search:focus {
+  border-color: var(--btn-apply, #00BCD4);
+  outline: none;
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1.2em;
+  color: var(--text-muted, #777);
+}
+
+/* Acciones: botones de aplicar y limpiar filtros (ancho completo) */
+.filter-actions {
+  display: flex;
+  flex-direction: column;
+  /* Botones apilados verticalmente */
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.btn-apply,
+.btn-clear {
+  padding: 0.75rem 0.875rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  font-size: 0.875em;
+}
+
+.btn-apply {
+  background: #00BCD4;
+  color: #fff;
+}
+
+.btn-apply:hover {
+  background: #00a0b0;
+  transform: translateY(-0.0625rem);
+}
+
+.btn-clear {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-color, #333);
+}
+
+.btn-clear:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-0.0625rem);
+}
+
+/* Mensaje de feedback */
+.filter-feedback {
+  margin-top: 1rem;
+  color: var(--text-muted, #777);
+  font-size: 0.9rem;
+  display: none;
+  text-align: center;
+}
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  font-size: 1em;
+  line-height: 1;
+}
+
+
+/* Ícono para la búsqueda (lupa) */
+.icon-search::before {
+  content: "🔍";
+}
+
+.user-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Ajuste en el input para dejar espacio al ícono */
+.user-search-container .user-search {
+  width: 100%;
+  padding-left: 2.5rem;
+  /* Se agrega espacio a la izquierda para el ícono */
+}
+
+/* Posicionamiento absoluto del ícono de búsqueda */
+.user-search-container .icon-search {
+  position: absolute;
+  left: 0.75rem;
+  pointer-events: none;
+  /* Para que no interfiera en la interacción con el input */
+  font-size: 1em;
+}
+
+.filter-close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-color, #333);
+  transition: color 0.3s ease;
+}
+
+.filter-close-button:hover {
+  color: var(--primary-color, #00BCD4);
+}
+
+/* ================== */
+/* Media queries para responsividad */
+/* ================== */
+@media (max-width: 768px) {
   .filters-panel {
-    position: absolute;
-    top: calc(100% + 1rem);
-    left: calc(0% - 0.5rem);
-    background: var(--background-color);
-    backdrop-filter: blur(12px);
-    border-radius: 1rem; /* 16px ≈ 1rem */
-    padding: 1.25rem;
-    box-shadow: 0 0.5rem 1.875rem rgba(0, 0, 0, 0.15);
-    display: none;
-    z-index: 1001;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    width: calc(100% - 2rem);
+    left: 1rem;
+    top: calc(100% + 0.5rem);
+    padding: 1rem;
   }
-  
-  /* Mostrar el panel (por ejemplo, agregando la clase .active) */
-  .filters-panel.active {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  /* Título principal */
-  .filters-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    color: var(--text-color, #333);
-  }
-  
-  /* Sección de cada grupo de filtros */
-  .filter-section {
-    margin-bottom: 1.75rem;
-    font-size: 0.8rem
-  }
-  
-  /* Subtítulos (más discretos) */
-  .filter-section h4 {
-    font-size: 1em;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    color: var(--text-muted, #777);
-  }
-  
-  /* Opciones rápidas para fechas */
-  .date-quick-options {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .quick-date {
-    background: var(--quick-date-bg, rgba(255, 255, 255, 0.15));
-    border: 0.063rem solid var(--input-border, #ccc);
-    border-radius: 1rem; /* apariencia tipo pill */
-    padding: 0.5rem 1rem;
-    font-size: 1em;
-    color: var(--text-color, #333);
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  }
-  
-  .quick-date:hover {
-    background: var(--quick-date-hover, rgba(255, 255, 255, 0.25));
-    transform: translateY(-0.125rem);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Estado activo para botón de fecha rápida (usa color de acento) */
-  .quick-date.active {
-    background: var(--primary-color, var(--link-color, #00BCD4));
-    color: #fff;
-    border-color: transparent;
-  }
+}
 
-  @keyframes bounce {
-    0%   { transform: scale(1); }
-    50%  { transform: scale(1.1); }
-    100% { transform: scale(1); }
-  }
+@media (max-width: 480px) {
 
-  .quick-date.clicked {
-    animation: bounce 0.3s ease;
-  }
-  
-  /* Contenedor de fechas personalizadas */
+  /* Para pantallas pequeñas: se apilan elementos y se ajustan columnas */
   .custom-dates {
-    display: grid;
-    gap: 0.75rem;
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  /* Inputs para seleccionar fecha */
-  .date-input {
-    background: var(--form-input-color, #fff);
-    border: 0.063rem solid var(--input-border, #ccc);
-    border-radius: 0.5rem;
-    padding: 0.75rem 0.875rem;
-    color: var(--text-color, #333);
-    font-size: 1em;
-    width: 200px;
-    transition: opacity 0.15s ease;
-    opacity: 1;
+    grid-template-columns: 1fr;
   }
 
-  .date-input::-webkit-calendar-picker-indicator {
-    filter: invert(55%) sepia(100%) saturate(500%) hue-rotate(180deg) brightness(90%);
-  }
-  
-  .date-input:focus {
-    border-color: var(--btn-apply, #00BCD4);
-    outline: none;
-  }
-
-  @keyframes shrink-grow {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(0.95); /* Se reduce al 90% de su tamaño */
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  
-  /* Clase para aplicar la animación a los inputs de fecha */
-  .date-input.animate-shrink {
-    animation: shrink-grow 0.4s ease;
-  }
-  
-  /* Rediseño del filtro de estado: grupo de botones */
-  .status-filters {
-    display: flex;
-    gap: 0.75rem;
-  }
-  
-  .status-btn {
-    flex: 1;
-    position: relative;
-    background: var(--input-background, #fff); /* Se unifica el fondo con los demás campos */
-    border: 0.063rem solid var(--input-border, #ccc);
-    border-radius: 0.5rem;
-    padding: 0.75rem 0.875rem;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    font-size: 1em;
-    color: var(--text-color, #333);
-  }
-
-  .status-btn.active::before {
-    content: "✓";
-    position: absolute;
-    left: 0.75rem;  /* Ajusta según el padding del botón */
-    color: var(--primary-color, #00BCD4);
-    font-size: 1em;
-  }
-  
-  .status-btn:hover {
-    background: var(--quick-date-hover, rgba(255, 255, 255, 0.25));
-    transform: translateY(-0.125rem);
-  }
-  
-  .status-btn.active {
-    border: 1px solid var(--primary-color, var(--link-color, #00BCD4));
-    color: var(--primary-color, var(--link-color, #00BCD4));
-  }
-  
-  /* Input para búsqueda de usuario */
-  .user-search {
-    width: 100%;
-    min-height: 2.5em;
-    border: 1px solid var(--input-border, #ccc);
-    border-radius: 0.5rem;
-    padding: 0.75rem 0.875rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    cursor: pointer;
-    position: relative;
-    background-color: var(--form-input-color, #fff);
-  }
-
-  .user-search:focus {
-    border-color: var(--btn-apply, #00BCD4);
-    outline: none;
-  }
-
-  .dropdown-icon {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    font-size: 1.2em;
-    color: var(--text-muted, #777);
-  }
-  
-  /* Acciones: botones de aplicar y limpiar filtros (ancho completo) */
-  .filter-actions {
-    display: flex;
-    flex-direction: column;  /* Botones apilados verticalmente */
-    gap: 0.75rem;
-    margin-top: 1rem;
-  }
-  
-  .btn-apply,
-  .btn-clear {
-    padding: 0.75rem 0.875rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    border: none;
-    transition: background 0.3s ease, transform 0.2s ease;
-    width: 100%;
-    font-size: 0.875em;
-  }
-  
-  .btn-apply {
-    background: #00BCD4;
-    color: #fff;
-  }
-  
-  .btn-apply:hover {
-    background: #00a0b0;
-    transform: translateY(-0.0625rem);
-  }
-  
-  .btn-clear {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--text-color, #333);
-  }
-  
-  .btn-clear:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-0.0625rem);
-  }
-  
-  /* Mensaje de feedback */
-  .filter-feedback {
-    margin-top: 1rem;
-    color: var(--text-muted, #777);
-    font-size: 0.9rem;
-    display: none;
-    text-align: center;
-  }
-
-  .icon {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    vertical-align: middle;
-    font-size: 1em;
-    line-height: 1;
-  }
-  
-  
-  /* Ícono para la búsqueda (lupa) */
-  .icon-search::before {
-    content: "🔍";
-  }
-
-  .user-search-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }  
-  
-  /* Ajuste en el input para dejar espacio al ícono */
-  .user-search-container .user-search {
-    width: 100%;
-    padding-left: 2.5rem;  /* Se agrega espacio a la izquierda para el ícono */
-  }
-  
-  /* Posicionamiento absoluto del ícono de búsqueda */
-  .user-search-container .icon-search {
-    position: absolute;
-    left: 0.75rem;
-    pointer-events: none; /* Para que no interfiera en la interacción con el input */
-    font-size: 1em;
-  }
-
-  .filter-close-button {
-    position: absolute;
-    top: 1rem;
-    right: 1.25rem;
-    background: transparent;
-    border: none;
-    font-size: 1.25rem;
-    line-height: 1;
-    cursor: pointer;
-    color: var(--text-color, #333);
-    transition: color 0.3s ease;
-  }
-  
-  .filter-close-button:hover {
-    color: var(--primary-color, #00BCD4);
-  }
-  
-  /* ================== */
-  /* Media queries para responsividad */
-  /* ================== */
-  @media (max-width: 768px) {
-    .filters-panel {
-      width: calc(100% - 2rem);
-      left: 1rem;
-      top: calc(100% + 0.5rem);
-      padding: 1rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    /* Para pantallas pequeñas: se apilan elementos y se ajustan columnas */
-    .custom-dates {
-      grid-template-columns: 1fr;
-    }
-    
-    .advanced-filters {
-      gap: 0.5rem;
-    }
-    
-    .filter-actions {
-      flex-direction: column;
-      gap: 0.5rem;
-      align-items: stretch;
-    }
-  }
-
-  .user-multi-select {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 1002;
-    background: var(--background-color, #fff);
-    border: 1px solid var(--input-border, #ccc);
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    max-height: 300px;
-    overflow-y: auto;
-    width: 100%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Estilo para el input interno de búsqueda */
-  .user-dropdown-search {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 0.25rem;
-    border: 1px solid var(--input-border, #ccc);
-    border-radius: 0.5rem;
-    font-size: 0.9em;
-    background: var(--form-input-color, #fff);
-    color: var(--text-color);
-  }
-
-  .user-dropdown-search:focus {
-      border-color: var(--btn-apply, #00BCD4);
-      outline: none;
-    }
-  
-  /* Estilos para cada opción de usuario */
-  .user-option {
-    display: flex;
-    align-items: center;
-    padding: 0.7rem 0.5rem;
-    border-bottom: 1px solid var(--input-border, #ccc);
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  
-  .user-option:last-child {
-    border-bottom: none;
-  }
-  
-  .user-option:hover {
-    background: var(--form-input-color)
-  }
-  
-  .user-option input[type="checkbox"] {
-    margin-right: 1rem;
-    /* Se aplican estilos personalizados al checkbox */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: 1.1em; /* un poco más grande */
-    height: 1.1em;
-    border: 1px solid var(--input-border, #ccc); /* borde oscuro */
-    border-radius: 4px;
-    background-color: var(--form-input-color, #fff); /* fondo oscuro */
-    cursor: pointer;
-    position: relative;
-  }
-
-  .user-option input[type="checkbox"]:checked {
-    background-color: var(--primary-color, #00BCD4);
-    border-color: var(--primary-color, #00BCD4);
-  }
-
-  .user-option input[type="checkbox"]:checked::after {
-    content: "\2713";
-    color: #fff;
-    font-size: 1em;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
-  /* Contenedor de información del usuario */
-  .user-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  
-  /* Nombre completo resaltado */
-  .user-fullname {
-    font-weight: bold;
-    font-size: 0.95em;
-    color: var(--text-color)
-  }
-  
-  /* DNI y rango militar con tipografía más discreta */
-  .user-dni {
-    font-size: 0.95em;
-    color: var(--primary-color, #00BCD4);
-  }
-
-  .user-militaryRank {
-    font-size: 0.95em;
-    color: var(--input-placeholder);
-  }
-
-  .selected-users {
-    display: flex;
-    flex-wrap: wrap;
+  .advanced-filters {
     gap: 0.5rem;
-    max-height: 3.5rem; /* Ajusta para que en wrap se muestren hasta 2 líneas */
-    overflow-y: auto;
   }
 
-  .selected-users::-webkit-scrollbar {
-    display: none;
+  .filter-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
   }
-  
-  /* Cada tarjeta (badge) de usuario */
-  .selected-user-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: var(--primary-color, #00BCD4);
-    color: #fff;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.9em;
-    white-space: nowrap;
-  }
+}
 
-  .placeholder {
-    color: #aaa;
-    margin-left: 0.5rem;
-  }
+.user-multi-select {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1002;
+  background: var(--background-color, #fff);
+  border: 1px solid var(--input-border, #ccc);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-  .selected-user-card .remove-badge {
-    margin-left: 0.5em;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1.1em;
-  }
-  
-  .selected-user-card .remove-badge:hover {
-    color: #ccc;
-  }
+/* Estilo para el input interno de búsqueda */
+.user-dropdown-search {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 0.25rem;
+  border: 1px solid var(--input-border, #ccc);
+  border-radius: 0.5rem;
+  font-size: 0.9em;
+  background: var(--form-input-color, #fff);
+  color: var(--text-color);
+}
+
+.user-dropdown-search:focus {
+  border-color: var(--btn-apply, #00BCD4);
+  outline: none;
+}
+
+/* Estilos para cada opción de usuario */
+.user-option {
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 0.5rem;
+  border-bottom: 1px solid var(--input-border, #ccc);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.user-option:last-child {
+  border-bottom: none;
+}
+
+.user-option:hover {
+  background: var(--form-input-color)
+}
+
+.user-option input[type="checkbox"] {
+  margin-right: 1rem;
+  /* Se aplican estilos personalizados al checkbox */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 1.1em;
+  /* un poco más grande */
+  height: 1.1em;
+  border: 1px solid var(--input-border, #ccc);
+  /* borde oscuro */
+  border-radius: 4px;
+  background-color: var(--form-input-color, #fff);
+  /* fondo oscuro */
+  cursor: pointer;
+  position: relative;
+}
+
+.user-option input[type="checkbox"]:checked {
+  background-color: var(--primary-color, #00BCD4);
+  border-color: var(--primary-color, #00BCD4);
+}
+
+.user-option input[type="checkbox"]:checked::after {
+  content: "\2713";
+  color: #fff;
+  font-size: 1em;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Contenedor de información del usuario */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Nombre completo resaltado */
+.user-fullname {
+  font-weight: bold;
+  font-size: 0.95em;
+  color: var(--text-color)
+}
+
+/* DNI y rango militar con tipografía más discreta */
+.user-dni {
+  font-size: 0.95em;
+  color: var(--primary-color, #00BCD4);
+}
+
+.user-militaryRank {
+  font-size: 0.95em;
+  color: var(--input-placeholder);
+}
+
+.selected-users {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-height: 3.5rem;
+  /* Ajusta para que en wrap se muestren hasta 2 líneas */
+  overflow-y: auto;
+}
+
+.selected-users::-webkit-scrollbar {
+  display: none;
+}
+
+/* Cada tarjeta (badge) de usuario */
+.selected-user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--primary-color, #00BCD4);
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.placeholder {
+  color: #aaa;
+  margin-left: 0.5rem;
+}
+
+.selected-user-card .remove-badge {
+  margin-left: 0.5em;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.selected-user-card .remove-badge:hover {
+  color: #ccc;
+}
