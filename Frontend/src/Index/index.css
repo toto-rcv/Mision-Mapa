@@ -937,7 +937,8 @@ textarea::-webkit-scrollbar-thumb:hover {
   
 /* Mostrar el panel (por ejemplo, agregando la clase .active) */
 .filters-panel.active {
-  display: block;
+  display: flex;
+  flex-direction: column;
   opacity: 1;
   transform: translateY(0);
 }
@@ -1287,6 +1288,70 @@ textarea::-webkit-scrollbar-thumb:hover {
   color: #ccc;
 }
 
+.map-search {
+  position: relative;
+  max-width: 300px; /* Puedes ajustar este valor según tus necesidades */
+}
+
+.map-search .search-input {
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem 2.5rem; /* Espacio para el ícono a la izquierda */
+  background-color: var(--input-background);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.map-search .search-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.map-search .search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(77, 144, 254, 0.2);
+}
+
+.map-search .search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--icon-color, #888);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.map-search .clear-button {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--icon-color, #888);
+  cursor: pointer;
+  font-size: 14px;
+  display: none;
+  transition: color 0.2s;
+}
+
+.map-search .search-input:not(:placeholder-shown) + .search-icon + .clear-button {
+  display: block;
+}
+
+.map-search .clear-button:hover,
+.map-search .clear-button:focus {
+  color: var(--focus-color);
+}
+
+.map-search .search-input:focus + .search-icon {
+  color: var(--primary-color);
+}
+
 @media (max-width: 480px) {
 
   .search-input {
@@ -1497,5 +1562,33 @@ textarea::-webkit-scrollbar-thumb:hover {
     left: 0;
     right: 0;
     padding-bottom: 2rem;
+    max-height: 75vh; 
   }
+
+  .filters-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+  }
+
+  .filter-section { 
+    margin-bottom: 24px;
+    scroll-snap-align: start;
+  }
+
+  .quick-date {
+    padding: 0.5rem 0.25rem;
+    flex-grow: 1;
+    flex-basis: min-content;
+  }
+
+  .date-quick-options {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+  }
+
+  .status-btn.active::before {
+    display: none;
+  }
+
 }
