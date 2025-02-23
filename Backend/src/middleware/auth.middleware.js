@@ -115,3 +115,46 @@ exports.validateRefreshToken = (req, res, next) => {
     return res.status(403).json({ message: "Refresh Token inválido o expirado" });
   }
 };
+
+exports.verifyResetToken = (req, res, next) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(401).json({ message: "Token requerido." });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.RESET_TOKEN_SECRET);
+    // Validar que el token sea del tipo reset
+    if (decoded.type !== "reset") {
+      return res.status(400).json({ message: "Token no válido para reseteo de contraseña." });
+    }
+    // Adjuntar la información decodificada a la request
+    req.decoded = decoded;
+    next();
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ message: "Token inválido o expirado." });
+  }
+};
+
+exports.validateResetPassword = [
+  // Validar que el campo 'token' exista y sea string
+  body('token')
+    .exists().withMessage('El campo token es obligatorio')
+    .isString().withMessage('El campo token debe ser un string'),
+  
+  // Validar que el campo 'password' exista, sea string y cumpla con la complejidad mínima
+  body('password')
+    .exists().withMessage('El campo password es obligatorio')
+    .isString().withMessage('El campo password debe ser un string')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)
+    .withMessage('La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo'),
+
+  // Middleware para revisar si hay errores en la validación
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    next();
+  }
+];

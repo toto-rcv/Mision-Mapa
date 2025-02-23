@@ -1,5 +1,5 @@
 const { hashPassword, comparePassword } = require("../utils/password.util");
-const { generateAccessToken, generateRefreshToken } = require("../utils/jwt.util");
+const { generateAccessToken, generateRefreshToken, generateResetToken } = require("../utils/jwt.util");
 const { saveRefreshToken } = require("../utils/refreshTokens");
 const db = require("../models");
 const User = db.User;
@@ -133,3 +133,59 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ message: "Error interno del servidor" });
   }
 }
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ message: "El campo email es obligatorio." });
+    }
+
+    // Buscar el usuario por email
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    
+    // Generar el token de reseteo usando la función encapsulada (con duración de 30 minutos)
+    const resetToken = generateResetToken(user);
+    
+    // Aquí deberías integrar el envío de email; por ejemplo:
+    console.log(
+      `Enviar email a ${user.email} con el enlace: ${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
+    );
+    
+    //res.json({ message: "Si el usuario existe, se ha enviado un email para resetear la contraseña." });
+    res.json({message: resetToken});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error en el servidor." });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    const { id } = req.decoded; // Se extrae el id del usuario del token
+
+    if (!password) {
+      return res.status(400).json({ message: "El campo password es obligatorio." });
+    }
+    
+    const user = await User.findOne({ where: { dni: id } });
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    // Hashear la nueva contraseña y actualizarla
+    const hashedPassword = await hashPassword(password);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ message: "Contraseña actualizada exitosamente." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error en el servidor." });
+  }
+};

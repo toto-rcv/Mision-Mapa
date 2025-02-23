@@ -32,6 +32,7 @@ services:
       - DB_NAME=${MYSQL_DATABASE}
       - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+      - RESET_TOKEN_SECRET=${RESET_TOKEN_SECRET}
     volumes:
       - ./backend/src:/app/src
       - /app/node_modules
