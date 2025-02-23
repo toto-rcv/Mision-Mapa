@@ -215,9 +215,17 @@ const UsersApp = (function () {
     // ================================
     function setupStatusButtons() {
         const statusButtons = document.querySelectorAll('.button-status');
+    
         statusButtons.forEach(button => {
             button.addEventListener('click', async () => {
                 let selectedStatus;
+                
+                // Quitar la clase 'selected' de todos los botones antes de agregarla al nuevo
+                statusButtons.forEach(btn => btn.classList.remove('selected'));
+    
+                // Agregar la clase 'selected' al botón actual
+                button.classList.add('selected');
+    
                 // Mapear el texto del botón al estado correspondiente
                 switch (button.textContent.trim().toLowerCase()) {
                     case 'todos':
@@ -229,17 +237,18 @@ const UsersApp = (function () {
                     case 'pendientes':
                         selectedStatus = 'pending';
                         break;
-                    case 'blockeados':
+                    case 'bloqueados':
                         selectedStatus = 'blocked';
                         break;
                     default:
                         selectedStatus = 'all';
                 }
                 currentStatusFilter = selectedStatus;
-                // Se obtiene la lista filtrada desde el backend según el estado
+    
+                // Obtener la lista filtrada desde el backend
                 let updatedUsers = await getAllUsers(selectedStatus);
-
-                // Si hay un valor en el input de búsqueda, se aplica ese filtro adicional
+    
+                // Aplicar filtro de búsqueda si hay texto en el input
                 const searchValue = elements.searchInput.value.trim().toLowerCase();
                 if (searchValue) {
                     updatedUsers = updatedUsers.filter(user =>
@@ -249,6 +258,7 @@ const UsersApp = (function () {
                         user.dni.toString().includes(searchValue)
                     );
                 }
+    
                 usersList = updatedUsers;
                 currentDisplayList = updatedUsers;
                 currentPage = 1;

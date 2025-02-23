@@ -369,13 +369,17 @@ form input {
      ========================================================================== */
 
 .buttons-for-status {
-  padding: 0px 0px 5px 6%;
+  padding: 0px 0px 5px 100px;
 }
 
 .buttons-for-status button:first-child {
   border-left: 1px solid var(--link-color);
 }
 
+.button-status.selected {
+ 
+  color: var(--link-color);
+}
 .button-status {
   background-color: var(--background-color);
   border: none;
@@ -583,7 +587,7 @@ form input {
   }
 
   .buttons-for-status {
-    padding: 0px 0px 5px 18%;
+    padding: 0px 0px 5px 120px;
   }
 }
 
@@ -667,5 +671,10 @@ form input {
     font-size: none !important;
   }
 
+  .buttons-for-status {
+    padding: 0px 0px 5px 0px;
+    width: max-content;
+
+  }
 
 }
