@@ -613,6 +613,9 @@ form input {
     width: 200%;
   }
 
+  .register-container{
+    font-size: 9px;
+  }
 
 
   .users-table tbody tr {
@@ -662,7 +665,7 @@ form input {
   #filter-modal {
     display: block;
     top: 20px;
-    transform: translate(-120%, 20%);
+    transform: translate(-110%, 18%);
     z-index: 9999;
     border-radius: 5px;
   }
