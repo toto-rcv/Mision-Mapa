@@ -686,29 +686,6 @@ form button:hover {
   font-size: 1em;
 }
 
-@media (max-width: 480px) {
-  .marker-alert {
-    padding: 0;
-    left: 1rem;
-    right: 1rem;
-    top: 5.5rem;
-    font-size: 0.9rem;
-  }
-
-  .marker-alert-content {
-    width: 100%;
-    padding: 0.9rem;
-  }
-
-  .marker-alert-info {
-    font-size: 0.9em;
-  }
-
-  .marker-alert-help {
-    display: none;
-  }
-}
-
 .form-select {
   background-color: rgba(26, 26, 26, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -942,6 +919,17 @@ textarea::-webkit-scrollbar-thumb:hover {
   opacity: 1;
   transform: translateY(0);
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* Fondo oscuro semi-transparente */
+  z-index: 9; /* Debe quedar por detrás del modal, que tenga un z-index mayor */
+  display: none; /* Oculto por defecto */
+}
   
 /* Título principal */
 .filters-title {
@@ -1089,22 +1077,6 @@ textarea::-webkit-scrollbar-thumb:hover {
   color: var(--primary-color, #00BCD4);
 }
  
-  @media (max-width: 480px) {
-    /* Para pantallas pequeñas: se apilan elementos y se ajustan columnas */
-    .custom-dates {
-      grid-template-columns: 1fr;
-    }
-    
-    .advanced-filters {
-      gap: 0.5rem;
-    }
-    
-    .filter-actions {
-      flex-direction: column;
-      gap: 0.5rem;
-      align-items: stretch;
-    }
-  }
 
 @keyframes bounce {
   0% {
@@ -1117,24 +1089,6 @@ textarea::-webkit-scrollbar-thumb:hover {
 
   100% {
     transform: scale(1);
-  }
-}
-
-@media (max-width: 480px) {
-
-  /* Para pantallas pequeñas: se apilan elementos y se ajustan columnas */
-  .custom-dates {
-    grid-template-columns: 1fr;
-  }
-
-  .advanced-filters {
-    gap: 0.5rem;
-  }
-
-  .filter-actions {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: stretch;
   }
 }
 
@@ -1290,7 +1244,8 @@ textarea::-webkit-scrollbar-thumb:hover {
 
 .map-search {
   position: relative;
-  max-width: 300px; /* Puedes ajustar este valor según tus necesidades */
+  max-width: 300px;
+  flex-grow: 1;
 }
 
 .map-search .search-input {
@@ -1385,6 +1340,42 @@ textarea::-webkit-scrollbar-thumb:hover {
 
   .btn {
     width: 100%;
+  }
+
+  /* Para pantallas pequeñas: se apilan elementos y se ajustan columnas */
+  .custom-dates {
+    grid-template-columns: 1fr;
+  }
+
+  .advanced-filters {
+    gap: 0.5rem;
+  }
+
+  .filter-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+
+  .marker-alert {
+    padding: 0;
+    left: 1rem;
+    right: 1rem;
+    top: 5.5rem;
+    font-size: 0.9rem;
+  }
+
+  .marker-alert-content {
+    max-width: unset;
+    padding: 0.9rem;
+  }
+
+  .marker-alert-info {
+    font-size: 0.9em;
+  }
+
+  .marker-alert-help {
+    display: none;
   }
 }
 
@@ -1589,6 +1580,22 @@ textarea::-webkit-scrollbar-thumb:hover {
 
   .status-btn.active::before {
     display: none;
+  }
+
+  .map-search {
+    flex-grow: 1;
+    max-width: unset;
+  }
+
+  .marker-alert {
+    padding: 0;
+    right: 1rem;
+    top: 5.5rem;
+    font-size: 0.9rem;
+  }
+
+  .filters-panel.active + .modal-overlay {
+    display: block;
   }
 
 }

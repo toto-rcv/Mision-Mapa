@@ -589,6 +589,10 @@ form input {
   .buttons-for-status {
     padding: 0px 0px 5px 120px;
   }
+
+  .register-container {
+    padding: 0 1rem;
+  }
 }
 
 /* Media Query para max-width: 468px */
