@@ -87,14 +87,11 @@
         left: 0;
         right: 0;
         width: 100%;
-        height: 56px;
-        height: 60px;
-        padding: 0;
+        padding: 0.25rem 0;
         flex-direction: row;
         justify-content: space-around;
         background-color: var(--background-color);
         backdrop-filter: blur(10px);
-        z-index: 1000;
         flex-shrink: 0;
     }
 

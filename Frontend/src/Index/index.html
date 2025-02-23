@@ -87,7 +87,13 @@
         <div class="map-container">
             <div class="search-container">
                 <div class="advanced-filters">
-                <input type="text" class="search-input" placeholder="Buscar ubicación..." id="search-field">
+                    <div class="map-search">
+                        <input type="text" id="search-field" class="search-input" placeholder="Navega a una región...">
+                        <i class="fas fa-paper-plane search-icon search-icon"></i>
+                        <button type="button" class="clear-button" aria-label="Limpiar búsqueda">
+                          <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                
                     <!-- Botón para mostrar/ocultar filtros -->
                     <button class="filter-button" id="toggle-filters">
@@ -99,61 +105,64 @@
                     <!-- Panel de Filtros (inicialmente oculto) -->
                     <div class="filters-panel" id="filters-panel">
                         <!-- Título principal -->
-                        <h2 class="filters-title">Filtros</h2>
-                        <button class="filter-close-button" id="close-filters-form" aria-label="Cerrar formulario">x</button>
-                        
+                        <div class="filters-header">
+                            <h2 class="filters-title">Filtros</h2>
+                            <button class="filter-close-button" id="close-filters-form" aria-label="Cerrar formulario">x</button>
+                        </div>
+
+                        <div class="filters-content">
                         <!-- Filtro de rango de fechas -->
-                        <div class="filter-section">
-                          <h4>
-                            Rango de Fechas 
-                            <span class="icon icon-calendar"></span>
-                          </h4>
-                          <div class="date-quick-options">
-                            <button class="quick-date" data-days="7">Última semana</button>
-                            <button class="quick-date" data-days="15">Últimos 15 días</button>
-                            <button class="quick-date" data-days="30">Último mes</button>
-                          </div>
-                          <div class="custom-dates">
-                            <input type="datetime-local" id="start-date" class="date-input">
-                            <input type="datetime-local" id="end-date" class="date-input">
-                          </div>
-                        </div>
-                        
-                        <!-- Filtro de estado de validación -->
-                        <div class="filter-section">
-                          <h4>
-                            Estado de Validación 
-                            <span class="icon icon-status"></span>
-                          </h4>
-                          <div class="status-filters">
-                            <!-- Los botones Pendiente y Validado tienen clase active por defecto -->
-                            <button type="button" class="status-btn active" data-value="pending">Pendiente</button>
-                            <button type="button" class="status-btn active" data-value="validated">Validado</button>
-                            <button type="button" class="status-btn" data-value="rejected">Descartado</button>
-                          </div>
-                        </div>
-                        
-                        <!-- Filtro de usuario creador -->
-                        <div class="filter-section">
+                            <div class="filter-section">
                             <h4>
-                                Creador 
-                                <span class="icon icon-user"></span>
+                                Rango de Fechas 
+                                <span class="icon icon-calendar"></span>
                             </h4>
-                            <div class="user-search-container" style="position: relative;">
-                                <div id="user-filter" class="user-search" tabindex="0">
-                                    <div class="selected-users" id="selected-users"></div>
-                                    <span class="placeholder" id="user-placeholder">Selecciona usuarios...</span>
-                                  </div>
-                                <span class="icon icon-search"></span>
-                                <span class="dropdown-icon">&#x25BC;</span>
-                                <div class="user-multi-select" id="user-multi-select" style="display: none;">
-                                    <input type="text" id="user-dropdown-search" class="user-dropdown-search" placeholder="Buscar por nombre o DNI">
-                                    <!-- Contenedor donde se agregarán las opciones -->
-                                    <div class="user-options-list" id="user-options-list"></div>
+                            <div class="date-quick-options">
+                                <button class="quick-date" data-days="7">Última semana</button>
+                                <button class="quick-date" data-days="15">Últimos 15 días</button>
+                                <button class="quick-date" data-days="30">Último mes</button>
+                            </div>
+                            <div class="custom-dates">
+                                <input type="datetime-local" id="start-date" class="date-input">
+                                <input type="datetime-local" id="end-date" class="date-input">
+                            </div>
+                            </div>
+                            
+                            <!-- Filtro de estado de validación -->
+                            <div class="filter-section">
+                            <h4>
+                                Estado de Validación 
+                                <span class="icon icon-status"></span>
+                            </h4>
+                            <div class="status-filters">
+                                <!-- Los botones Pendiente y Validado tienen clase active por defecto -->
+                                <button type="button" class="status-btn active" data-value="pending">Pendiente</button>
+                                <button type="button" class="status-btn active" data-value="validated">Validado</button>
+                                <button type="button" class="status-btn" data-value="rejected">Descartado</button>
+                            </div>
+                            </div>
+                            
+                            <!-- Filtro de usuario creador -->
+                            <div class="filter-section">
+                                <h4>
+                                    Creador 
+                                    <span class="icon icon-user"></span>
+                                </h4>
+                                <div class="user-search-container" style="position: relative;">
+                                    <div id="user-filter" class="user-search" tabindex="0">
+                                        <div class="selected-users" id="selected-users"></div>
+                                        <span class="placeholder" id="user-placeholder">Selecciona usuarios...</span>
+                                    </div>
+                                    <span class="icon icon-search"></span>
+                                    <span class="dropdown-icon">&#x25BC;</span>
+                                    <div class="user-multi-select" id="user-multi-select" style="display: none;">
+                                        <input type="text" id="user-dropdown-search" class="user-dropdown-search" placeholder="Buscar por nombre o DNI">
+                                        <!-- Contenedor donde se agregarán las opciones -->
+                                        <div class="user-options-list" id="user-options-list"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
                         <!-- Acciones: aplicar y limpiar filtros -->
                         <div class="filter-actions">
                           <button class="btn-apply">Aplicar Filtros</button>
