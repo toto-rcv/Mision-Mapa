@@ -1,6 +1,8 @@
 const { hashPassword, comparePassword } = require("../utils/password.util");
 const { generateAccessToken, generateRefreshToken, generateResetToken } = require("../utils/jwt.util");
 const { saveRefreshToken } = require("../utils/refreshTokens");
+const { sendResetPasswordEmail } = require('../utils/mailer');
+
 const db = require("../models");
 const User = db.User;
 const UserStatus = db.UserStatus;
@@ -150,11 +152,8 @@ exports.forgotPassword = async (req, res) => {
     
     // Generar el token de reseteo usando la función encapsulada (con duración de 30 minutos)
     const resetToken = generateResetToken(user);
-    
-    // Aquí deberías integrar el envío de email; por ejemplo:
-    console.log(
-      `Enviar email a ${user.email} con el enlace: ${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
-    );
+  
+    sendResetPasswordEmail(email, resetToken);
     
     //res.json({ message: "Si el usuario existe, se ha enviado un email para resetear la contraseña." });
     res.json({message: resetToken});

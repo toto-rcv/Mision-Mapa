@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.2",
     "mysql2": "^3.11.5",
+    "nodemailer": "^6.10.0",
     "sequelize": "^6.37.5",
     "socket.io": "^4.8.1"
   },

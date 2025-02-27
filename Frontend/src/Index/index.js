@@ -1,6 +1,6 @@
 import { reloadUserProfile, getUserId } from '/utils/profile.js';
 import { customFetch } from '/utils/auth.js';
-import { showNavItems } from '/static/js/navigation.js';
+import { showNavItems, setSidebarItemsListeners } from '/static/js/navigation.js';
 import getSocketClient from '/utils/socket.js';
 import { formatDNI } from '/utils/utils.js';
 
@@ -15,6 +15,7 @@ const inputs = formPanel.querySelectorAll('input, select, textarea');
 let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null;
 let formEditMode = false;
 let markers = [];
+let allUsers = [];
 let minTimestamp, maxTimestamp;
 
 let currentFilters = {
@@ -26,15 +27,13 @@ let currentFilters = {
 
 let userId;
 
-
 const mapContainer = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap contributors'}).addTo(mapContainer);
 
-
 const redIcon = L.icon({
     // Define redIcon here
-    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+    iconUrl: "/static/img/marker-icon-red.png",
+    shadowUrl: "/static/img/marker-shadow.png",
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -42,8 +41,8 @@ const redIcon = L.icon({
 });
 
 const blueIconMarker = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
+    iconUrl: '/static/img/marker-icon-blue.png',
+    shadowUrl: '/static/img/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -51,8 +50,8 @@ const blueIconMarker = new L.Icon({
 });
 
 const greyIcon = L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconUrl: '/static/img/marker-icon-grey.png',
+    shadowUrl: '/static/img/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -61,6 +60,7 @@ const greyIcon = L.icon({
 
 // DOM elements
 const elements = {
+    sideBarItems: document.querySelectorAll('.sidebar-item'),
     mapContainer: document.getElementById("map"),
     registerButton: document.getElementById("register-button"),
     overlay: document.getElementById("new-sighting-overlay"),
@@ -82,7 +82,7 @@ const elements = {
     filtersClearButton: document.querySelector(".btn-clear"),
     quickDateButtons: document.querySelectorAll('.quick-date'),
     userFilter: document.getElementById('user-filter'),
-    applyFiltersButton: document.querySelector('.btn-apply')
+    applyFiltersButton: document.querySelector('.btn-apply'),
   }
 
 
@@ -250,6 +250,8 @@ elements.quickDateButtons.forEach(btn => {
 })
 
 elements.userFilter.addEventListener('click', toggleUserMultiSelect);
+
+setSidebarItemsListeners(elements.sideBarItems);
 
 // Handle map clicks
 mapContainer.on('click', function (e) {
@@ -423,15 +425,6 @@ if (L.Browser.touch) {
     mapContainer.keyboard.enable();
     if (mapContainer.tap) mapContainer.tap.enable();
 }
-
-// Bottom navigation handling
-const navItems = document.querySelectorAll('.sidebar-item');
-navItems.forEach(item => {
-    item.addEventListener('click', function () {
-        navItems.forEach(i => i.classList.remove('active'));
-        this.classList.add('active');
-    });
-});
 
 // Initialize map controls
 const zoomInButton = document.querySelector('#zoom-in');
@@ -1269,8 +1262,6 @@ function animateShrink(input) {
       input.classList.remove("animate-shrink");
     }, animationDuration);
 }
-
-let allUsers = [];
 
 function toggleUserMultiSelect() {
     const container = document.getElementById('user-multi-select');
