@@ -10,3 +10,12 @@ export function showNavItems(userPermissions) {
             }
     });
 }
+
+export function setSidebarItemsListeners(navItems) {
+    navItems.forEach(item => {
+        item.addEventListener('click', function () {
+            navItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+}
