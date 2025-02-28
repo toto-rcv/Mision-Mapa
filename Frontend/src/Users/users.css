@@ -377,9 +377,10 @@ form input {
 }
 
 .button-status.selected {
- 
+
   color: var(--link-color);
 }
+
 .button-status {
   background-color: var(--background-color);
   border: none;
@@ -387,6 +388,7 @@ form input {
   width: 100px;
   height: 40px;
   color: white;
+  cursor: pointer;
 }
 
 .button-status:hover {
@@ -613,7 +615,7 @@ form input {
     width: 200%;
   }
 
-  .register-container{
+  .register-container {
     font-size: 9px;
   }
 
