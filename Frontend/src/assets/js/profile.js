@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         event.stopPropagation();
         profileDropdownContent.classList.toggle('show');
         if (isMobile) {
-            profileDropdownOverlay.classList.toggle('show');
+            //profileDropdownOverlay.classList.toggle('show');
             document.body.style.overflow = profileDropdownContent.classList.contains('show') ? 'hidden' : '';
         }
     });
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!event.target.closest('.profile')) {
             profileDropdownContent.classList.remove('show');
             if (isMobile) {
-                profileDropdownOverlay.classList.remove('show');
+                //profileDropdownOverlay.classList.remove('show');
                 document.body.style.overflow = '';
             }
         }
@@ -28,11 +28,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close dropdown when clicking overlay on mobile
     if (isMobile) {
+        /*
         profileDropdownOverlay.addEventListener('click', function() {
             profileDropdownContent.classList.remove('show');
             profileDropdownOverlay.classList.remove('show');
             document.body.style.overflow = '';
         });
+        */
     }
 
     // Handle logout

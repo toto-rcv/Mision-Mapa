@@ -29,3 +29,9 @@
     visibility: visible;
     display: block;
 }
+
+@keyframes opacityfadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  

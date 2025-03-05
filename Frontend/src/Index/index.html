@@ -23,7 +23,7 @@
 </head>
 
 <body>
-    <header class="header">
+    <header class="header" data-loaded="false">
         <img class="logo" src="/static/img/logo.jpg" alt="Logo de la aplicación de avistamientos">
         <div class="title-container">
             <h1 class="title">Mapa de Avistamientos</h1>
@@ -48,7 +48,7 @@
     </header>
 
     <main class="main-content">
-        <aside class="sidebar">
+        <aside class="sidebar" data-loaded="false">
             <div class="sidebar-item active hidden">
                 <a href="/index.html">
                     <div class="sidebar-icon">
@@ -186,7 +186,7 @@
                 Registrar
             </button>
 
-
+            <div class="form-overlay" id="form-overlay"></div>
             <div class="form-panel" id="sighting-form">
                 <div class="form-header">
                     <button class="close-button" id="close-form" aria-label="Cerrar formulario">x</button>
