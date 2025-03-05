@@ -41,6 +41,11 @@ export function loadUserProfile() {
     const profileInfo = document.querySelector('.profile-info');
 
     // Actualiza los elementos del perfil con los datos del usuario
+    if (!profileAvatar || !profileName || !profileRole || !profileInfo) {
+        console.error('No se encontraron los elementos necesarios para cargar el perfil.');
+        return;
+    }
+    
     profileAvatar.textContent = user.firstName.charAt(0).toUpperCase() + user.lastName.charAt(0).toUpperCase(); // Inicial del nombre
     profileName.textContent = `${user.firstName} ${user.lastName}`;
     profileRole.textContent = `Rol: ${user.userRank}`;

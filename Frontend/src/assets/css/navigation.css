@@ -77,6 +77,10 @@
     color: white;
 }
 
+.sidebar {
+    animation: opacityfadeIn 0.8s ease-out 0.3s both;
+}
+
 /* Mobile-specific styles */
 @media (max-width: 768px) {
 

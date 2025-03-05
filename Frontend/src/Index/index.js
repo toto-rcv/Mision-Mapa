@@ -2,20 +2,16 @@ import { reloadUserProfile, getUserId } from '/utils/profile.js';
 import { customFetch } from '/utils/auth.js';
 import { showNavItems, setSidebarItemsListeners } from '/static/js/navigation.js';
 import getSocketClient from '/utils/socket.js';
+import { initMap, addMarker, updateGreyMarker, removeGreyMarker, reverseGeocode, getMarkers, setMarkerColor, clearAllMarkers, adjustMapViewToMarker, getLatLngFromMarker, staggerMarkers} from '/mapModule.js';
 import { formatDNI } from '/utils/utils.js';
 
 // Initialize UI elements
-const registerButton = document.getElementById('register-button');
-const overlay = document.getElementById('new-sighting-overlay');
-const formPanel = document.getElementById('sighting-form');
 const closeFormButton = document.getElementById('close-form');
 const cancelButton = document.getElementById('cancel-button');
-const inputs = formPanel.querySelectorAll('input, select, textarea');
 
 let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null;
 let formEditMode = false;
-let markers = [];
-let allUsers = [];
+
 let minTimestamp, maxTimestamp;
 
 let currentFilters = {
@@ -26,37 +22,6 @@ let currentFilters = {
 };
 
 let userId;
-
-const mapContainer = L.map('map', { zoomControl: false }).setView([-34.6037, -58.3816], 12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap contributors'}).addTo(mapContainer);
-
-const redIcon = L.icon({
-    // Define redIcon here
-    iconUrl: "/static/img/marker-icon-red.png",
-    shadowUrl: "/static/img/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-});
-
-const blueIconMarker = new L.Icon({
-    iconUrl: '/static/img/marker-icon-blue.png',
-    shadowUrl: '/static/img/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
-
-const greyIcon = L.icon({
-    iconUrl: '/static/img/marker-icon-grey.png',
-    shadowUrl: '/static/img/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
 
 // DOM elements
 const elements = {
@@ -83,8 +48,10 @@ const elements = {
     quickDateButtons: document.querySelectorAll('.quick-date'),
     userFilter: document.getElementById('user-filter'),
     applyFiltersButton: document.querySelector('.btn-apply'),
-  }
+};
 
+// Inicializar mapa
+const map = initMap(elements.mapContainer);
 
 function validateField(input) {
     if (!input.required) {
@@ -124,7 +91,7 @@ function validateOnBlur(input, validationFunction) {
     });
 }
 
-inputs.forEach(input => {
+elements.inputs.forEach(input => {
     if (input.id === 'estimated-height') {
         validateOnBlur(input, validateHeight);
     } else if (input.id === 'observations') {
@@ -150,7 +117,7 @@ function hideOverlay() {
 }
 
 function showForm(editMode = false) {
-    elements.formPanel.style.display = 'block';
+    elements.formPanel.classList.add('visible');
     isFormActive = true;
     formEditMode = editMode;
 }
@@ -158,15 +125,8 @@ function showForm(editMode = false) {
 function hideForm() {
     formEditMode = false;
 
-    elements.formPanel.style.display = 'none';
+    elements.formPanel.classList.remove('visible');
     isFormActive = false;
-}
-
-function removeGreyMarker() {
-    if (greyMarker) {
-        mapContainer.removeLayer(greyMarker);
-        greyMarker = null;
-    }
 }
 
 
@@ -254,7 +214,7 @@ elements.userFilter.addEventListener('click', toggleUserMultiSelect);
 setSidebarItemsListeners(elements.sideBarItems);
 
 // Handle map clicks
-mapContainer.on('click', function (e) {
+map.on('click', function (e) {
     let formEditable = isFormActive && formEditMode;
     if (isOverlayActive || formEditable) {
         lat = formatCoordinates(e.latlng.lat);
@@ -277,12 +237,26 @@ mapContainer.on('click', function (e) {
 
         updateGreyMarker(e.latlng);
 
+        if (formEditable) {
+            let percentage = calculateMarkerPositionPercentage();
+            adjustMapViewToMarker(e.latlng, percentage);
+        }
+
+
         // Perform reverse geocoding
-        reverseGeocode(lat, lng);
+        reverseGeocode(lat, lng).then(address => {
+            if (address) {
+                document.getElementById('location').value = address;
+            }
+        });
 
         if (isOverlayActive) {
             hideOverlay();
             showForm(true);
+
+            let percentage = calculateMarkerPositionPercentage();
+            adjustMapViewToMarker(e.latlng, percentage);
+
             const cancelButton = document.getElementById('cancel-button');
             const saveButton = document.getElementById('save-button');
             clearForm();
@@ -300,27 +274,8 @@ mapContainer.on('click', function (e) {
 
 });
 
-// Add this new function for reverse geocoding
-async function reverseGeocode(lat, lng) {
-    try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`);
-        const data = await response.json();
-
-        // You can extract specific address components if needed
-        const address = data.display_name;
-
-        // Optionally, update the location input in the form
-        const locationInput = document.getElementById('location');
-        if (locationInput) {
-            locationInput.value = address;
-        }
-    } catch (error) {
-        console.error('Error performing reverse geocoding:', error);
-    }
-}
-
 function validateForm() {
-    const form = document.getElementById('sighting-form');
+    const form = elements.formPanel;
     const inputs = form.querySelectorAll('input, select, textarea');
     let isValid = true;
 
@@ -339,14 +294,14 @@ function validateForm() {
 }
 
 // Form validation and submission
-document.getElementById('sighting-form').addEventListener('submit', async function (e) {
+elements.formPanel.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const isValid = validateForm();
 
 
     if (isValid) {
-        const form = document.getElementById('sighting-form');
+        const form = elements.formPanel;
 
         // Captura los datos del formulario
         const formData = {
@@ -387,11 +342,11 @@ document.getElementById('sighting-form').addEventListener('submit', async functi
 
             
             hideForm();
-            greyMarker.remove();
+            removeGreyMarker();
 
             if (response.ok) {
                 const sighting = await response.json();
-                addMarker(sighting.id, sighting);
+                addMarker(sighting.id, sighting, false, handleMarkerClick);
                 updateRedMarkersModal();
 
             } else {
@@ -415,145 +370,12 @@ document.querySelectorAll('.form-group input, .form-group select, .form-group te
     });
 });
 
-// Enable touch gestures for map
-if (L.Browser.touch) {
-    mapContainer.dragging.enable();
-    mapContainer.touchZoom.enable();
-    mapContainer.doubleClickZoom.enable();
-    mapContainer.scrollWheelZoom.enable();
-    mapContainer.boxZoom.enable();
-    mapContainer.keyboard.enable();
-    if (mapContainer.tap) mapContainer.tap.enable();
-}
-
 // Initialize map controls
 const zoomInButton = document.querySelector('#zoom-in');
 const zoomOutButton = document.querySelector('#zoom-out');
 
-zoomInButton.addEventListener('click', () => mapContainer.zoomIn());
-zoomOutButton.addEventListener('click', () => mapContainer.zoomOut());
-
-function handleMobileFormVisibility() {
-    const formPanel = document.getElementById('sighting-form');
-    if (formPanel.classList.contains('visible')) {
-        formPanel.classList.remove('visible');
-    } else {
-        formPanel.classList.add('visible');
-    }
-}
-
-function initOverlayListeners() {
-    const overlay = document.getElementById('new-sighting-overlay');
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            hideOverlay();
-        }
-    });
-}
-
-function showOverlayMobile() {
-    const overlay = document.getElementById('new-sighting-overlay');
-    overlay.style.display = 'flex';
-    setTimeout(() => {
-        overlay.classList.add('visible');
-    }, 10);
-    isOverlayActive = true;
-}
-
-function hideOverlayMobile() {
-    const overlay = document.getElementById('new-sighting-overlay');
-    overlay.classList.remove('visible');
-    setTimeout(() => {
-        overlay.style.display = 'none';
-    }, 300);
-    isOverlayActive = false;
-}
-
-function showFormMobile() {
-    const formPanel = document.getElementById('sighting-form');
-    formPanel.style.display = 'block';
-    setTimeout(() => {
-        formPanel.classList.add('visible');
-    }, 10);
-    isFormActive = true;
-}
-
-function hideFormMobile() {
-    const formPanel = document.getElementById('sighting-form');
-    formPanel.classList.remove('visible');
-    setTimeout(() => {
-        formPanel.style.display = 'none';
-    }, 300);
-    isFormActive = false;
-    if (greyMarker) {
-        mapContainer.removeLayer(greyMarker);
-        greyMarker = null;
-    }
-}
-
-function initMobileListeners() {
-    const registerButton = document.getElementById('register-button');
-    const closeFormButton = document.getElementById('close-form');
-    const cancelButton = document.getElementById('cancel-button');
-
-    registerButton.addEventListener('click', showOverlayMobile);
-    closeFormButton.addEventListener('click', hideFormMobile);
-    cancelButton.addEventListener('click', hideFormMobile);
-
-    // Handle map clicks for mobile
-    mapContainer.on('click', function (e) {
-        if (isOverlayActive || isFormActive) {
-            const lat = formatCoordinates(e.latlng.lat);
-            const lng = formatCoordinates(e.latlng.lng);
-            const timestamp = new Date().toLocaleString('es-ES', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-
-            // Update coordinates in the form
-            const coordinates = document.querySelector('.coordinates');
-            coordinates.innerHTML = `
-                <div><label>Longitud:</label><span>${lng}</span></div>
-                <div><label>Latitud:</label><span>${lat}</span></div>
-            `;
-
-            // Update timestamp
-            const timestampElement = document.querySelector('.timestamp');
-            timestampElement.textContent = timestamp;
-
-            updateGreyMarker(e.latlng);
-
-            if (isOverlayActive) {
-                hideOverlayMobile();
-                showFormMobile();
-            }
-        }
-    });
-}
-
-// Check if it's a mobile device and initialize mobile listeners
-if (window.innerWidth <= 768) {
-    initMobileListeners();
-}
-
-// Add resize listener to handle orientation changes
-window.addEventListener('resize', function () {
-    if (window.innerWidth <= 768) {
-        initMobileListeners();
-    }
-});
-
-function updateGreyMarker(latlng) {
-    if (greyMarker) {
-        greyMarker.setLatLng(latlng);
-        return;
-    } 
-
-    greyMarker = L.marker(latlng, { icon: greyIcon }).addTo(mapContainer);
-}
+zoomInButton.addEventListener('click', () => map.zoomIn());
+zoomOutButton.addEventListener('click', () => map.zoomOut());
 
 async function loadMarkers(filters = {}) {
     try {
@@ -704,18 +526,13 @@ const debouncedBuscarUbicacion = debounce((event) => {
     }
 }, 300);
 
-function setMarkerColor(marker) {
-    marker.leafletObject.setIcon(blueIconMarker);
-    marker.isRed = false;
-}
-
 async function setMarkerAsSeen(sightingId, authorId, currentUserId) {
 
     if (currentUserId === authorId) return;
 
-    const marker = markers.find(m => m.id === sightingId);
+    const marker = getMarkers().find(m => m.id === sightingId);
     if (marker) {
-        setMarkerColor(marker)
+        setMarkerColor(marker, true)
         updateRedMarkersModal();
     }
 
@@ -741,14 +558,11 @@ function placeMarkersOnMap(sightings) {
    clearAllMarkers();
 
     // Itera sobre los datos y agrega marcadores al mapa
-    sightings.forEach(sighting => {
+    sightings.forEach((sighting, i) => {
         const { id, validador } = sighting;
-
-        addMarker(
-            id,
-            sighting,
-            validador
-        );
+        setTimeout(() => {
+            addMarker(id, sighting, !!validador, handleMarkerClick);
+        }, i * 30);
 
     });
 
@@ -761,7 +575,7 @@ function fillForm({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitu
 
     // obtener el formulario
 
-    const form = document.querySelector('#sighting-form');
+    const form = elements.formPanel;
 
     const idLabel = form.querySelector("span.sighting-id").innerHTML = `AV-${String(id).padStart(5, '0')}`
     form.querySelector("span.timestamp").innerHTML = fecha_avistamiento
@@ -820,15 +634,15 @@ async function setSocketEvents() {
         socket.on('NEW_SIGHTING', (sighting) => {
 
             if (userId !== sighting.usuario_id && matchesFilters(sighting)) {
-                addMarker(sighting.id, sighting);
+                addMarker(sighting.id, sighting, false, handleMarkerClick);
                 updateRedMarkersModal();
-                updateMarkersCount(markers.length);
+                updateMarkersCount(getMarkers().length);
             }
         });
 
         socket.on('VALIDATE_SIGHTING', (sightingId) => {
 
-            const marker = markers.find(m => m.id == sightingId);
+            const marker = getMarkers().find(m => m.id == sightingId);
 
             if (marker && marker.sighting) {
                 marker.sighting.status = 'validated'
@@ -836,7 +650,7 @@ async function setSocketEvents() {
                 if (!matchesFilters(marker.sighting)) {
                     marker.leafletObject.remove()
                 }
-                setMarkerColor(marker)
+                setMarkerColor(marker, true)
                 updateRedMarkersModal();
             }
         });
@@ -884,41 +698,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 function updateSightingsComponents(sightings) {
     processTimestamps(sightings);
     placeMarkersOnMap(sightings);
+    staggerMarkers(getMarkers());
     filterMarkersByDateRange();
 }
 
 function getCurrentRedMarkersCount() {
-    return markers.filter(marker => marker.isRed).length;
-}
-
-function addMarker(id, sighting, isValidated = false) {
-    const { latitud: lat, longitud: lng } = sighting;
-
-    const icon = isValidated ? blueIconMarker : redIcon;
-    const marker = L.marker([lat, lng], { icon }).addTo(mapContainer);
-
-    const markerObject = {
-        leafletObject: marker,
-        sighting: sighting,
-        isRed: !isValidated,
-        id: id
-    };
-
-    markerObject.leafletObject.on('click', () => handleMarkerClick(markerObject, sighting));
-
-    markers.push(markerObject);
-
-    return markerObject;
-}
-
-function clearAllMarkers() {
-    if (markers && markers.length) {
-      markers.forEach(marker => {
-        marker.leafletObject.remove();
-      });
-
-      markers = [];
-    }
+    return getMarkers().filter(marker => marker.isRed).length;
 }
 
 function handleMarkerClick(marker, sighting) {
@@ -931,12 +716,13 @@ function handleMarkerClick(marker, sighting) {
     if (marker.isRed) {
         setMarkerAsSeen(marker.id, marker.sighting.usuario_id, userId);
     }
-
-    mapContainer.setView(marker.leafletObject.getLatLng(), 10);
-
+    
     hideNotificationOverlay();
     fillForm(sighting);
     showForm(false);
+
+    let percentage = calculateMarkerPositionPercentage();
+    adjustMapViewToMarker(getLatLngFromMarker(marker), percentage)
 }
 
 
@@ -1055,7 +841,7 @@ function onRangeChange() {
     // La fecha superior se establece a las 23:59:59.999 para incluir todo el día
     selectedEndDate.setHours(23, 59, 59, 999);
   
-    markers.forEach(marker => {
+    getMarkers().forEach(marker => {
       const markerDate = new Date(marker.sighting.fecha_avistamiento);
       if (markerDate >= selectedStartDate && markerDate <= selectedEndDate) {
         marker.leafletObject.setOpacity(1);
@@ -1240,7 +1026,7 @@ async function clearFilters() {
 }
   
 function updateMarkersVisibility(visibleMarkers) {
-    markers.forEach(marker => {
+    getMarkers().forEach(marker => {
       const opacity = visibleMarkers.includes(marker) ? 1 : 0.2;
       marker.leafletObject.setOpacity(opacity);
     });
@@ -1407,3 +1193,24 @@ if (window.visualViewport) {
 }
 
 window.addEventListener('resize', actualizarAlturaViewport);
+
+function calculateMarkerPositionPercentage() {
+    const mapContainer = document.getElementById('map');
+    const formContainer = elements.formPanel;
+    
+    if (!mapContainer || !formContainer) {
+        console.warn('Elementos no encontrados.');
+        return 25; // Valor por defecto
+    }
+    
+    const mapLeft = mapContainer.getBoundingClientRect().left;
+    const formLeft = formContainer.getBoundingClientRect().left;
+    
+    const availableSpace = formLeft - mapLeft;
+    const midpoint = availableSpace / 2;
+    
+    const mapWidth = mapContainer.offsetWidth;
+    const percentage = (midpoint / mapWidth) * 100;
+    
+    return percentage;
+}
