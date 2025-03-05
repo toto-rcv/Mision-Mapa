@@ -17,7 +17,6 @@ const getAllUsers = async (req, res) => {
                 as: 'statusDetail',
                 required: true,
                 where: statusFilter
-
             }],
 
 

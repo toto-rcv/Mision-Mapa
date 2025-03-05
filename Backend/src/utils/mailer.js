@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 
+
 // Configura el transporte SMTP usando las variables de entorno
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -7,22 +8,24 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
+
   },
 });
 
 exports.sendResetPasswordEmail = async (recipientEmail, resetToken) => {
-  const resetLink = `192.168.1.4:8070/reset-password?token=${resetToken}`;
+  const resetLink = `${process.env.FRONTEND_URL}/change-password?token=${resetToken}`;
   console.log(recipientEmail, resetLink);
-
   const mailOptions = {
-    from: '"Mi Aplicación" <postmaster@sandbox872b33bad2ab4ead887b4d2a23dbbd0d.mailgun.org>',
+    from: process.env.SMTP_USER,
     to: recipientEmail,
     subject: 'Recuperación de contraseña',
     html: `
-      <p>Has solicitado recuperar tu contraseña.</p>
-      <p>Haz click en el siguiente enlace para resetearla:</p>
-      <a href="${resetLink}">${resetLink}</a>
-      <p>Este enlace expirará en 30 minutos.</p>
+    <p>Has solicitado recuperar tu contraseña.</p>
+    <p>Haz clic en el siguiente enlace para resetearla:</p>
+    <a href="${resetLink}">Cliquee aqui para cambiar la contraseña</a>
+    <p>Si el enlace no funciona, copia y pega la siguiente URL en tu navegador:</p>
+    <p><strong>${resetLink}</strong></p>
+    <p>Este enlace expirará en 30 minutos.</p>
     `,
   };
 

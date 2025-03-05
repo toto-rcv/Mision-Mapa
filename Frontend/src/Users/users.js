@@ -313,7 +313,7 @@ const UsersApp = (function () {
                     </select>
                 </td>
                 <td class="hide-on-mobile">${formatDate(new Date(user.createdAt))}</td>
-                <td class="hide-on-mobile">${user.confirmUpdate}</td>
+                <td class="hide-on-mobile">${user.confirmUpdate ?? '-'}</td>
                 <td data-label="Estado del Usuario:">
                     <select class="status-select" data-id="${user.dni}">
                         <option value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Activo</option>

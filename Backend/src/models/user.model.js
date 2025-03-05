@@ -57,8 +57,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     confirmUpdate: {
       type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: false
+      allowNull: true,
     },
     powerMilitary: {
       type: DataTypes.STRING,
