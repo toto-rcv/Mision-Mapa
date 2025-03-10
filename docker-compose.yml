@@ -39,7 +39,6 @@ services:
       - SMTP_PASS=${SMTP_PASS}
       - FRONTEND_URL=${FRONTEND_URL}
     volumes:
-      - ./backend/src:/app/src
       - /app/node_modules
     depends_on:
       - db
