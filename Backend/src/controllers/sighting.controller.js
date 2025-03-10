@@ -10,10 +10,10 @@ const createSighting = async (req, res) => {
     try {
         let newSighting = await Sighting.create(req.body);
 
-        const {id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo,tipo_aeronave,tipo_motor,cantidad_motores,color,observaciones  } = newSighting;
+        const {id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo,tipo_aeronave,tipo_motor,cantidad_motores,color,observaciones,ubicacion_actual} = newSighting;
         const response = {id,
             fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo, tipo_aeronave,
-            tipo_motor,cantidad_motores,color,observaciones,
+            tipo_motor,cantidad_motores,color,observaciones,ubicacion_actual,
             status: 'pending', usuario_id: req.user.id};
         eventEmitter.emit('NEW_SIGHTING', response);
         
