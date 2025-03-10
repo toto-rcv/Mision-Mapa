@@ -87,8 +87,14 @@
         <div class="register-container">
             <div id="registro" aria-label="Mapa interactivo de avistamientos">
                 <div class="filters">
-                    <input type="text" id="search" class="search-input" placeholder="Buscar Avistamientos">
-                    <button class="generarPDF"  id="generarPDF">Generar PDF</button>
+                    <div class="records-search">
+                        <input type="text" id="search" class="search-input" placeholder="Buscar Avistamientos">
+                        <i class="fas fa-search search-icon"></i>
+                        <button type="button" class="clear-button" aria-label="Limpiar búsqueda">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button class="generarPDF" id="generarPDF">Generar PDF</button>
                 </div>
                 <div id="sightings-list" class="table-container">
                     <!-- Aquí se cargarán los avistamientos -->
@@ -152,12 +158,12 @@
             </form>
         </div>
     </div>
-    
+
 
     <script src="records.js" type="module"></script>
-    
 
-    
+
+
     <noscript>
         <p>Esta página requiere JavaScript para funcionar correctamente. Por favor, habilite JavaScript en su navegador.
         </p>
