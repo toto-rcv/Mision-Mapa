@@ -302,8 +302,8 @@ const UsersApp = (function () {
             row.setAttribute('data-id', user.id);
             row.innerHTML = `
                 <td data-label="D.N.I:" >${formatDNI(user.dni)}</td>
-                <td class="userForze" data-label="Fuerza Per.:" >${user.powerMilitary.trim()}</td>
-                <td class="userName" data-label="Usuario:">${user.militaryRank.trim()} , ${user.firstName.trim()} ${user.lastName.trim()}</td>
+                <td class="userForze" data-label="Fuerza Per.:" >${user.powerMilitary ? user.powerMilitary.trim() : ''}</td>
+                <td class="userName" data-label="Usuario:">${user.militaryRank ? user.militaryRank.trim() : ''} , ${user.firstName ? user.firstName.trim() : ''} ${user.lastName ? user.lastName.trim() : ''}</td>
                 <td data-label="Email:">${user.email}</td>
                 <td data-label="Rol-Usuario:">
                     <select class="rank-select" data-id="${user.dni}">

@@ -82,10 +82,6 @@ module.exports = (sequelize, DataTypes) => {
           key: "dni",
         }
       },
-      ubicacion_actual: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
     }, {
       timestamps: false, // Desactiva los timestamps automáticos
     });
