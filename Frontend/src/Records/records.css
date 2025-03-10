@@ -366,7 +366,7 @@ textarea.modal-input {
 .filters {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
+  padding: 12px;
 }
 
 .generarPDF {

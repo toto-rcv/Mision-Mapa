@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="/static/css/header.css" />
     <script src="/utils/auth.js" type="module" defer></script>
     <script src="/utils/profile.js" type="module" defer></script>
+    <script src="/static/js/profile.js" type="module" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
@@ -89,11 +92,10 @@
                             placeholder="Buscar por DNI, nombre, apellido, email...">
                         <i class="fas fa-search search-icon"></i>
                         <button type="button" class="clear-button" aria-label="Limpiar búsqueda">
-                            <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <button id="filter-options-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                    <button id="filter-options-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
                             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                         </svg>
                     </button>

@@ -285,7 +285,7 @@ const SightingsApp = (function () {
 
             const body = allSightings.map(sighting => [
                 sighting.id,
-                `${toProperCase(sighting.usuario.powerMilitary)} ${toProperCase(sighting.usuario.militaryRank)}    ${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}`,
+                `${toProperCase(sighting.usuario.powerMilitary || '')} ${toProperCase(sighting.usuario.militaryRank || '')} ${toProperCase(sighting.usuario.firstName || '')} ${toProperCase(sighting.usuario.lastName || '')}`,
                 formatDate(new Date(sighting.fecha_avistamiento)),
                 sighting.ubicacion,
                 `${sighting.latitud}\n${sighting.longitud}`,
@@ -379,8 +379,6 @@ const SightingsApp = (function () {
 
 
     }
-
-
 
     // Utility functions
     function checkPermissionsAndDisableDeleteButtons() {

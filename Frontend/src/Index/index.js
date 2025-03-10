@@ -476,7 +476,7 @@ async function buscarUbicacion(nombreLugar) {
             }
 
             // Centrar el mapa y ajustar el zoom
-            mapContainer.setView([lat, lon], zoomLevel);
+            map.setView([lat, lon], zoomLevel);
         } else {
             alert('No se encontraron resultados para tu búsqueda.');
         }
@@ -524,7 +524,7 @@ const debouncedBuscarUbicacion = debounce((event) => {
     if (nombreLugar.trim()) {
         buscarUbicacion(nombreLugar);
     }
-}, 300);
+}, 500);
 
 async function setMarkerAsSeen(sightingId, authorId, currentUserId) {
 
@@ -1227,3 +1227,11 @@ function calculateMarkerPositionPercentage() {
         return { percentage, direction: 'vertical' };
     }
 }
+
+// Seleccionar el botón de limpiar búsqueda
+const clearSearchButton = document.getElementById('clear-search-button');
+
+// Agregar evento click para limpiar el campo de búsqueda
+clearSearchButton.addEventListener('click', () => {
+    elements.searchInput.value = '';
+});

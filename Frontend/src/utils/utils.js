@@ -1,4 +1,5 @@
 export function toProperCase(text) {
+    if (!text) return ''; // Manejar texto nulo o indefinido
     return text
         .toLowerCase()
         .split(" ") 
