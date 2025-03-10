@@ -532,7 +532,7 @@ async function setMarkerAsSeen(sightingId, authorId, currentUserId) {
 
     const marker = getMarkers().find(m => m.id === sightingId);
     if (marker) {
-        setMarkerColor(marker, true)
+        setMarkerColor(marker.id, true)
         updateRedMarkersModal();
     }
 
@@ -650,7 +650,7 @@ async function setSocketEvents() {
                 if (!matchesFilters(marker.sighting)) {
                     marker.leafletObject.remove()
                 }
-                setMarkerColor(marker, true)
+                setMarkerColor(marker.id, true)
                 updateRedMarkersModal();
             }
         });
