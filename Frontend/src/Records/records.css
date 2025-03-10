@@ -268,14 +268,70 @@ textarea.modal-input {
 }
 
 .search-input {
-  padding: 10px;
-  width: 40%;
-  /* Ajusta el ancho según sea necesario */
-  border: 1px solid #00BCD4;
-  border-radius: 4px;
+  padding: 0.75rem;
+  padding-left: 2rem;
+  width: 100%;
+  border: 1px solid #555;
+  border-radius: 5px;
   background-color: #1e1e24;
   color: white;
+  transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+  outline: none;
 }
+
+.search-input:focus {
+  border-color: #00BCD4;
+  background-color: #444;
+  box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+  transition: color 0.3s;
+}
+
+.search-input:focus+.search-icon {
+  color: #00BCD4;
+}
+.records-search {
+  position: relative;
+  width: 40%;
+}
+
+.clear-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 14px;
+  z-index: 2;
+  transition: color 0.2s;
+  display: none;
+}
+
+.search-input:not(:placeholder-shown)+.search-icon+.clear-button {
+  display: block;
+}
+
+.clear-button:hover,
+.clear-button:focus {
+  color: #00BCD4;
+}
+
 
 .register-container {
   background: #1A1A1C;
@@ -310,7 +366,7 @@ textarea.modal-input {
 .filters {
   display: flex;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 10px;
 }
 
 .generarPDF {
@@ -421,6 +477,13 @@ textarea.modal-input {
     transform: translateY(100%);
   }
 
+  .records-search{
+    width: 100%;
+  }
+  .records-search i{
+    display: none;
+  }
+
   form {
     display: flex;
     flex-wrap: wrap;
@@ -482,9 +545,8 @@ textarea.modal-input {
   }
 
   .search-input {
-    width: 80%;
+    width: 90%;
     font-size: 1em;
-    height: unset;
     padding: 1rem;
   }
 
@@ -531,13 +593,15 @@ textarea.modal-input {
 
 @media (max-width:468px) {
 
-  .generarPDF{
+  .generarPDF {
     font-size: 11px;
     width: 60px;
   }
 
-
+ .records-search{
+  width: 100%;
+ }
   .search-input {
-    width: 75%; 
+    width: 90%;
   }
 }
