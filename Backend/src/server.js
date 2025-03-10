@@ -19,7 +19,6 @@ const server = http.createServer(app);
 initializeSocket(server);
 
 app.use(bodyParser.json());
-db.sequelize.sync();
 
 app.use("/api/sightings", sightingsRoutes);
 app.use("/api/auth", authRoutes);

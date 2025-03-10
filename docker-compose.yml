@@ -8,8 +8,6 @@ services:
         NGINX_PORT: ${NGINX_PORT}
     ports:
       - "${NGINX_PORT}:80"
-    volumes:
-      - ./Frontend/src:/usr/share/nginx/html # Hot reload del frontend
     container_name: sada-frontend
     env_file:
       - .env
