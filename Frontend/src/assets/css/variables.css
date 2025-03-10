@@ -27,7 +27,7 @@
 
 .visible {
     visibility: visible;
-    display: block;
+    display: flex !important;
 }
 
 @keyframes opacityfadeIn {

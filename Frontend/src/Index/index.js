@@ -238,8 +238,8 @@ map.on('click', function (e) {
         updateGreyMarker(e.latlng);
 
         if (formEditable) {
-            let percentage = calculateMarkerPositionPercentage();
-            adjustMapViewToMarker(e.latlng, percentage);
+            let {percentage, direction} = calculateMarkerPositionPercentage();
+            adjustMapViewToMarker(e.latlng, percentage, direction);
         }
 
 
@@ -254,8 +254,8 @@ map.on('click', function (e) {
             hideOverlay();
             showForm(true);
 
-            let percentage = calculateMarkerPositionPercentage();
-            adjustMapViewToMarker(e.latlng, percentage);
+            let  {percentage, direction} = calculateMarkerPositionPercentage();
+            adjustMapViewToMarker(e.latlng, percentage, direction);
 
             const cancelButton = document.getElementById('cancel-button');
             const saveButton = document.getElementById('save-button');
@@ -721,8 +721,8 @@ function handleMarkerClick(marker, sighting) {
     fillForm(sighting);
     showForm(false);
 
-    let percentage = calculateMarkerPositionPercentage();
-    adjustMapViewToMarker(getLatLngFromMarker(marker), percentage)
+    let {percentage, direction} = calculateMarkerPositionPercentage();
+    adjustMapViewToMarker(getLatLngFromMarker(marker), percentage, direction)
 }
 
 
@@ -1200,17 +1200,30 @@ function calculateMarkerPositionPercentage() {
     
     if (!mapContainer || !formContainer) {
         console.warn('Elementos no encontrados.');
-        return 25; // Valor por defecto
+        // Valor por defecto asumiendo desktop
+        return { percentage: 25, direction: 'horizontal' };
     }
     
-    const mapLeft = mapContainer.getBoundingClientRect().left;
-    const formLeft = formContainer.getBoundingClientRect().left;
+    // Detección simple de mobile: umbral ajustable
+    const isMobile = window.innerWidth <= 768;
     
-    const availableSpace = formLeft - mapLeft;
-    const midpoint = availableSpace / 2;
-    
-    const mapWidth = mapContainer.offsetWidth;
-    const percentage = (midpoint / mapWidth) * 100;
-    
-    return percentage;
+    if (!isMobile) {
+        // Desktop: calcular desplazamiento horizontal
+        const mapLeft = mapContainer.getBoundingClientRect().left;
+        const formLeft = formContainer.getBoundingClientRect().left;
+        const availableSpace = formLeft - mapLeft;
+        const midpoint = availableSpace / 2;
+        const mapWidth = mapContainer.offsetWidth;
+        const percentage = (midpoint / mapWidth) * 100;
+        return { percentage, direction: 'horizontal' };
+    } else {
+        // Mobile: calcular desplazamiento vertical
+        const mapTop = mapContainer.getBoundingClientRect().top;
+        const formTop = formContainer.getBoundingClientRect().top;
+        const availableSpace = formTop - mapTop;
+        const midpoint = availableSpace / 2;
+        const mapHeight = mapContainer.offsetHeight;
+        const percentage = (midpoint / mapHeight) * 100;
+        return { percentage, direction: 'vertical' };
+    }
 }

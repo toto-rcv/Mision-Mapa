@@ -164,19 +164,31 @@ export function setMarkerColor(id, isValidated) {
  * @param {L.LatLng} latlng - Coordenadas del marcador.
  * @param {number} [viewportPercentage=0.25] - Porcentaje del ancho del viewport donde posicionar el marcador (0 a 1).
  */
-export function adjustMapViewToMarker(latlng, viewportPercentage = 25) {
-    if (!map) {
+export function adjustMapViewToMarker(latlng, percentage, direction) {
+  if (!map) {
       console.warn('El mapa no está inicializado.');
       return;
-    }
-    
-    const mapWidth = map.getSize().x; // Ancho del contenedor del mapa en píxeles
-    const offsetX = (mapWidth / 2) - (mapWidth * viewportPercentage / 100); // Desplazamiento basado en el porcentaje
-    const point = map.latLngToContainerPoint(latlng); // Coordenadas del marcador en píxeles
-    const targetPoint = L.point(point.x + offsetX, point.y); // Desplazar a la posición deseada
-    const targetLatLng = map.containerPointToLatLng(targetPoint); // Convertir a coordenadas geográficas
-
-    map.setView(targetLatLng, map.getZoom()); // Ajustar la vista sin cambiar el zoom
+  }
+  
+  const point = map.latLngToContainerPoint(latlng);
+  
+  if (direction === 'horizontal') {
+      // Cálculo en eje X para desktop
+      const mapWidth = map.getSize().x;
+      const offsetX = (mapWidth / 2) - (mapWidth * percentage / 100);
+      const targetPoint = L.point(point.x + offsetX, point.y);
+      const targetLatLng = map.containerPointToLatLng(targetPoint);
+      map.setView(targetLatLng, map.getZoom());
+  } else if (direction === 'vertical') {
+      // Cálculo en eje Y para mobile
+      const mapHeight = map.getSize().y;
+      const offsetY = (mapHeight / 2) - (mapHeight * percentage / 100);
+      const targetPoint = L.point(point.x, point.y + offsetY);
+      const targetLatLng = map.containerPointToLatLng(targetPoint);
+      map.setView(targetLatLng, map.getZoom());
+  } else {
+      console.warn('Dirección no reconocida. Usa "horizontal" o "vertical".');
+  }
 }
 
 export function getLatLngFromMarker(marker) {
