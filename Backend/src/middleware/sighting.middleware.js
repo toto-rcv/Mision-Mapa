@@ -1,4 +1,3 @@
-
 const { body, validationResult } = require("express-validator");
 
 const validateCreateSighting = [
@@ -15,7 +14,8 @@ const validateCreateSighting = [
         .isString().withMessage("El campo 'tipo_aeronave' debe ser un texto")
         .notEmpty().withMessage("El campo 'tipo_aeronave' es requerido"),
     body("altitud_estimada")
-        .isInt({ min: 0, max: 15000 }).withMessage("El campo 'altitud_estimada' debe tener un altura minima de 0 y maxima de 15000")
+        .isString().withMessage("El campo 'altitud_estimada' debe ser un texto")
+        .isIn(["Muy alto", "Alto", "Bajo", "Muy bajo"]).withMessage("El campo 'altitud_estimada' debe ser uno de los siguientes valores: Muy alto, Alto, Bajo, Muy bajo")
         .notEmpty().withMessage("El campo 'altitud_estimada' es requerido"),
     body("rumbo")
         .isString().withMessage("El campo 'rumbo' debe ser un texto")
@@ -24,7 +24,7 @@ const validateCreateSighting = [
     body("tipo_motor")
         .optional()
         .isString().withMessage("El campo 'tipo_motor' debe ser un texto")
-        .isLength({ min: 0, max: 30 }).withMessage("El campo 'tipo_motor' debe tener un max de 30 letras"),
+        .isIn(["Turbofan", "Pistón", "Turbohélice", "Reactor"]).withMessage("El campo 'tipo_motor' debe ser uno de los siguientes valores: Turbofan, Pistón, Turbohélice, Reactor"),
     body("cantidad_motores")
         .optional()
         .isInt({ min: 0, max: 4 }).withMessage("El campo 'cantidad_motores' debe ser un número entero"),
@@ -34,7 +34,7 @@ const validateCreateSighting = [
     body("observaciones")
         .isString().withMessage("El campo 'observaciones' debe ser un texto")
         .isLength({ min: 0, max: 250 }).withMessage("El campo 'observaciones' debe tener un max de 250 letras"),
-        
+
     // Validar existencia del usuario y agregar `usuario_id` desde el token
     (req, res, next) => {
         if (!req.user || !req.user.id) {
@@ -53,8 +53,6 @@ const validateCreateSighting = [
 
         next();
     },
-
-
 ];
 
 module.exports = validateCreateSighting;

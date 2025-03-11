@@ -10,13 +10,15 @@ const createSighting = async (req, res) => {
     try {
         let newSighting = await Sighting.create(req.body);
 
-        const {id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo,tipo_aeronave,tipo_motor,cantidad_motores,color,observaciones} = newSighting;
-        const response = {id,
-            fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada,rumbo, tipo_aeronave,
-            tipo_motor,cantidad_motores,color,observaciones,
-            status: 'pending', usuario_id: req.user.id};
+        const { id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones } = newSighting;
+        const response = {
+            id,
+            fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave,
+            tipo_motor, cantidad_motores, color, observaciones,
+            status: 'pending', usuario_id: req.user.id
+        };
         eventEmitter.emit('NEW_SIGHTING', response);
-        
+
         res.status(201).json(response);
     } catch (error) {
         console.error("Error al crear avistamiento:", error);
@@ -68,7 +70,7 @@ const validateSighting = async (id) => {
 };
 
 const deleteSighting = async (req, res) => {
-    
+
     try {
         const { id } = req.params;
         const sighting = await validateSighting(id);
@@ -98,93 +100,93 @@ const deleteSighting = async (req, res) => {
 
 const getAllMarkers = async (req, res) => {
     try {
-      const role = req.role;
-      const userId = req.user.id;
-      
-      // Extraer filtros desde la query string
-      const { startDate, endDate, statuses, userIds } = req.query;
-      const whereClause = {};
-  
-      // Filtrado por fecha: si se pasan startDate o endDate, se utilizan;
-      // de lo contrario se usa el filtro por defecto de 30 días.
-      if (startDate || endDate) {
-        whereClause.fecha_avistamiento = {};
-        if (startDate) {
-          whereClause.fecha_avistamiento[Op.gte] = new Date(startDate);
-        }
-        if (endDate) {
-          whereClause.fecha_avistamiento[Op.lte] = new Date(endDate);
-        }
-      } else {
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        whereClause.fecha_avistamiento = { [Op.gte]: thirtyDaysAgo };
-      }
-  
-      // Filtrado por estados, si se especifica (se espera una lista separada por comas)
-      if (statuses) {
-        const statusesArr = statuses.split(',');
-        const stateConditions = [];
-        
-        statusesArr.forEach(status => {
-            switch (status.toLowerCase()) {
-                case 'pending':
-                // Pendiente: validado_por y eliminado_por son null
-                stateConditions.push({
-                    validado_por: { [Op.is]: null },
-                    eliminado_por: { [Op.is]: null }
-                });
-                break;
-                case 'validated':
-                // Validado: validado_por NO es null y eliminado_por es null
-                stateConditions.push({
-                    validado_por: { [Op.not]: null },
-                    eliminado_por: { [Op.is]: null }
-                });
-                break;
-                case 'rejected':
-                case 'descartado':
-                // Descartado: eliminado_por NO es null
-                stateConditions.push({
-                    eliminado_por: { [Op.not]: null }
-                });
-                break;
-                default:
-                break;
+        const role = req.role;
+        const userId = req.user.id;
+
+        // Extraer filtros desde la query string
+        const { startDate, endDate, statuses, userIds } = req.query;
+        const whereClause = {};
+
+        // Filtrado por fecha: si se pasan startDate o endDate, se utilizan;
+        // de lo contrario se usa el filtro por defecto de 30 días.
+        if (startDate || endDate) {
+            whereClause.fecha_avistamiento = {};
+            if (startDate) {
+                whereClause.fecha_avistamiento[Op.gte] = new Date(startDate);
             }
-        });
-        
-        
-        if (stateConditions.length > 0) {
-            // Combina las condiciones de estado con un OR
-            whereClause[Op.or] = stateConditions;
+            if (endDate) {
+                whereClause.fecha_avistamiento[Op.lte] = new Date(endDate);
+            }
+        } else {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            whereClause.fecha_avistamiento = { [Op.gte]: thirtyDaysAgo };
         }
-      }
-  
-      // Filtrado por usuario, si se especifica (se espera una lista separada por comas)
-      if (userIds) {
-        const userIdsArr = userIds.split(',');
-        whereClause.usuario_id = { [Op.in]: userIdsArr };
-      }
-  
-      // Se asume que fetchSightingsByRole utiliza whereClause para filtrar
-      const { sightings } = await fetchSightingsByRole(role, userId, whereClause);
-  
-      res.status(200).json({ sightings });
+
+        // Filtrado por estados, si se especifica (se espera una lista separada por comas)
+        if (statuses) {
+            const statusesArr = statuses.split(',');
+            const stateConditions = [];
+
+            statusesArr.forEach(status => {
+                switch (status.toLowerCase()) {
+                    case 'pending':
+                        // Pendiente: validado_por y eliminado_por son null
+                        stateConditions.push({
+                            validado_por: { [Op.is]: null },
+                            eliminado_por: { [Op.is]: null }
+                        });
+                        break;
+                    case 'validated':
+                        // Validado: validado_por NO es null y eliminado_por es null
+                        stateConditions.push({
+                            validado_por: { [Op.not]: null },
+                            eliminado_por: { [Op.is]: null }
+                        });
+                        break;
+                    case 'rejected':
+                    case 'descartado':
+                        // Descartado: eliminado_por NO es null
+                        stateConditions.push({
+                            eliminado_por: { [Op.not]: null }
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+
+            if (stateConditions.length > 0) {
+                // Combina las condiciones de estado con un OR
+                whereClause[Op.or] = stateConditions;
+            }
+        }
+
+        // Filtrado por usuario, si se especifica (se espera una lista separada por comas)
+        if (userIds) {
+            const userIdsArr = userIds.split(',');
+            whereClause.usuario_id = { [Op.in]: userIdsArr };
+        }
+
+        // Se asume que fetchSightingsByRole utiliza whereClause para filtrar
+        const { sightings } = await fetchSightingsByRole(role, userId, whereClause);
+
+        res.status(200).json({ sightings });
     } catch (error) {
-      console.error("Error al obtener los marcadores:", error);
-      if (error instanceof InsufficientPermissionsError) {
-        res.status(403).json({ message: error.message });
-        return;
-      }
-      res.status(500).json({ message: "Error interno del servidor" });
+        console.error("Error al obtener los marcadores:", error);
+        if (error instanceof InsufficientPermissionsError) {
+            res.status(403).json({ message: error.message });
+            return;
+        }
+        res.status(500).json({ message: "Error interno del servidor" });
     }
-  };
+};
 
 const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}) => {
     const commonInclude = [
         { model: User, as: "usuario", attributes: ["firstName", "lastName", "dni", "powerMilitary", "militaryRank"] },
-        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni", ] },
+        { model: User, as: "validador", attributes: ["firstName", "lastName", "dni",] },
     ];
 
     const commonAttributes = { exclude: ["validado_por", "eliminado_por", "validado_en", "fue_eliminado"] };
@@ -222,12 +224,12 @@ const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}
         }
 
         return {
-        ...sighting.toJSON(),
-        status,
+            ...sighting.toJSON(),
+            status,
         };
     });
 
-  return { sightings: computedSightings, totalRecords };
+    return { sightings: computedSightings, totalRecords };
 
 };
 

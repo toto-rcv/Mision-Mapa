@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       altitud_estimada: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.STRING,
         allowNull: true,
       },
       rumbo: {

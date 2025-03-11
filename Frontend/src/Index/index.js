@@ -64,16 +64,6 @@ function validateField(input) {
     }
 }
 
-function validateHeight(input) {
-    const height = parseInt(input.value, 10);
-    if (isNaN(height) || height < 0 || height > 15000) {
-        input.setCustomValidity('La altura debe estar entre 0 y 15000 metros');
-    } else {
-        input.setCustomValidity('');
-    }
-    validateField(input);
-}
-
 function validateObservations(input) {
     const length = input.value.length;
     if (length > 250) {
@@ -92,9 +82,7 @@ function validateOnBlur(input, validationFunction) {
 }
 
 elements.inputs.forEach(input => {
-    if (input.id === 'estimated-height') {
-        validateOnBlur(input, validateHeight);
-    } else if (input.id === 'observations') {
+    if (input.id === 'observations') {
         validateOnBlur(input, validateObservations);
         input.addEventListener('input', () => validateObservations(input));
     } else {
@@ -280,9 +268,7 @@ function validateForm() {
     let isValid = true;
 
     inputs.forEach(input => {
-        if (input.id === 'estimated-height') {
-            validateHeight(input);
-        } else if (input.required || input.value.trim() !== '') {
+        if (input.required || input.value.trim() !== '') {
             validateField(input);
         }
         if (input.required && !input.validity.valid) {
@@ -299,7 +285,6 @@ elements.formPanel.addEventListener('submit', async function (e) {
 
     const isValid = validateForm();
 
-
     if (isValid) {
         const form = elements.formPanel;
 
@@ -309,7 +294,7 @@ elements.formPanel.addEventListener('submit', async function (e) {
             ubicacion: document.getElementById('location').value,
             latitud: lat,
             longitud: lng,
-            altitud_estimada: parseFloat(document.getElementById('estimated-height').value),
+            altitud_estimada: document.getElementById('estimated-height').value,
             rumbo: document.getElementById('heading').value,
             tipo_aeronave: document.getElementById('aircraft-type').value,
             observaciones: document.getElementById('observations').value
@@ -331,7 +316,6 @@ elements.formPanel.addEventListener('submit', async function (e) {
             
         try {
             // Envía los datos al backend con fetch
-
             let response = await customFetch('/api/sightings', {
                 method: 'POST',
                 headers: {
@@ -340,7 +324,6 @@ elements.formPanel.addEventListener('submit', async function (e) {
                 body: JSON.stringify(formData)
             });
 
-            
             hideForm();
             removeGreyMarker();
 
@@ -348,7 +331,6 @@ elements.formPanel.addEventListener('submit', async function (e) {
                 const sighting = await response.json();
                 addMarker(sighting.id, sighting, false, handleMarkerClick);
                 updateRedMarkersModal();
-
             } else {
                 const error = await response.json();
                 console.error('Error:', error.message);
@@ -356,10 +338,7 @@ elements.formPanel.addEventListener('submit', async function (e) {
         } catch (err) {
             console.error('Error al conectar con el servidor:', err);
         }
-
     }
-
-
 });
 
 document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(input => {
@@ -582,10 +561,10 @@ function fillForm({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitu
     form.querySelector("span#coordinateLog").innerHTML = longitud
     form.querySelector("span#coordinateLat").innerHTML = latitud
     form.querySelector("input#location").value = ubicacion
-    form.querySelector("input#estimated-height").value = altitud_estimada
+    form.querySelector("select#estimated-height").value = altitud_estimada
     form.querySelector("select#heading").value = rumbo
     form.querySelector("input#aircraft-type").value = tipo_aeronave
-    form.querySelector("input#engine-type").value = tipo_motor
+    form.querySelector("select#engine-type").value = tipo_motor
     form.querySelector("select#engine-count").value = cantidad_motores
     form.querySelector("input#color").value = color
     form.querySelector("textarea#observations").value = observaciones
@@ -685,7 +664,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const sightingRecord = sightings.find(sighting => sighting.id === parseInt(recordId, 10));
         const { latitud, longitud } = sightingRecord || {};
         if (latitud !== undefined && longitud !== undefined) {
-            mapContainer.setView([latitud, longitud], 10);
+            map.setView([latitud, longitud], 10);
             fillForm(sightingRecord)
             showForm(false);
         }

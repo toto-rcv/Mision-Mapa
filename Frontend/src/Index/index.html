@@ -215,9 +215,13 @@
                         <div class="form-column">
                             <div class="form-group">
                                 <label for="estimated-height">Altura estimada</label>
-                                <input type="number" id="estimated-height" name="estimated-height"
-                                    placeholder="Metros sobre el nivel del mar" required min="0" max="15000">
-                                <div class="invalid-feedback">Debe estar entre 0 y 15000 mts.</div>
+                                <select name="estimated-height" id="estimated-height" required class="form-select">
+                                    <option value="" disabled selected>Seleccione Altura</option>
+                                    <option value="Muy alto">Muy alto</option>
+                                    <option value="Alto">Alto</option>
+                                    <option value="Bajo">Bajo</option>
+                                    <option value="Muy bajo">Muy bajo</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-column">
@@ -251,8 +255,13 @@
                         <div class="form-column">
                             <div class="form-group">
                                 <label for="engine-type">Tipo de motor</label>
-                                <input type="text" id="engine-type" name="engine-type"
-                                    placeholder="Ej: Turbofan, Pistón, Turbohélice">
+                                    <select name="engine-type" id="engine-type" class="form-select">
+                                        <option value="" disabled selected>Seleccione tipo de motor</option>
+                                        <option value="Turbofan">Turbofan</option>
+                                        <option value="Pistón">Pistón</option>
+                                        <option value="Turbohélice">Turbohélice</option>
+                                        <option value="Reactor">Reactor</option>
+                                    </select>
                             </div>
                         </div>
                     </div>
