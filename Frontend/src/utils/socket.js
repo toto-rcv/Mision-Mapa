@@ -118,7 +118,8 @@ class SocketClient {
 
   async function getSocketClient() {
       if (!socketInstance) {
-          socketInstance = new SocketClient('ws://'); // Puedes pasar la URL base aquí o configurarla después
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+          socketInstance = new SocketClient(protocol +'//'); // Puedes pasar la URL base aquí o configurarla después
           const isTokenValid = await verifyAccessToken(); // Esperar a que se verifique el token
           if (isTokenValid) {
               const initialized = await socketInstance.initialize(); // Inicializar y conectar solo si el token es válido
