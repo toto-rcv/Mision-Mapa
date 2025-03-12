@@ -147,7 +147,7 @@ const SightingsApp = (function () {
                 <tr>
                     <th>#</th>
                     <th class="col-ws fecha-header">Fecha</th>
-                    <th class="ubicacion-cell">Lugar de envío</th>
+                    <th class="col-medium-screen">Lugar de envío</th>
                     <th class="ubicacion-cell">Ubicacion</th>
                     <th class="col-medium-screen">Creado por</th>
                     <th class="col-large-screen">Latitud</th>
@@ -169,7 +169,7 @@ const SightingsApp = (function () {
             row.innerHTML = `
                 <td>${sighting.id}</td>
                 <td data-label="Fecha" class="col-ws">${formatDateTime(new Date(sighting.fecha_avistamiento))}</td>
-                <td data-label="Lugar de envío" class="ubicacion-cell">${sighting.current_location}</td>
+                <td data-label="Lugar de envío" class="col-medium-screen">${sighting.current_location}</td>
                 <td data-label="Ubicación" class="ubicacion-cell">${sighting.ubicacion}</td>
                 <td data-label="Nombre y Apellido" class="col-medium-screen">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
                 <td data-label="Latitud" class="latitud-cell col-large-screen">${sighting.latitud}</td>

@@ -9,7 +9,7 @@ import { formatDNI, formatDateTime } from '/utils/utils.js';
 const closeFormButton = document.getElementById('close-form');
 const cancelButton = document.getElementById('cancel-button');
 
-let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null;
+let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null, currentLocation = null;
 let formEditMode = false;
 
 let minTimestamp, maxTimestamp;
@@ -700,7 +700,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Verificar si hay marcadores rojos y mostrar el modal de notificación si es necesario
+    updateRedMarkersModal();
+
     setSocketEvents();
+
+    setTimeout(() => {
+        updateRedMarkersModal();
+    }, 1000); // Adjust the delay as needed
+
 });
 
 function updateSightingsComponents(sightings) {
