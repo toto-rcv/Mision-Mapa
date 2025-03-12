@@ -18,7 +18,14 @@ const SightingsApp = (function () {
         modalContent: document.querySelector('#observations-modal .modal-content'),
         searchInput: document.getElementById('search'),
         sightingsList: document.getElementById('sightings-list'),
-        paginationContainer: document.getElementById('sightings-pagination')
+        paginationContainer: document.getElementById('sightings-pagination'),
+        filterByDateButton: document.getElementById('filterByDate'),
+        dateFilterModal: document.getElementById('date-filter-modal'),
+        closeDateFilterModalButton: document.getElementById('close-date-filter-modal'),
+        applyDateFilterButton: document.getElementById('applyDateFilter'),
+        clearDateFilterButton: document.getElementById('clearDateFilter'),
+        startDateInput: document.getElementById('start-date'),
+        endDateInput: document.getElementById('end-date')
     };
 
     // Event listeners
@@ -30,6 +37,10 @@ const SightingsApp = (function () {
         window.addEventListener("hashchange", handleHashChange)
         elements.searchInput.addEventListener("input", debounce(handleSearch, 300))
         window.addEventListener("resize", adjustColumnsForSmallScreens)
+        elements.filterByDateButton.addEventListener('click', openDateFilterModal);
+        elements.closeDateFilterModalButton.addEventListener('click', closeDateFilterModal);
+        elements.applyDateFilterButton.addEventListener('click', applyDateFilter);
+        elements.clearDateFilterButton.addEventListener('click', clearDateFilter);
     }
 
     // Touch event handlers
@@ -136,6 +147,7 @@ const SightingsApp = (function () {
                 <tr>
                     <th>#</th>
                     <th class="col-ws fecha-header">Fecha</th>
+                    <th class="ubicacion-cell">Lugar de envío</th>
                     <th class="ubicacion-cell">Ubicacion</th>
                     <th class="col-medium-screen">Creado por</th>
                     <th class="col-large-screen">Latitud</th>
@@ -157,6 +169,7 @@ const SightingsApp = (function () {
             row.innerHTML = `
                 <td>${sighting.id}</td>
                 <td data-label="Fecha" class="col-ws">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+                <td data-label="Lugar de envío" class="ubicacion-cell">${sighting.current_location}</td>
                 <td data-label="Ubicación" class="ubicacion-cell">${sighting.ubicacion}</td>
                 <td data-label="Nombre y Apellido" class="col-medium-screen">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
                 <td data-label="Latitud" class="latitud-cell col-large-screen">${sighting.latitud}</td>
@@ -185,7 +198,7 @@ const SightingsApp = (function () {
         paginationControls.classList.add('pagination-controls');
         paginationControls.innerHTML = `
             <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
-            <span>Página ${currentPage} de ${totalPages}</span>
+            <span class="spanpageNumber">Página ${currentPage} de ${totalPages}</span>
             <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente</button>
         `;
 
@@ -427,6 +440,41 @@ const SightingsApp = (function () {
                 }
             })
         })
+    }
+
+    function openDateFilterModal() {
+        elements.dateFilterModal.classList.add('active');
+        elements.dateFilterModal.setAttribute('aria-hidden', 'false');
+        elements.closeDateFilterModalButton.focus();
+    }
+
+    function closeDateFilterModal() {
+        elements.dateFilterModal.classList.remove('active');
+        elements.dateFilterModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function applyDateFilter() {
+        const startDate = elements.startDateInput.value;
+        const endDate = elements.endDateInput.value;
+        if (startDate && endDate) {
+            const formattedStartDate = `${startDate}T00:00:00`;
+            const formattedEndDate = `${endDate}T23:59:59`;
+            currentSearch = `date:${formattedStartDate},${formattedEndDate}`;
+            sightingsCurrentPage = 1;
+            loadAndDisplaySightings();
+            closeDateFilterModal();
+        } else {
+            alert('Por favor, seleccione ambas fechas.');
+        }
+    }
+
+    function clearDateFilter() {
+        elements.startDateInput.value = '';
+        elements.endDateInput.value = '';
+        currentSearch = '';
+        sightingsCurrentPage = 1;
+        loadAndDisplaySightings();
+        closeDateFilterModal();
     }
 
     // Initialization

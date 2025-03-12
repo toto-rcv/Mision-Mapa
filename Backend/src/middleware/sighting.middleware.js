@@ -10,13 +10,16 @@ const validateCreateSighting = [
     body("longitud")
         .isFloat().withMessage("El campo 'longitud' debe ser un número decimal")
         .notEmpty().withMessage("El campo 'longitud' es requerido"),
+    body("current_location")
+        .isString().withMessage("El campo 'current_location' debe ser un texto")
+        .notEmpty().withMessage("El campo 'current_location' es requerido"),
     body("tipo_aeronave")
         .isString().withMessage("El campo 'tipo_aeronave' debe ser un texto")
         .notEmpty().withMessage("El campo 'tipo_aeronave' es requerido"),
     body("altitud_estimada")
-        .isString().withMessage("El campo 'altitud_estimada' debe ser un texto")
-        .isIn(["Muy alto", "Alto", "Bajo", "Muy bajo"]).withMessage("El campo 'altitud_estimada' debe ser uno de los siguientes valores: Muy alto, Alto, Bajo, Muy bajo")
-        .notEmpty().withMessage("El campo 'altitud_estimada' es requerido"),
+        .isString().withMessage("El campo 'Altitud Estimada' debe ser un texto")
+        .isIn(["Muy alto", "Alto", "Bajo", "Muy bajo"]).withMessage("El campo 'Altitud Estimada' debe ser uno de los siguientes valores: Muy alto, Alto, Bajo, Muy bajo")
+        .notEmpty().withMessage("El campo 'Altitud Estimada' es requerido"),
     body("rumbo")
         .isString().withMessage("El campo 'rumbo' debe ser un texto")
         .isIn(["N", "NE", "E", "SE", "S", "SW", "W", "NW"]).withMessage("El campo 'rumbo' debe ser uno de los siguientes valores: N, NE, E, SE, S, SW, W, NW")

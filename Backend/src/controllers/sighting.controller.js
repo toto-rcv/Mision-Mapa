@@ -10,10 +10,10 @@ const createSighting = async (req, res) => {
     try {
         let newSighting = await Sighting.create(req.body);
 
-        const { id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones } = newSighting;
+        const { id, fecha_avistamiento, ubicacion, latitud, longitud, current_location, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones } = newSighting;
         const response = {
             id,
-            fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave,
+            fecha_avistamiento, ubicacion, latitud, longitud, current_location, altitud_estimada, rumbo, tipo_aeronave,
             tipo_motor, cantidad_motores, color, observaciones,
             status: 'pending', usuario_id: req.user.id
         };
@@ -35,7 +35,20 @@ const getAllSightings = async (req, res) => {
         const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
         const offset = (page - 1) * limit;
 
-        const whereClause = search ? { ubicacion: { [Op.like]: `%${search}%` } } : {};
+        const whereClause = {};
+
+        if (search.startsWith('date:')) {
+            const [startDate, endDate] = search.replace('date:', '').split(',');
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            whereClause.fecha_avistamiento = {
+                [Op.between]: [start, end]
+            };
+        } else if (search) {
+            whereClause.ubicacion = { [Op.like]: `%${search}%` };
+        }
 
         const { sightings, totalRecords } = await fetchSightingsByRole(role, userId, whereClause, { limit, offset, paginated: true });
 

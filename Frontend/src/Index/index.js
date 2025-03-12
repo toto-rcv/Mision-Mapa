@@ -2,14 +2,14 @@ import { reloadUserProfile, getUserId } from '/utils/profile.js';
 import { customFetch } from '/utils/auth.js';
 import { showNavItems, setSidebarItemsListeners } from '/static/js/navigation.js';
 import getSocketClient from '/utils/socket.js';
-import { initMap, addMarker, updateGreyMarker, removeGreyMarker, reverseGeocode, getMarkers, setMarkerColor, clearAllMarkers, adjustMapViewToMarker, getLatLngFromMarker, staggerMarkers} from '/mapModule.js';
+import { initMap, addMarker, updateGreyMarker, removeGreyMarker, reverseGeocode, getMarkers, setMarkerColor, clearAllMarkers, adjustMapViewToMarker, getLatLngFromMarker, staggerMarkers } from '/mapModule.js';
 import { formatDNI } from '/utils/utils.js';
 
 // Initialize UI elements
 const closeFormButton = document.getElementById('close-form');
 const cancelButton = document.getElementById('cancel-button');
 
-let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null;
+let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null ,currentLocation = null;
 let formEditMode = false;
 
 let minTimestamp, maxTimestamp;
@@ -137,7 +137,7 @@ elements.registerButton.addEventListener('click', async () => {
     showOverlay();
 });
 
-closeFormButton.addEventListener('click', () => { 
+closeFormButton.addEventListener('click', () => {
     hideForm();
     removeGreyMarker();
     updateRedMarkersModal();
@@ -149,51 +149,51 @@ cancelButton.addEventListener('click', () => {
     updateRedMarkersModal();
 });
 
-elements.filterButton.addEventListener("click", function() {
+elements.filterButton.addEventListener("click", function () {
     elements.filtersPanel.classList.toggle("active");
     elements.filterButton.classList.toggle("active");
 });
 
-elements.filtersCloseButton.addEventListener("click", function() {
+elements.filtersCloseButton.addEventListener("click", function () {
     elements.filtersPanel.classList.remove("active");
     elements.filterButton.classList.remove("active");
 });
 
 elements.statusButtons.forEach(btn => {
-    btn.addEventListener("click", function() {
-      const statusValue = btn.getAttribute("data-value");
-      if (btn.classList.contains("active")) {
-        // Si ya está activo, se desactiva
-        btn.classList.remove("active");
-        currentFilters.statuses = currentFilters.statuses.filter(s => s !== statusValue);
-      } else {
-        // Se activa el botón y se agrega el valor al arreglo
-        btn.classList.add("active");
-        currentFilters.statuses.push(statusValue);
-      }
+    btn.addEventListener("click", function () {
+        const statusValue = btn.getAttribute("data-value");
+        if (btn.classList.contains("active")) {
+            // Si ya está activo, se desactiva
+            btn.classList.remove("active");
+            currentFilters.statuses = currentFilters.statuses.filter(s => s !== statusValue);
+        } else {
+            // Se activa el botón y se agrega el valor al arreglo
+            btn.classList.add("active");
+            currentFilters.statuses.push(statusValue);
+        }
     });
 });
 
-elements.startDateInput.addEventListener("change", function() {
+elements.startDateInput.addEventListener("change", function () {
     currentFilters.startDate = elements.startDateInput.value ? new Date(elements.startDateInput.value) : null;
 });
 
-elements.endDateInput.addEventListener("change", function() {
+elements.endDateInput.addEventListener("change", function () {
     currentFilters.endDate = elements.endDateInput.value ? new Date(elements.endDateInput.value) : null;
 });
 
 elements.filtersClearButton.addEventListener("click", clearFilters);
 
 elements.quickDateButtons.forEach(btn => {
-    btn.addEventListener("click", function() {
+    btn.addEventListener("click", function () {
 
-      btn.classList.add("clicked");
-      // Remueve la clase después de la duración de la animación (300ms)
-      setTimeout(() => {
-        btn.classList.remove("clicked");
-      }, 300);
+        btn.classList.add("clicked");
+        // Remueve la clase después de la duración de la animación (300ms)
+        setTimeout(() => {
+            btn.classList.remove("clicked");
+        }, 300);
 
-      animateShrink(elements.startDateInput);
+        animateShrink(elements.startDateInput);
     })
 })
 
@@ -214,10 +214,20 @@ map.on('click', function (e) {
             hour: '2-digit',
             minute: '2-digit'
         });
+        currentLocation = '';
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                currentLocation = `${latitude},${longitude}`;
+                document.getElementById('current_location').textContent = currentLocation;
+            })
+        }
 
         // Update coordinates in the form
         document.getElementById('coordinateLog').textContent = lng;
         document.getElementById('coordinateLat').textContent = lat;
+        document.getElementById('current_location').textContent = current_location;
 
         // Update timestamp
         const timestampElement = document.querySelector('.timestamp');
@@ -226,7 +236,7 @@ map.on('click', function (e) {
         updateGreyMarker(e.latlng);
 
         if (formEditable) {
-            let {percentage, direction} = calculateMarkerPositionPercentage();
+            let { percentage, direction } = calculateMarkerPositionPercentage();
             adjustMapViewToMarker(e.latlng, percentage, direction);
         }
 
@@ -242,7 +252,7 @@ map.on('click', function (e) {
             hideOverlay();
             showForm(true);
 
-            let  {percentage, direction} = calculateMarkerPositionPercentage();
+            let { percentage, direction } = calculateMarkerPositionPercentage();
             adjustMapViewToMarker(e.latlng, percentage, direction);
 
             const cancelButton = document.getElementById('cancel-button');
@@ -288,55 +298,71 @@ elements.formPanel.addEventListener('submit', async function (e) {
     if (isValid) {
         const form = elements.formPanel;
 
-        // Captura los datos del formulario
-        const formData = {
-            fecha_avistamiento: new Date().toISOString(),
-            ubicacion: document.getElementById('location').value,
-            latitud: lat,
-            longitud: lng,
-            altitud_estimada: document.getElementById('estimated-height').value,
-            rumbo: document.getElementById('heading').value,
-            tipo_aeronave: document.getElementById('aircraft-type').value,
-            observaciones: document.getElementById('observations').value
-        };
+        // Captura la ubicación actual del usuario
+        let currentLocation = '';
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                currentLocation = `${latitude},${longitude}`;
+                document.getElementById('current_location').textContent = currentLocation;
 
-        // Campos opcionales con validaciones adicionales
-        const optionalFields = [
-            { id: 'engine-type', key: 'tipo_motor' },
-            { id: 'engine-count', key: 'cantidad_motores', parse: parseInt },
-            { id: 'color', key: 'color' },
-        ];
+                // Captura los datos del formulario
+                const formData = {
+                    fecha_avistamiento: new Date().toISOString(),
+                    current_location: currentLocation,   // Se agrega la ubicación actual
+                    ubicacion: document.getElementById('location').value,
+                    latitud: lat,
+                    longitud: lng,
+                    altitud_estimada: document.getElementById('estimated-height').value,
+                    rumbo: document.getElementById('heading').value,
+                    tipo_aeronave: document.getElementById('aircraft-type').value,
+                    observaciones: document.getElementById('observations').value
+                };
 
-        optionalFields.forEach(({ id, key, parse }) => {
-            const value = document.getElementById(id).value;
-            if (value) {
-                formData[key] = parse ? parse(value) : value;
-            }
-        });
-            
-        try {
-            // Envía los datos al backend con fetch
-            let response = await customFetch('/api/sightings', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
+                // Campos opcionales con validaciones adicionales
+                const optionalFields = [
+                    { id: 'engine-type', key: 'tipo_motor' },
+                    { id: 'engine-count', key: 'cantidad_motores', parse: parseInt },
+                    { id: 'color', key: 'color' },
+                ];
+
+                optionalFields.forEach(({ id, key, parse }) => {
+                    const value = document.getElementById(id).value;
+                    if (value) {
+                        formData[key] = parse ? parse(value) : value;
+                    }
+                });
+
+                try {
+                    // Envía los datos al backend con fetch
+                    let response = await customFetch('/api/sightings', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    hideForm();
+                    removeGreyMarker();
+
+                    if (response.ok) {
+                        const sighting = await response.json();
+                        addMarker(sighting.id, sighting, false, handleMarkerClick);
+                        updateRedMarkersModal();
+                    } else {
+                        const error = await response.json();
+                        console.error('Error:', error.message);
+                    }
+                } catch (err) {
+                    console.error('Error al conectar con el servidor:', err);
+                }
+            }, error => {
+                console.error('Error al obtener la geolocalización:', error);
             });
-
-            hideForm();
-            removeGreyMarker();
-
-            if (response.ok) {
-                const sighting = await response.json();
-                addMarker(sighting.id, sighting, false, handleMarkerClick);
-                updateRedMarkersModal();
-            } else {
-                const error = await response.json();
-                console.error('Error:', error.message);
-            }
-        } catch (err) {
-            console.error('Error al conectar con el servidor:', err);
+        } else {
+            console.error('Geolocation no está disponible.');
         }
     }
 });
@@ -360,26 +386,26 @@ async function loadMarkers(filters = {}) {
     try {
         let url = '/api/sightings/all';
         const queryParams = new URLSearchParams();
-    
+
         if (filters.startDate) {
-          queryParams.append('startDate', filters.startDate.toISOString());
+            queryParams.append('startDate', filters.startDate.toISOString());
         }
         if (filters.endDate) {
-          queryParams.append('endDate', filters.endDate.toISOString());
+            queryParams.append('endDate', filters.endDate.toISOString());
         }
         if (filters.statuses && filters.statuses.length) {
-          queryParams.append('statuses', filters.statuses.join(','));
+            queryParams.append('statuses', filters.statuses.join(','));
         }
         if (filters.userIds && filters.userIds.length) {
-          queryParams.append('userIds', filters.userIds.join(','));
+            queryParams.append('userIds', filters.userIds.join(','));
         }
-    
+
         // Si se han agregado parámetros, se adjuntan a la URL
         if ([...queryParams].length) {
-          url += `?${queryParams.toString()}`;
+            url += `?${queryParams.toString()}`;
         }
         // Realiza una solicitud GET para obtener los datos de los avistamientos
-        const response = await customFetch(url, {method: 'GET'});
+        const response = await customFetch(url, { method: 'GET' });
 
         if (response.ok) {
             const { sightings } = await response.json();
@@ -396,17 +422,17 @@ async function loadMarkers(filters = {}) {
 
 function loadUsers() {
     customFetch('/api/users/minimal')
-      .then(response => response.json())
-      .then(data => {
-       
-        const optionsList = document.getElementById('user-options-list');
-        optionsList.innerHTML = ''; // Limpiar contenido previo
-  
-        data.users.forEach(user => {
-          const label = document.createElement('label');
-          label.classList.add('user-option');
-          // Construir el contenido: checkbox + info del usuario
-          label.innerHTML = `
+        .then(response => response.json())
+        .then(data => {
+
+            const optionsList = document.getElementById('user-options-list');
+            optionsList.innerHTML = ''; // Limpiar contenido previo
+
+            data.users.forEach(user => {
+                const label = document.createElement('label');
+                label.classList.add('user-option');
+                // Construir el contenido: checkbox + info del usuario
+                label.innerHTML = `
             <input type="checkbox" value="${user.dni}" class="user-checkbox">
             <div class="user-info">
                 <span class="user-militaryRank">${user.militaryRank}</span>
@@ -414,15 +440,15 @@ function loadUsers() {
                 </span>
             </div>
           `;
-          optionsList.appendChild(label);
-        });
-  
-        // Asocia el evento change a cada checkbox
-        document.querySelectorAll('.user-checkbox').forEach(checkbox => {
-          checkbox.addEventListener('change', handleUserSelection);
-        });
-      })
-      .catch(error => console.error('Error loading users:', error));
+                optionsList.appendChild(label);
+            });
+
+            // Asocia el evento change a cada checkbox
+            document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', handleUserSelection);
+            });
+        })
+        .catch(error => console.error('Error loading users:', error));
 }
 
 function updateMarkersCount(count) {
@@ -534,7 +560,7 @@ async function setMarkerAsSeen(sightingId, authorId, currentUserId) {
 }
 
 function placeMarkersOnMap(sightings) {
-   clearAllMarkers();
+    clearAllMarkers();
 
     // Itera sobre los datos y agrega marcadores al mapa
     sightings.forEach((sighting, i) => {
@@ -550,7 +576,7 @@ function placeMarkersOnMap(sightings) {
 
 }
 
-function fillForm({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones }) {
+function fillForm({ id, fecha_avistamiento, ubicacion, current_location, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones }) {
 
     // obtener el formulario
 
@@ -560,6 +586,7 @@ function fillForm({ id, fecha_avistamiento, ubicacion, latitud, longitud, altitu
     form.querySelector("span.timestamp").innerHTML = fecha_avistamiento
     form.querySelector("span#coordinateLog").innerHTML = longitud
     form.querySelector("span#coordinateLat").innerHTML = latitud
+    form.querySelector("span#current_location").innerHTML = current_location
     form.querySelector("input#location").value = ubicacion
     form.querySelector("select#estimated-height").value = altitud_estimada
     form.querySelector("select#heading").value = rumbo
@@ -640,7 +667,6 @@ async function setSocketEvents() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-
     await reloadUserProfile();
     const userProfile = JSON.parse(localStorage.getItem("user"));
     const userPermissions = userProfile.permissions || {};
@@ -665,13 +691,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         const { latitud, longitud } = sightingRecord || {};
         if (latitud !== undefined && longitud !== undefined) {
             map.setView([latitud, longitud], 10);
-            fillForm(sightingRecord)
+
+            fillForm(sightingRecord);
             showForm(false);
+
+            // Lógica de posicionamiento del marcador
+            let { percentage, direction } = calculateMarkerPositionPercentage();
+            adjustMapViewToMarker({ lat: latitud, lng: longitud }, percentage, direction);
         }
     }
 
     setSocketEvents();
-
 });
 
 function updateSightingsComponents(sightings) {
@@ -695,12 +725,12 @@ function handleMarkerClick(marker, sighting) {
     if (marker.isRed) {
         setMarkerAsSeen(marker.id, marker.sighting.usuario_id, userId);
     }
-    
+
     hideNotificationOverlay();
     fillForm(sighting);
     showForm(false);
 
-    let {percentage, direction} = calculateMarkerPositionPercentage();
+    let { percentage, direction } = calculateMarkerPositionPercentage();
     adjustMapViewToMarker(getLatLngFromMarker(marker), percentage, direction)
 }
 
@@ -717,15 +747,15 @@ timelineToggle.addEventListener('click', () => {
     timelineContainer.classList.toggle('expanded');
     const icon = timelineToggle.querySelector('i');
     if (timelineContainer.classList.contains('expanded')) {
-      icon.classList.remove('fa-chevron-up');
-      icon.classList.add('fa-chevron-down');
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
     } else {
-      icon.classList.remove('fa-chevron-down');
-      icon.classList.add('fa-chevron-up');
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
     }
-  });
-  
-  // Eventos de cambio en los sliders
+});
+
+// Eventos de cambio en los sliders
 startSlider.addEventListener('input', onRangeChange);
 endSlider.addEventListener('input', onRangeChange);
 
@@ -740,181 +770,181 @@ function snapStartSlider() {
     let dayIndex;
     // Si la parte fraccionaria es menor a 0.5, se redondea hacia abajo; de lo contrario, se avanza un día.
     if (dayIndexFloat - Math.floor(dayIndexFloat) < 0.5) {
-      dayIndex = Math.floor(dayIndexFloat);
+        dayIndex = Math.floor(dayIndexFloat);
     } else {
-      dayIndex = Math.floor(dayIndexFloat) + 1;
+        dayIndex = Math.floor(dayIndexFloat) + 1;
     }
-    
+
     // Verificar la distancia mínima: el índice de inicio debe ser menor que el índice del extremo final
     const currentEndIndex = Math.round(parseFloat(endSlider.value) / step);
     if (dayIndex >= currentEndIndex) {
-      // Si el snap haría que ambos extremos sean iguales o que se invierta el orden, forzamos el inicio a quedar 1 día antes
-      dayIndex = Math.max(0, currentEndIndex - 1);
+        // Si el snap haría que ambos extremos sean iguales o que se invierta el orden, forzamos el inicio a quedar 1 día antes
+        dayIndex = Math.max(0, currentEndIndex - 1);
     }
-    
+
     const newValue = dayIndex * step;
     // Forzamos a un entero
     startSlider.value = Math.round(newValue);
     onRangeChange();
-  }
-  
-  // Función para snappear el slider final
-  function snapEndSlider() {
+}
+
+// Función para snappear el slider final
+function snapEndSlider() {
     const step = sliderStep();
     const rawValue = parseFloat(endSlider.value);
     const dayIndexFloat = rawValue / step;
     let dayIndex;
     // Si la parte fraccionaria es menor a 0.5, se redondea hacia abajo; de lo contrario, se redondea hacia arriba.
     if (dayIndexFloat - Math.floor(dayIndexFloat) < 0.5) {
-      dayIndex = Math.floor(dayIndexFloat);
+        dayIndex = Math.floor(dayIndexFloat);
     } else {
-      dayIndex = Math.floor(dayIndexFloat) + 1;
+        dayIndex = Math.floor(dayIndexFloat) + 1;
     }
-    
+
     // Verificar la distancia mínima: el índice final debe ser al menos 1 mayor que el índice de inicio
     const currentStartIndex = Math.round(parseFloat(startSlider.value) / step);
     if (dayIndex <= currentStartIndex) {
-      // Se fuerza a que el final sea 1 día mayor, sin exceder el límite máximo (totalDays()-1)
-      dayIndex = Math.min(totalDays() - 1, currentStartIndex + 1);
+        // Se fuerza a que el final sea 1 día mayor, sin exceder el límite máximo (totalDays()-1)
+        dayIndex = Math.min(totalDays() - 1, currentStartIndex + 1);
     }
-    
+
     const newValue = dayIndex * step;
     endSlider.value = Math.round(newValue);
     onRangeChange();
-  }
+}
 
 function onRangeChange() {
     // Asegurarse de que el slider de inicio no supere al de fin
     if (parseInt(startSlider.value) > parseInt(endSlider.value)) {
-      startSlider.value = endSlider.value;
+        startSlider.value = endSlider.value;
     }
     if (parseInt(endSlider.value) < parseInt(startSlider.value)) {
-      endSlider.value = startSlider.value;
+        endSlider.value = startSlider.value;
     }
 
     updateSliderTrack();
     filterMarkersByDateRange();
     updateRangeFeedback();
-  }
-  
-  // Actualiza la posición y tamaño del tramo seleccionado en el slider
-  function updateSliderTrack() {
+}
+
+// Actualiza la posición y tamaño del tramo seleccionado en el slider
+function updateSliderTrack() {
     const startVal = parseFloat(startSlider.value);
     const endVal = parseFloat(endSlider.value);
     const track = document.querySelector('.slider-track');
     track.style.left = startVal + '%';
     track.style.width = (endVal - startVal) + '%';
-  }
-  
-  // Filtra los marcadores según el rango de fechas seleccionado
-  function filterMarkersByDateRange() {
+}
+
+// Filtra los marcadores según el rango de fechas seleccionado
+function filterMarkersByDateRange() {
     const minDate = new Date(minTimestamp);
     const maxDate = new Date(maxTimestamp);
     const startValue = parseFloat(startSlider.value);
     const endValue = parseFloat(endSlider.value);
-  
+
     const selectedStartDate = new Date(minDate.getTime() + (startValue / 100) * (maxDate - minDate));
     const selectedEndDate = new Date(minDate.getTime() + (endValue / 100) * (maxDate - minDate));
 
     selectedStartDate.setHours(0, 0, 0, 0);
     // La fecha superior se establece a las 23:59:59.999 para incluir todo el día
     selectedEndDate.setHours(23, 59, 59, 999);
-  
+
     getMarkers().forEach(marker => {
-      const markerDate = new Date(marker.sighting.fecha_avistamiento);
-      if (markerDate >= selectedStartDate && markerDate <= selectedEndDate) {
-        marker.leafletObject.setOpacity(1);
-      } else {
-        marker.leafletObject.setOpacity(0.2);
-      }
+        const markerDate = new Date(marker.sighting.fecha_avistamiento);
+        if (markerDate >= selectedStartDate && markerDate <= selectedEndDate) {
+            marker.leafletObject.setOpacity(1);
+        } else {
+            marker.leafletObject.setOpacity(0.2);
+        }
     });
-  }
-  
+}
+
 // Actualiza el feedback visual basándose en los valores discretos
 function updateRangeFeedback() {
     const step = sliderStep();
     let startDayIndex = Math.round(startSlider.value / step);
     let endDayIndex = Math.round(endSlider.value / step);
-    
+
     // Aseguramos que el índice final no exceda el límite (totalDays()-1)
     if (endDayIndex >= totalDays()) {
-      endDayIndex = totalDays() - 1;
+        endDayIndex = totalDays() - 1;
     }
-    
+
     // Si por el snapping el extremo final cae en el mismo día (o incluso anterior) que el de inicio,
     // se fuerza a que ambos tengan el mismo índice (es decir, el día inicial).
     if (endDayIndex < startDayIndex) {
-      endDayIndex = startDayIndex;
+        endDayIndex = startDayIndex;
     }
-    
+
     // Se calcula la fecha correspondiente a cada índice, partiendo de minTimestamp
     let startDate = new Date(minTimestamp + startDayIndex * 24 * 60 * 60 * 1000);
     let endDate = new Date(minTimestamp + (endDayIndex - 1) * 24 * 60 * 60 * 1000);
-    
+
     // Forzamos que para el feedback el inicio muestre 00:00 y el final 23:59
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(23, 59, 0, 0);
-    
+
     currentRangeFeedback.textContent = `${formatDate(startDate)} (00:00) - ${formatDate(endDate)} (23:59)`;
-  }
-  
-  // Procesa los timestamps de los avistamientos para determinar el rango global
-  function processTimestamps(sightings) {
+}
+
+// Procesa los timestamps de los avistamientos para determinar el rango global
+function processTimestamps(sightings) {
     const timestamps = sightings.map(s => new Date(s.fecha_avistamiento).getTime());
     // Se obtiene el primer y último timestamp del dataset
     let rawMin = new Date(Math.min(...timestamps));
     let rawMax = new Date(Math.max(...timestamps));
-    
+
     // Ajustamos para que el primer día comience a las 00:00...
     rawMin.setHours(0, 0, 0, 0);
     // ...y el último día finalice a las 23:59:59.999
     rawMax.setHours(23, 59, 59, 999);
-    
+
     // Actualizamos las variables globales
     minTimestamp = rawMin.getTime();
     maxTimestamp = rawMax.getTime();
-    
+
     // Actualizamos la interfaz con los nuevos límites formateados en dd/mm/yyyy
     document.getElementById('timeline-start-date').textContent = formatDate(rawMin);
     document.getElementById('timeline-end-date').textContent = formatDate(rawMax);
-  
+
     updateRangeFeedback();
     updateSliderTrack();
 
     generateTicks();
-  }
+}
 
 
-  function formatDate(date) {
+function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
-  }
+}
 
-  function totalDays() {
+function totalDays() {
     // Cada día son 24*60*60*1000 milisegundos
     return ((maxTimestamp - minTimestamp) / (24 * 60 * 60 * 1000) + 1);
-  }
+}
 
-  // Calcula el tamaño de cada paso discreto en el slider (en porcentaje)
+// Calcula el tamaño de cada paso discreto en el slider (en porcentaje)
 function sliderStep() {
     // Dividimos el slider (0–100) en (totalDays()-1) intervalos.
     return 100 / (totalDays() - 1);
-  }
+}
 
-  // Función que genera de forma dinámica los ticks
+// Función que genera de forma dinámica los ticks
 function generateTicks() {
     const tickContainer = document.querySelector('.slider-ticks');
     tickContainer.innerHTML = ''; // Limpiar cualquier tick previo
     const total = totalDays();
     const step = sliderStep();
-    
+
     for (let i = 0; i < total; i++) {
-      const tick = document.createElement('div');
-      tick.className = 'tick';
-      tick.style.left = (i * step) + '%';
-      tickContainer.appendChild(tick);
+        const tick = document.createElement('div');
+        tick.className = 'tick';
+        tick.style.left = (i * step) + '%';
+        tickContainer.appendChild(tick);
     }
 }
 
@@ -927,13 +957,13 @@ function initFilters() {
 
     currentFilters.statuses = ['pending', 'validated'];
     currentFilters.userIds = [];
-  
+
     document.querySelectorAll('.quick-date').forEach(button => {
-      button.addEventListener('click', handleQuickDate);
+        button.addEventListener('click', handleQuickDate);
     });
-  
+
     elements.applyFiltersButton.addEventListener('click', applyFilters);
-  
+
     loadUsers();
 }
 
@@ -941,34 +971,34 @@ function setDefaultDateRange(days) {
     const now = new Date();
     const startDate = new Date();
     startDate.setDate(now.getDate() - days);
-  
+
     startDate.setHours(0, 0, 0, 0);
-  
+
     currentFilters.startDate = startDate;
     currentFilters.endDate = null;
 
     const formatLocalDate = (date) => {
-      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-      return localDate.toISOString().slice(0, 16);
+        const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return localDate.toISOString().slice(0, 16);
     };
-  
+
     elements.startDateInput.value = formatLocalDate(startDate);
     elements.endDateInput.value = '';
 }
-  
-  // Manejadores de Eventos
+
+// Manejadores de Eventos
 function handleQuickDate(e) {
     const days = parseInt(e.target.dataset.days);
     setDefaultDateRange(days);
-  }
-  
+}
+
 function handleStatusChange(e) {
     currentFilters.statuses = Array.from(
-      document.querySelectorAll('.status-filters input:checked')
+        document.querySelectorAll('.status-filters input:checked')
     ).map(c => c.value);
 }
-  
-  // Lógica de Filtrado
+
+// Lógica de Filtrado
 async function applyFilters() {
     const sightings = await loadMarkers(currentFilters);
     updateSightingsComponents(sightings);
@@ -991,31 +1021,31 @@ async function clearFilters() {
     });
 
     document.querySelectorAll('.user-checkbox').forEach(checkbox => {
-      checkbox.checked = false;
+        checkbox.checked = false;
     });
-  
+
     const selectedContainer = document.getElementById('selected-users');
     selectedContainer.innerHTML = '';
     const placeholder = document.getElementById('user-placeholder');
     if (placeholder) {
-      placeholder.style.display = 'block';
+        placeholder.style.display = 'block';
     }
 
     await applyFilters();
 }
-  
+
 function updateMarkersVisibility(visibleMarkers) {
     getMarkers().forEach(marker => {
-      const opacity = visibleMarkers.includes(marker) ? 1 : 0.2;
-      marker.leafletObject.setOpacity(opacity);
+        const opacity = visibleMarkers.includes(marker) ? 1 : 0.2;
+        marker.leafletObject.setOpacity(opacity);
     });
 }
-  
+
 function showFilterFeedback(visibleCount) {
     const feedback = document.getElementById('filter-feedback');
-    feedback.textContent = visibleCount === 0 ? 
-      "No se encontraron avistamientos con los filtros aplicados." : 
-      `${visibleCount} avistamientos encontrados`;
+    feedback.textContent = visibleCount === 0 ?
+        "No se encontraron avistamientos con los filtros aplicados." :
+        `${visibleCount} avistamientos encontrados`;
     feedback.style.display = 'block';
     setTimeout(() => feedback.style.display = 'none', 3000);
 }
@@ -1024,98 +1054,98 @@ function animateShrink(input) {
     const animationDuration = 400;
     input.classList.add("animate-shrink");
     setTimeout(() => {
-      input.classList.remove("animate-shrink");
+        input.classList.remove("animate-shrink");
     }, animationDuration);
 }
 
 function toggleUserMultiSelect() {
     const container = document.getElementById('user-multi-select');
     if (container.style.display === 'none' || container.style.display === '') {
-      container.style.display = 'block';
-      // Enfoca el buscador interno al abrir el dropdown
-      document.getElementById('user-dropdown-search').focus();
+        container.style.display = 'block';
+        // Enfoca el buscador interno al abrir el dropdown
+        document.getElementById('user-dropdown-search').focus();
     } else {
-      container.style.display = 'none';
+        container.style.display = 'none';
     }
-  }
+}
 
 function handleUserSelection(e) {
     const checkbox = e.target;
     const userDni = checkbox.value;
     if (checkbox.checked) {
-      if (!currentFilters.userIds.includes(userDni)) {
-        currentFilters.userIds.push(userDni);
-      }
+        if (!currentFilters.userIds.includes(userDni)) {
+            currentFilters.userIds.push(userDni);
+        }
     } else {
-      currentFilters.userIds = currentFilters.userIds.filter(id => id !== userDni);
+        currentFilters.userIds = currentFilters.userIds.filter(id => id !== userDni);
     }
 
     // Actualiza el input principal con los nombres de los usuarios seleccionados
     updateSelectedUserCards();
-  }
+}
 
-  function updateSelectedUserCards() {
+function updateSelectedUserCards() {
     const selectedContainer = document.getElementById('selected-users');
     const placeholder = document.getElementById('user-placeholder');
     // Limpiar el contenedor
     selectedContainer.innerHTML = '';
-  
+
     // Obtener todas las opciones seleccionadas
     const selectedCheckboxes = document.querySelectorAll('.user-checkbox:checked');
     selectedCheckboxes.forEach(cb => {
-      const option = cb.closest('.user-option');
-      const fullName = option.querySelector('.user-fullname').textContent;
-      const dni = cb.value;
-      
-      const badgeText = `${abbreviateName(fullName)} (${formatDNI(dni)})`;
+        const option = cb.closest('.user-option');
+        const fullName = option.querySelector('.user-fullname').textContent;
+        const dni = cb.value;
 
-      // Crear la tarjeta (badge)
-      const badge = document.createElement('div');
-      badge.classList.add('selected-user-card');
+        const badgeText = `${abbreviateName(fullName)} (${formatDNI(dni)})`;
 
-      const nameSpan = document.createElement('span');
-      nameSpan.textContent = badgeText;
-      badge.appendChild(nameSpan);
+        // Crear la tarjeta (badge)
+        const badge = document.createElement('div');
+        badge.classList.add('selected-user-card');
 
-      const removeBtn = document.createElement('span');
-      removeBtn.classList.add('remove-badge');
-      removeBtn.textContent = '×';
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = badgeText;
+        badge.appendChild(nameSpan);
 
-      removeBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
+        const removeBtn = document.createElement('span');
+        removeBtn.classList.add('remove-badge');
+        removeBtn.textContent = '×';
 
-        currentFilters.userIds = currentFilters.userIds.filter(id => id !== dni);
-        cb.checked = false;
+        removeBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
 
-        badge.remove();
-   
-        if (selectedContainer.children.length === 0) {
-          placeholder.style.display = 'block';
-        }
-      });
+            currentFilters.userIds = currentFilters.userIds.filter(id => id !== dni);
+            cb.checked = false;
 
-      badge.appendChild(removeBtn);
+            badge.remove();
 
-      
-      selectedContainer.appendChild(badge);
+            if (selectedContainer.children.length === 0) {
+                placeholder.style.display = 'block';
+            }
+        });
+
+        badge.appendChild(removeBtn);
+
+
+        selectedContainer.appendChild(badge);
     });
-  
+
     // Mostrar u ocultar el placeholder
     placeholder.style.display = selectedContainer.children.length ? 'none' : 'block';
-  }
+}
 
 function filterUserOptions() {
     const searchTerm = document.getElementById('user-dropdown-search').value.toLowerCase();
     const options = document.querySelectorAll('.user-option');
     options.forEach(option => {
-      const fullName = option.querySelector('.user-fullname').textContent.toLowerCase();
-      const dni = option.querySelector('.user-dni').textContent.toLowerCase().replace(/\./g, '');
-      // Se verifica si el término de búsqueda coincide con el nombre o el DNI
-      if (fullName.includes(searchTerm) || dni.includes(searchTerm)) {
-        option.style.display = '';
-      } else {
-        option.style.display = 'none';
-      }
+        const fullName = option.querySelector('.user-fullname').textContent.toLowerCase();
+        const dni = option.querySelector('.user-dni').textContent.toLowerCase().replace(/\./g, '');
+        // Se verifica si el término de búsqueda coincide con el nombre o el DNI
+        if (fullName.includes(searchTerm) || dni.includes(searchTerm)) {
+            option.style.display = '';
+        } else {
+            option.style.display = 'none';
+        }
     });
 }
 
@@ -1126,18 +1156,18 @@ function abbreviateName(fullName) {
     const firstInitial = parts[0].charAt(0);
     const lastName = parts[1];
     return `${firstInitial}. ${lastName}`;
-  }
+}
 
 document.getElementById('user-dropdown-search').addEventListener('input', filterUserOptions);
 
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     const dropdown = document.getElementById('user-multi-select');
     const input = document.getElementById('user-filter');
     // Si el clic se produce fuera del dropdown y del input, se cierra el dropdown
     if (!dropdown.contains(event.target) && event.target !== input) {
-      dropdown.style.display = 'none';
+        dropdown.style.display = 'none';
     }
-  });
+});
 
 function matchesFilters(sighting) {
 
@@ -1145,17 +1175,17 @@ function matchesFilters(sighting) {
     const sightingDate = new Date(sighting.fecha_avistamiento);
     if (currentFilters.startDate && sightingDate < currentFilters.startDate) return false;
     if (currentFilters.endDate && sightingDate > currentFilters.endDate) return false;
-  
+
     // Determinar el estado del avistamiento
     if (currentFilters.statuses && currentFilters.statuses.length) {
         if (!currentFilters.statuses.includes(sighting.status)) return false;
     }
-  
+
     // Verificar filtro de usuario
     if (currentFilters.userIds && currentFilters.userIds.length) {
-      if (!currentFilters.userIds.includes(sighting.usuario_id)) return false;
+        if (!currentFilters.userIds.includes(sighting.usuario_id)) return false;
     }
-  
+
     return true;
 }
 
@@ -1164,7 +1194,7 @@ function actualizarAlturaViewport() {
     const alturaVisible = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     document.documentElement.style.setProperty('--vh', `${alturaVisible * 0.01}px`);
 }
-  
+
 // Actualiza la altura al cargar y al redimensionar
 actualizarAlturaViewport();
 if (window.visualViewport) {
@@ -1176,16 +1206,16 @@ window.addEventListener('resize', actualizarAlturaViewport);
 function calculateMarkerPositionPercentage() {
     const mapContainer = document.getElementById('map');
     const formContainer = elements.formPanel;
-    
+
     if (!mapContainer || !formContainer) {
         console.warn('Elementos no encontrados.');
         // Valor por defecto asumiendo desktop
         return { percentage: 25, direction: 'horizontal' };
     }
-    
+
     // Detección simple de mobile: umbral ajustable
     const isMobile = window.innerWidth <= 768;
-    
+
     if (!isMobile) {
         // Desktop: calcular desplazamiento horizontal
         const mapLeft = mapContainer.getBoundingClientRect().left;

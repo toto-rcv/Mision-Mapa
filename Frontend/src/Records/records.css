@@ -140,6 +140,7 @@ td.actions-cell>button:last-child {
   display: flex;
   justify-content: space-evenly;
   padding-top: 10px;
+  width: 100%;
 }
 
 .button-confirm-delete {
@@ -147,8 +148,8 @@ td.actions-cell>button:last-child {
   /* Color inicial */
   color: white;
   border-radius: 10px;
-  width: 40px;
-  height: 40px;
+  width: 100px;
+  height: 50px;
   transition: background-color 0.3s ease;
   /* Transición suave */
 }
@@ -302,6 +303,7 @@ textarea.modal-input {
 .search-input:focus+.search-icon {
   color: #00BCD4;
 }
+
 .records-search {
   position: relative;
   width: 40%;
@@ -369,6 +371,12 @@ textarea.modal-input {
   padding: 12px;
 }
 
+.searchAndFilter {
+  display: flex;
+  width: 100%;
+  
+}
+
 .generarPDF {
   border-radius: 10px;
   width: 100px;
@@ -417,6 +425,19 @@ textarea.modal-input {
   /* Asegúrate de no tener filtros que alteren el color */
   color: white;
   /* Cambia el color del SVG */
+}
+
+.filterByDate {
+  border-radius: 10px;
+  width: 150px;
+  background-color: #1e1e24;
+  border: 2px solid var(--primary-color);
+  color: white;
+  margin-left: 10px;
+}
+
+.filterByDate:hover {
+  background-color: var(--primary-color);
 }
 
 @media (max-width: 768px) {
@@ -477,10 +498,11 @@ textarea.modal-input {
     transform: translateY(100%);
   }
 
-  .records-search{
+  .records-search {
     width: 100%;
   }
-  .records-search i{
+
+  .records-search i {
     display: none;
   }
 
@@ -560,6 +582,10 @@ textarea.modal-input {
     overflow-y: auto;
   }
 
+  .filterByDate {
+    margin: 0px 10px 0px 0px;
+  }
+
 }
 
 @media (max-width: 1600px) {
@@ -598,10 +624,14 @@ textarea.modal-input {
     width: 60px;
   }
 
- .records-search{
-  width: 100%;
- }
+  .records-search {
+    width: 100%;
+  }
+
   .search-input {
     width: 90%;
+  }
+  .spanpageNumber{
+    font-size: 10px;
   }
 }
