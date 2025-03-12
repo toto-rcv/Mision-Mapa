@@ -3,13 +3,13 @@ import { customFetch } from '/utils/auth.js';
 import { showNavItems, setSidebarItemsListeners } from '/static/js/navigation.js';
 import getSocketClient from '/utils/socket.js';
 import { initMap, addMarker, updateGreyMarker, removeGreyMarker, reverseGeocode, getMarkers, setMarkerColor, clearAllMarkers, adjustMapViewToMarker, getLatLngFromMarker, staggerMarkers } from '/mapModule.js';
-import { formatDNI } from '/utils/utils.js';
+import { formatDNI, formatDateTime } from '/utils/utils.js';
 
 // Initialize UI elements
 const closeFormButton = document.getElementById('close-form');
 const cancelButton = document.getElementById('cancel-button');
 
-let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null ,currentLocation = null;
+let greyMarker, isOverlayActive = false, isFormActive = false, lat = null, lng = null;
 let formEditMode = false;
 
 let minTimestamp, maxTimestamp;
@@ -105,6 +105,7 @@ function hideOverlay() {
 }
 
 function showForm(editMode = false) {
+    elements.formPanel.querySelector('.form-title').textContent = editMode ? 'Registrar avistamiento' : 'Detalle de avistamiento';
     elements.formPanel.classList.add('visible');
     isFormActive = true;
     formEditMode = editMode;
@@ -578,12 +579,10 @@ function placeMarkersOnMap(sightings) {
 
 function fillForm({ id, fecha_avistamiento, ubicacion, current_location, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones }) {
 
-    // obtener el formulario
-
     const form = elements.formPanel;
 
-    const idLabel = form.querySelector("span.sighting-id").innerHTML = `AV-${String(id).padStart(5, '0')}`
-    form.querySelector("span.timestamp").innerHTML = fecha_avistamiento
+    form.querySelector("span.sighting-id").innerHTML = `AV-${String(id).padStart(5, '0')}`
+    form.querySelector("span.timestamp").innerHTML = formatDateTime(new Date(fecha_avistamiento)) ?? 'No disponible'
     form.querySelector("span#coordinateLog").innerHTML = longitud
     form.querySelector("span#coordinateLat").innerHTML = latitud
     form.querySelector("span#current_location").innerHTML = current_location

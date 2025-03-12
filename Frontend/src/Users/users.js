@@ -4,7 +4,7 @@
 import { reloadUserProfile, retrieveUserProfile } from '/utils/profile.js';
 import { showNavItems } from '/static/js/navigation.js';
 import { customFetch } from '/utils/auth.js';
-import { debounce, formatDate, formatDNI } from '/utils/utils.js';
+import { debounce, formatDateTime, formatDNI } from '/utils/utils.js';
 
 // ================================
 // VARIABLES GLOBALES
@@ -312,7 +312,7 @@ const UsersApp = (function () {
                         <option value="JEFE DE DETECCION" ${user.userRank === 'JEFE DE DETECCION' ? 'selected' : ''}>JEFE DE DETECCION</option>
                     </select>
                 </td>
-                <td class="hide-on-mobile">${formatDate(new Date(user.createdAt))}</td>
+                <td class="hide-on-mobile">${formatDateTime(new Date(user.createdAt))}</td>
                 <td class="hide-on-mobile">${user.confirmUpdate ?? '-'}</td>
                 <td data-label="Estado del Usuario:">
                     <select class="status-select" data-id="${user.dni}">

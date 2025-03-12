@@ -1,7 +1,7 @@
 import { reloadUserProfile } from '/utils/profile.js';
 import { customFetch } from '../utils/auth.js';
 import { showNavItems } from '/static/js/navigation.js';
-import { toProperCase, debounce, formatDate } from '../utils/utils.js';
+import { toProperCase, debounce, formatDateTime } from '../utils/utils.js';
 
 
 
@@ -168,7 +168,7 @@ const SightingsApp = (function () {
             row.setAttribute('data-id', sighting.id);
             row.innerHTML = `
                 <td>${sighting.id}</td>
-                <td data-label="Fecha" class="col-ws">${formatDate(new Date(sighting.fecha_avistamiento))}</td>
+                <td data-label="Fecha" class="col-ws">${formatDateTime(new Date(sighting.fecha_avistamiento))}</td>
                 <td data-label="Lugar de envío" class="ubicacion-cell">${sighting.current_location}</td>
                 <td data-label="Ubicación" class="ubicacion-cell">${sighting.ubicacion}</td>
                 <td data-label="Nombre y Apellido" class="col-medium-screen">${toProperCase(sighting.usuario.firstName)} ${toProperCase(sighting.usuario.lastName)}</td>
@@ -299,7 +299,7 @@ const SightingsApp = (function () {
             const body = allSightings.map(sighting => [
                 sighting.id,
                 `${toProperCase(sighting.usuario.powerMilitary || '')} ${toProperCase(sighting.usuario.militaryRank || '')} ${toProperCase(sighting.usuario.firstName || '')} ${toProperCase(sighting.usuario.lastName || '')}`,
-                formatDate(new Date(sighting.fecha_avistamiento)),
+                formatDateTime(new Date(sighting.fecha_avistamiento)),
                 sighting.ubicacion,
                 `${sighting.latitud}\n${sighting.longitud}`,
                 sighting.rumbo,
@@ -360,7 +360,7 @@ const SightingsApp = (function () {
 
             // Obtener fecha y hora formateada desde la función importada
             const now = new Date();
-            const timestamp = formatDate(now)
+            const timestamp = formatDateTime(now)
                 .replace(' ', ' -- ')   // Reemplaza espacio entre fecha y hora con ' -- '
                 .replace(':', '-')     // Reemplaza ':' entre hora y minutos con '-'
                 .replace(/\//g, '-');   // Reemplaza '/' por '-'
