@@ -105,7 +105,7 @@ function hideOverlay() {
 }
 
 function showForm(editMode = false) {
-    elements.formPanel.querySelector('.form-title').textContent = editMode ? 'Editar avistamiento' : 'Detalle de avistamiento';
+    elements.formPanel.querySelector('.form-title').textContent = editMode ? 'Registrar avistamiento' : 'Detalle de avistamiento';
     elements.formPanel.classList.add('visible');
     isFormActive = true;
     formEditMode = editMode;
