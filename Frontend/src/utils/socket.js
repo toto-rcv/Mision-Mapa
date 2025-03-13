@@ -116,9 +116,9 @@ class SocketClient {
   // Configuración global (opcional)
   let socketInstance = null;
 
-  async function getSocketClient() {
+  async function getSocketClient(url) {
       if (!socketInstance) {
-          socketInstance = new SocketClient('ws://'); // Puedes pasar la URL base aquí o configurarla después
+          socketInstance = new SocketClient(url); // Pasar la URL como parámetro
           const isTokenValid = await verifyAccessToken(); // Esperar a que se verifique el token
           if (isTokenValid) {
               const initialized = await socketInstance.initialize(); // Inicializar y conectar solo si el token es válido
@@ -136,7 +136,6 @@ class SocketClient {
       }
       return socketInstance;
   }
-  
   
   // Exportar la función para obtener la instancia del socket
   export default getSocketClient;
