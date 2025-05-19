@@ -4,9 +4,6 @@ class SocketClient {
     static instance;
   
     constructor(url, options = {}) {
-      if (!url) {
-        throw new Error("URL is required to initialize SocketClient");
-      }
       this.url = url;
       this.options = {
         reconnection: true,
@@ -44,34 +41,20 @@ class SocketClient {
           token: accessToken
       };
 
-      try {
-        this.socket = io(this.url.replace('ws:', 'wss:'), this.options); // Intentar con wss primero
-        await this._setupSocketEvents();
-      } catch (error) {
-        console.warn("Failed to connect with wss, trying ws...");
-        this.socket = io(this.url.replace('wss:', 'ws:'), this.options); // Intentar con ws si wss falla
-        await this._setupSocketEvents();
-      }
+      this.socket = io(this.url, this.options);
 
-      return true; // Indicate successful initialization
-    }
-
-    async _setupSocketEvents() {
-      return new Promise((resolve, reject) => {
-        this.socket.on('connect', () => {
+      // Eventos base
+      this.socket.on('connect', () => {
           this.isConnected = true;
           this.trigger('connect');
-          resolve();
-        });
-        this.socket.on('disconnect', (reason) => {
+      });
+      this.socket.on('disconnect', (reason) => {
           this.isConnected = false;
           this.trigger('disconnect', reason);
-        });
-        this.socket.on('error', (error) => {
-          this.trigger('error', error);
-          reject(error);
-        });
       });
+      this.socket.on('error', (error) => this.trigger('error', error));
+
+      return true; // Indicate successful initialization
     }
   
     on(event, callback) {
@@ -133,9 +116,9 @@ class SocketClient {
   // Configuración global (opcional)
   let socketInstance = null;
 
-  async function getSocketClient(url) {
+  async function getSocketClient() {
       if (!socketInstance) {
-          socketInstance = new SocketClient(url); // Pasar la URL completa como parámetro
+          socketInstance = new SocketClient('ws://'); // Puedes pasar la URL base aquí o configurarla después
           const isTokenValid = await verifyAccessToken(); // Esperar a que se verifique el token
           if (isTokenValid) {
               const initialized = await socketInstance.initialize(); // Inicializar y conectar solo si el token es válido
@@ -146,13 +129,14 @@ class SocketClient {
               }
               socketInstance.connect(); // Conectar manualmente después de la inicialización exitosa
           } else {
-              socketInstance = null; // Reset instance if token is invalid
+              socketInstance = null;
               console.error("Token verification failed, SocketClient not initialized.");
               return null;
           }
       }
       return socketInstance;
   }
+  
   
   // Exportar la función para obtener la instancia del socket
   export default getSocketClient;

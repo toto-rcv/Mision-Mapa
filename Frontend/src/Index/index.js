@@ -707,7 +707,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     setTimeout(() => {
         updateRedMarkersModal();
-    }, 1000); // Adjust the delay as needed
+    }, 1000);
+
+    const clearSearchButton = document.getElementById('clear-search-button');
+    if (clearSearchButton) {
+        clearSearchButton.addEventListener('click', () => {
+            elements.searchInput.value = '';
+        });
+    } else {
+        console.warn("El botón 'clear-search-button' no se encontró en el DOM.");
+    }
 
 });
 
