@@ -80,10 +80,10 @@ function redirectToLogin() {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    window.location.href = "/";
 }
 
-if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+if (window.location.pathname !== "/" && window.location.pathname !== "/register") {
     document.addEventListener("DOMContentLoaded", verifyAccessToken);
 }
 
