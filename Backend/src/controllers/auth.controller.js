@@ -46,31 +46,55 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
+  // Buscar usuario (aunque esté bloqueado, para mostrar mensaje correcto)
   const user = await User.findOne({ where: { email },
-  include: {
-    model: UserStatus,
-    where: {status: 'active'},
-    required: true,
-    as: 'statusDetail'
+    include: {
+      model: UserStatus,
+      where: {status: 'active'},
+      required: true,
+      as: 'statusDetail'
     }
   });
-  
-  if (!user) return res.status(401).json({ message: "Credenciales Incorrectas" });
 
+  // Si no existe usuario, responde igual (no revelar si existe o no)
+  if (!user) {
+    return res.status(401).json({ message: "Credenciales Incorrectas" });
+  }
+
+  // Verificar si está bloqueado
+  if (user.loginBlockedUntil && user.loginBlockedUntil > new Date()) {
+    const wait = Math.ceil((user.loginBlockedUntil - new Date()) / 1000);
+    return res.status(429).json({ message: `Demasiados intentos. Espera ${wait} segundos para volver a intentarlo.` });
+  }
+
+  // Verificar contraseña
   const isValidPassword = await comparePassword(password, user.password);
-  if (!isValidPassword) return res.status(401).json({ message: "Credenciales Incorrectas" });
+  if (!isValidPassword) {
+    user.loginAttempts += 1;
+    // Si llega a 3 intentos, bloquear por 5 minutos
+    if (user.loginAttempts >= 3) {
+      user.loginBlockedUntil = new Date(Date.now() + 5 * 60 * 1000); // 5 minutos
+      user.loginAttempts = 0; // Reinicia el contador
+    }
+    await user.save();
+    return res.status(401).json({ message: "Credenciales Incorrectas" });
+  }
+
+  // Si login exitoso, reinicia contador y bloqueo
+  user.loginAttempts = 0;
+  user.loginBlockedUntil = null;
+  await user.save();
 
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  saveRefreshToken(refreshToken)
+  saveRefreshToken(refreshToken);
 
   res.json({
     message: "Acceso exitoso",
     accessToken,
     refreshToken,
   });
-
 };
 
 // Verificar validez del access token token

@@ -62,6 +62,15 @@ module.exports = (sequelize, DataTypes) => {
     powerMilitary: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    loginAttempts: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
+    loginBlockedUntil: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   });
 

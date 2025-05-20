@@ -220,5 +220,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function redirectToLogin() {
-    window.location.href = "/login"
-  }
+    window.location.href = "/login";
+}

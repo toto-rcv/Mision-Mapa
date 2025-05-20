@@ -443,7 +443,7 @@ const UsersApp = (function () {
         const userPermissions = userProfile.permissions || {};
 
         if (!userPermissions["viewUsers"]) {
-            window.location.href = "/";
+            window.location.href = "/index";
             return;
         }
 
