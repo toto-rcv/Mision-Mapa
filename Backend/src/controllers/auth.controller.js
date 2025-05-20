@@ -146,8 +146,8 @@ exports.getProfile = async (req, res) => {
     }
 
     const permissions = {
-      deleteSightings: userR.userRank === 'DETECCION' || userR.userRank === 'JEFE DE DETECCION',
-      viewUsers: userR.userRank === 'DETECCION' || userR.userRank === 'JEFE DE DETECCION'
+      deleteSightings: userR.userRank === 'DETECCION' || userR.userRank === 'JEFE DE DETECCION' || userR.userRank === 'SUPERVISOR', 
+      viewUsers: userR.userRank === 'DETECCION' || userR.userRank === 'JEFE DE DETECCION' || userR.userRank === 'SUPERVISOR'
     };
 
 

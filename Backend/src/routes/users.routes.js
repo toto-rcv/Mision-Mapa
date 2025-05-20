@@ -5,12 +5,12 @@ const { validateAccessToken } = require("../middleware/auth.middleware");
 const router = express.Router();
 const validateRole = require("../middleware/role.middleware");
 
-router.get("/", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), getAllUsers);
-router.get("/minimal", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION", "POA"]), getMinimalUsers);
+router.get("/", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION","SUPERVISOR"]), getAllUsers);
+router.get("/minimal", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION", "POA","SUPERVISOR"]), getMinimalUsers);
 
-router.put("/:id/status", validateAccessToken, validateRole(["JEFE DE DETECCION"]), updateUserStatus,);
-router.put("/:id/rank", validateAccessToken, validateRole(["JEFE DE DETECCION"]), updateUserRank)
+router.put("/:id/status", validateAccessToken, validateRole(["JEFE DE DETECCION","SUPERVISOR"]), updateUserStatus,);
+router.put("/:id/rank", validateAccessToken, validateRole(["JEFE DE DETECCION","SUPERVISOR"]), updateUserRank)
 
-router.delete("/:id/deleteUser", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION"]), getDeleteUser);
+router.delete("/:id/deleteUser", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION","SUPERVISOR"]), getDeleteUser);
 
 module.exports = router;

@@ -208,7 +208,7 @@ const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}
 
     if (role === "POA") {
         additionalWhere.usuario_id = userId;
-    } else if (!["JEFE DE DETECCION", "DETECCION"].includes(role)) {
+    } else if (!["JEFE DE DETECCION", "DETECCION", "SUPERVISOR"].includes(role)) {
         throw new Error("Insufficient permissions");
     }
 

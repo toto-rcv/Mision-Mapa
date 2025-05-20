@@ -4,13 +4,15 @@ const User = db.User;
 const UserStatus = db.UserStatus;
 const getAllUsers = async (req, res) => {
     try {
-
         const { status } = req.query; // Obtener el parámetro status de la URL
 
         // Construir el filtro de estado dinámicamente
         const statusFilter = status ? { status } : { status: { [Op.in]: ["active", "pending", "blocked"] } };
 
         const users = await User.findAll({
+            where: {
+                userRank: { [Op.ne]: "SUPERVISOR" } // Excluir SUPERVISOR
+            },
             include: [{
                 model: db.UserStatus,
                 attributes: ['status'],
@@ -18,8 +20,6 @@ const getAllUsers = async (req, res) => {
                 required: true,
                 where: statusFilter
             }],
-
-
         });
 
         res.status(200).json(users);
@@ -28,7 +28,6 @@ const getAllUsers = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
-
 const getMinimalUsers = async (req, res) => {
     try {
         let users;
@@ -40,6 +39,7 @@ const getMinimalUsers = async (req, res) => {
                     attributes: ['dni', 'firstName', 'lastName', 'militaryRank', 'email']
                 });
                 break;
+            case 'SUPERVISOR':
             case 'DETECCION':
             case 'JEFE DE DETECCION':
                 users = await User.findAll({
