@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const profileDropdownBtn = document.getElementById('profileDropdownBtn');
     const profileDropdownContent = document.getElementById('profileDropdownContent');
     const profileDropdownOverlay = document.getElementById('profileDropdownOverlay');
@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const isMobile = window.innerWidth <= 768;
 
     // Toggle dropdown when clicking the button
-    profileDropdownBtn.addEventListener('click', function(event) {
+    profileDropdownBtn.addEventListener('click', function (event) {
         event.stopPropagation();
         profileDropdownContent.classList.toggle('show');
         if (isMobile) {
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         if (!event.target.closest('.profile')) {
             profileDropdownContent.classList.remove('show');
             if (isMobile) {
@@ -37,13 +37,15 @@ document.addEventListener('DOMContentLoaded', function() {
         */
     }
 
+
     // Handle logout
-    logoutBtn.addEventListener('click', function(event) {
+    logoutBtn.addEventListener('click', function (event) {
         event.preventDefault();
         // Perform logout actions
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
+        localStorage.removeItem('sightings'); // Añadir esta línea
         // Redirect to login page
         window.location.href = '/login.html';
     });

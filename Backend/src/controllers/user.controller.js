@@ -4,23 +4,39 @@ const User = db.User;
 const UserStatus = db.UserStatus;
 const getAllUsers = async (req, res) => {
     try {
-        const { status } = req.query; // Obtener el parámetro status de la URL
+        // Lee el filtro de estado del query param
+        const statusFilter = req.query.status || 'all';
 
-        // Construir el filtro de estado dinámicamente
-        const statusFilter = status ? { status } : { status: { [Op.in]: ["active", "pending", "blocked"] } };
+        // Construye el include dinámicamente según el rol y el filtro recibido
+        let includeStatus = {
+            model: db.UserStatus,
+            attributes: ['status'],
+            as: 'statusDetail',
+            required: true
+        };
+
+        // Determina los estados permitidos según el rol
+        let allowedStatuses = ["active", "pending", "blocked"];
+        if (req.role === 'SUPERVISOR') {
+            allowedStatuses = ["active", "pending", "blocked", "deleted"];
+        }
+
+        // Si el filtro es distinto de "all", filtra solo por ese estado (si está permitido)
+        if (statusFilter !== 'all' && allowedStatuses.includes(statusFilter)) {
+            includeStatus.where = { status: statusFilter };
+        } else {
+            // Si es "all", filtra por los estados permitidos según el rol
+            includeStatus.where = { status: { [Op.in]: allowedStatuses } };
+        }
 
         const users = await User.findAll({
             where: {
-                userRank: { [Op.ne]: "SUPERVISOR" } // Excluir SUPERVISOR
+                userRank: { [Op.ne]: "SUPERVISOR" }
             },
-            include: [{
-                model: db.UserStatus,
-                attributes: ['status'],
-                as: 'statusDetail',
-                required: true,
-                where: statusFilter
-            }],
+            include: [includeStatus],
         });
+
+        console.log(users.map(u => ({ dni: u.dni, status: u.statusDetail.status })));
 
         res.status(200).json(users);
     } catch (error) {
@@ -73,19 +89,22 @@ const updateUserStatus = async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
 
+        // Solo SUPERVISOR puede poner estado "deleted"
+        if (status === "deleted" && req.user.userRank !== "SUPERVISOR") {
+            return res.status(403).json({ message: "No autorizado para eliminar usuarios" });
+        }
+
         const user = await User.findByPk(id);
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        //obtener id de status segun el estatus
-        const statusId = await UserStatus.findOne({ where: { status: status } });
+        const statusId = await UserStatus.findOne({ where: { status } });
         if (!statusId) {
             return res.status(404).json({ message: 'Estado no encontrado' });
         }
         user.status = statusId.id;
         user.confirmUpdate = req.user.id;
-
 
         await user.save();
 
@@ -95,7 +114,6 @@ const updateUserStatus = async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor' });
     }
 };
-
 const updateUserRank = async (req, res) => {
     try {
         const { id } = req.params;
@@ -128,13 +146,13 @@ const getDeleteUser = async (req, res) => {
         }
 
         // Obtener el ID del estado "blocked"
-        const statusBlocked = await UserStatus.findOne({ where: { status: "blocked" } });
-        if (!statusBlocked) {
-            return res.status(404).json({ message: "Estado 'blocked' no encontrado" });
+        const statusDelete = await UserStatus.findOne({ where: { status: "deleted" } });
+        if (!statusDelete) {
+            return res.status(404).json({ message: "Estado 'deleted' no encontrado" });
         }
 
-        // Actualizar el estado del usuario a "blocked"
-        user.status = statusBlocked.id;
+        // Actualizar el estado del usuario a "deleted"
+        user.status = statusDelete.id;
         await user.save();
 
         res.status(200).json({ message: "Usuario bloqueado exitosamente" });

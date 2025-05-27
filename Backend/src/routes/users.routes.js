@@ -11,6 +11,6 @@ router.get("/minimal", validateAccessToken, validateRole(["DETECCION", "JEFE DE 
 router.put("/:id/status", validateAccessToken, validateRole(["JEFE DE DETECCION","SUPERVISOR"]), updateUserStatus,);
 router.put("/:id/rank", validateAccessToken, validateRole(["JEFE DE DETECCION","SUPERVISOR"]), updateUserRank)
 
-router.delete("/:id/deleteUser", validateAccessToken, validateRole(["DETECCION", "JEFE DE DETECCION","SUPERVISOR"]), getDeleteUser);
+router.delete("/:id/deleteUser", validateAccessToken, validateRole(["JEFE DE DETECCION","SUPERVISOR"]), getDeleteUser);
 
 module.exports = router;

@@ -81,6 +81,11 @@ const SightingsApp = (function () {
 
     // Modal functions
     function showObservationsModal(sighting) {
+        if (!sighting) {
+            console.error('No se encontró el avistamiento');
+            return;
+        }
+
         const modalMapping = {
             observaciones: 'modal-observaciones',
             tipo_motor: 'modal-tipo-motor',
@@ -121,8 +126,13 @@ const SightingsApp = (function () {
             const data = await loadSightings({ page: sightingsCurrentPage, search: currentSearch });
             if (data) {
                 const { sightings, currentPage, totalPages } = data;
-                // Cache the sightings
-                localStorage.setItem("sightings", JSON.stringify(sightings))
+                // Solo guardar si el usuario está autenticado
+                const accessToken = localStorage.getItem("accessToken");
+                if (accessToken) {
+                    localStorage.setItem("sightings", JSON.stringify(sightings));
+                } else {
+                    localStorage.removeItem("sightings");
+                }
                 displaySightings(sightings);
                 renderPagination(currentPage, totalPages);
             }
@@ -263,7 +273,7 @@ const SightingsApp = (function () {
             }
         });
 
-        
+
         // Evento para cancelar la eliminación
         document.getElementById("cancelDelete").addEventListener('click', () => {
             sightingIdToDelete = null;
@@ -420,8 +430,12 @@ const SightingsApp = (function () {
     }
 
     function getSightingById(id) {
-        const sightings = JSON.parse(localStorage.getItem("sightings") || "[]")
-        return sightings.find((sighting) => sighting.id === Number.parseInt(id, 10))
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+            return null;
+        }
+        const sightings = JSON.parse(localStorage.getItem("sightings") || "[]");
+        return sightings.find((sighting) => sighting.id === Number.parseInt(id, 10));
     }
 
     function adjustColumnsForSmallScreens() {
@@ -543,7 +557,7 @@ function actualizarAlturaViewport() {
     const alturaVisible = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     document.documentElement.style.setProperty('--vh', `${alturaVisible * 0.01}px`);
 }
-  
+
 // Actualiza la altura al cargar y al redimensionar
 actualizarAlturaViewport();
 if (window.visualViewport) {

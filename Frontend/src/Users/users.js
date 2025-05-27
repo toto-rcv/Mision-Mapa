@@ -205,7 +205,7 @@ const UsersApp = (function () {
     document.addEventListener("scroll", function () {
         const modal = document.getElementById("filter-modal");
         if (modal && modal.style.display !== "none") {
-          modal.style.display = "none";
+            modal.style.display = "none";
         }
     });
 
@@ -215,17 +215,17 @@ const UsersApp = (function () {
     // ================================
     function setupStatusButtons() {
         const statusButtons = document.querySelectorAll('.button-status');
-    
+
         statusButtons.forEach(button => {
             button.addEventListener('click', async () => {
                 let selectedStatus;
-                
+
                 // Quitar la clase 'selected' de todos los botones antes de agregarla al nuevo
                 statusButtons.forEach(btn => btn.classList.remove('selected'));
-    
+
                 // Agregar la clase 'selected' al botón actual
                 button.classList.add('selected');
-    
+
                 // Mapear el texto del botón al estado correspondiente
                 switch (button.textContent.trim().toLowerCase()) {
                     case 'todos':
@@ -240,14 +240,17 @@ const UsersApp = (function () {
                     case 'bloqueados':
                         selectedStatus = 'blocked';
                         break;
+                    case 'eliminado': // <-- Agrega este caso
+                        selectedStatus = 'deleted';
+                        break;
                     default:
                         selectedStatus = 'all';
                 }
                 currentStatusFilter = selectedStatus;
-    
+
                 // Obtener la lista filtrada desde el backend
                 let updatedUsers = await getAllUsers(selectedStatus);
-    
+
                 // Aplicar filtro de búsqueda si hay texto en el input
                 const searchValue = elements.searchInput.value.trim().toLowerCase();
                 if (searchValue) {
@@ -258,7 +261,7 @@ const UsersApp = (function () {
                         user.dni.toString().includes(searchValue)
                     );
                 }
-    
+
                 usersList = updatedUsers;
                 currentDisplayList = updatedUsers;
                 currentPage = 1;
@@ -319,10 +322,15 @@ const UsersApp = (function () {
                         <option value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Activo</option>
                         <option value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Pendiente</option>
                         <option value="blocked" ${user.statusDetail.status === 'blocked' ? 'selected' : ''}>Blockeado</option>
+                         ${retrieveUserProfile().user.userRank === "SUPERVISOR"
+                    ? `<option value="deleted" ${user.statusDetail.status === 'deleted' ? 'selected' : ''}>Eliminado</option>`
+                    : ''
+                }
                     </select>
-                </td>
-                <td class="actions-cell">
-                    <button class="delete-btn" data-id="${user.dni}">Eliminar</button>
+               <td class="actions-cell">
+                  <button class="delete-btn" data-id="${user.dni}"
+                    ${retrieveUserProfile().user.userRank === "DETECCION" ? 'disabled style="cursor:not-allowed;opacity:0.6;"' : ''}
+                    >Eliminar</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -508,10 +516,8 @@ async function updateUserRank(userId, newRank) {
 async function getAllUsers(statusFilter = 'all') {
     try {
         let url = '/api/users';
-        // Si el filtro es distinto de "all", se añade como query param
-        if (statusFilter !== 'all') {
-            url += `?status=${statusFilter}`;
-        }
+        // Siempre añade el filtro de estado como query param, incluso si es "all"
+        url += `?status=${statusFilter}`;
         const response = await customFetch(url, {
             method: 'GET',
             headers: {

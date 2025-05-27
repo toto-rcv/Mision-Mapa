@@ -6,11 +6,11 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       usuario_id: {
-        type: DataTypes.INTEGER, // Actualizado de STRING a INTEGER
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: "Users",
-          key: "dni", // Referencia a la columna `dni` de Users
+          key: "id", // Referencia a la columna `id` de Users
         },
       },
       fecha_avistamiento: {
@@ -85,6 +85,10 @@ module.exports = (sequelize, DataTypes) => {
           model: "Users",
           key: "dni",
         }
+      },
+      ip_address: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     }, {
       timestamps: false, // Desactiva los timestamps automáticos

@@ -2,6 +2,9 @@ import { getUserProfile } from '/utils/profile.js';
 import { verifyAccessToken } from '/utils/auth.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
+    // Limpiar sightings al cargar la página de login
+    localStorage.removeItem("sightings");
+    
     const accessToken = localStorage.getItem("accessToken");
 
     if (accessToken) {

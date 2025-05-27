@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const eventEmitter = require('../utils/eventEmitter');
 const { SightingNotFoundError, InsufficientPermissionsError, SightingAlreadyDeletedError } = require('../errors/customErrors');
+const { checkSuspiciousSightings } = require('../utils/sightingVerification');
 
 const db = require("../models");
 const Sighting = db.Sighting;
@@ -8,15 +9,29 @@ const User = db.User;
 
 const createSighting = async (req, res) => {
     try {
-        let newSighting = await Sighting.create(req.body);
+        // Agregar la dirección IP a los datos del avistamiento
+        const sightingData = {
+            ...req.body,
+            ip_address: req.ip || req.connection.remoteAddress,
+            usuario_id: req.user.id // Using id from token which contains the dni
+        };
+
+        let newSighting = await Sighting.create(sightingData);
+
+        // Verificar actividad sospechosa
+        const isSuspicious = await checkSuspiciousSightings(newSighting);
 
         const { id, fecha_avistamiento, ubicacion, latitud, longitud, current_location, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones } = newSighting;
         const response = {
             id,
             fecha_avistamiento, ubicacion, latitud, longitud, current_location, altitud_estimada, rumbo, tipo_aeronave,
             tipo_motor, cantidad_motores, color, observaciones,
-            status: 'pending', usuario_id: req.user.id
+            status: 'pending',
+            usuario_id: req.user.id, // Using id from token which contains the dni
+            isSuspicious,
+            forceLogout: isSuspicious // Agregar flag para forzar cierre de sesión
         };
+
         eventEmitter.emit('NEW_SIGHTING', response);
 
         res.status(201).json(response);
@@ -25,6 +40,7 @@ const createSighting = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
 
 const getAllSightings = async (req, res) => {
     try {

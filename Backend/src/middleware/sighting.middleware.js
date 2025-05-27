@@ -37,6 +37,8 @@ const validateCreateSighting = [
     body("observaciones")
         .isString().withMessage("El campo 'observaciones' debe ser un texto")
         .isLength({ min: 0, max: 250 }).withMessage("El campo 'observaciones' debe tener un max de 250 letras"),
+    body("ip_address")
+        .optional(),
 
     // Validar existencia del usuario y agregar `usuario_id` desde el token
     (req, res, next) => {

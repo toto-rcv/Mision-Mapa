@@ -350,6 +350,17 @@ elements.formPanel.addEventListener('submit', async function (e) {
 
                     if (response.ok) {
                         const sighting = await response.json();
+                        
+                        // Verificar si se debe forzar el cierre de sesión
+                        if (sighting.forceLogout) {
+                            // Limpiar el localStorage
+                            localStorage.removeItem('accessToken');
+                            localStorage.removeItem('user');
+                            // Redirigir al login
+                            window.location.href = '/login.html';
+                            return;
+                        }
+
                         addMarker(sighting.id, sighting, false, handleMarkerClick);
                         updateRedMarkersModal();
                     } else {
