@@ -4,6 +4,13 @@ FROM node:18
 # Define el directorio de trabajo
 WORKDIR /app
 
+# Instala las dependencias necesarias para bcrypt
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copia package.json y package-lock.json (usa COPY con .dockerignore)
 COPY package*.json ./
 

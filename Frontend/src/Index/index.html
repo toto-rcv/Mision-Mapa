@@ -90,62 +90,67 @@
                     <div class="map-search">
                         <input type="text" id="search-field" class="search-input" placeholder="Navega a una región...">
                         <i class="fas fa-paper-plane search-icon search-icon"></i>
-                        <button type="button" class="clear-button" id="clear-search-button" aria-label="Limpiar búsqueda">
-                          <i class="fas fa-times"></i>
+                        <button type="button" class="clear-button" id="clear-search-button"
+                            aria-label="Limpiar búsqueda">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
-               
+
                     <!-- Botón para mostrar/ocultar filtros -->
                     <button class="filter-button" id="toggle-filters">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                         </svg>
                     </button>
-                  
+
                     <!-- Panel de Filtros (inicialmente oculto) -->
                     <div class="filters-panel" id="filters-panel">
                         <!-- Título principal -->
                         <div class="filters-header">
                             <h2 class="filters-title">Filtros</h2>
-                            <button class="filter-close-button" id="close-filters-form" aria-label="Cerrar formulario">x</button>
+                            <button class="filter-close-button" id="close-filters-form"
+                                aria-label="Cerrar formulario">x</button>
                         </div>
 
                         <div class="filters-content">
-                        <!-- Filtro de rango de fechas -->
+                            <!-- Filtro de rango de fechas -->
                             <div class="filter-section">
-                            <h4>
-                                Rango de Fechas 
-                                <span class="icon icon-calendar"></span>
-                            </h4>
-                            <div class="date-quick-options">
-                                <button class="quick-date" data-days="7">Última semana</button>
-                                <button class="quick-date" data-days="15">Últimos 15 días</button>
-                                <button class="quick-date" data-days="30">Último mes</button>
+                                <h4>
+                                    Rango de Fechas
+                                    <span class="icon icon-calendar"></span>
+                                </h4>
+                                <div class="date-quick-options">
+                                    <button class="quick-date" data-days="7">Última semana</button>
+                                    <button class="quick-date" data-days="15">Últimos 15 días</button>
+                                    <button class="quick-date" data-days="30">Último mes</button>
+                                </div>
+                                <div class="custom-dates">
+                                    <input type="datetime-local" id="start-date" class="date-input">
+                                    <input type="datetime-local" id="end-date" class="date-input">
+                                </div>
                             </div>
-                            <div class="custom-dates">
-                                <input type="datetime-local" id="start-date" class="date-input">
-                                <input type="datetime-local" id="end-date" class="date-input">
-                            </div>
-                            </div>
-                            
+
                             <!-- Filtro de estado de validación -->
                             <div class="filter-section">
-                            <h4>
-                                Estado de Validación 
-                                <span class="icon icon-status"></span>
-                            </h4>
-                            <div class="status-filters">
-                                <!-- Los botones Pendiente y Validado tienen clase active por defecto -->
-                                <button type="button" class="status-btn active" data-value="pending">Pendiente</button>
-                                <button type="button" class="status-btn active" data-value="validated">Validado</button>
-                                <button type="button" class="status-btn" data-value="rejected">Descartado</button>
+                                <h4>
+                                    Estado de Validación
+                                    <span class="icon icon-status"></span>
+                                </h4>
+                                <div class="status-filters">
+                                    <!-- Los botones Pendiente y Validado tienen clase active por defecto -->
+                                    <button type="button" class="status-btn active"
+                                        data-value="pending">Pendiente</button>
+                                    <button type="button" class="status-btn active"
+                                        data-value="validated">Validado</button>
+                                    <button type="button" class="status-btn" data-value="rejected">Descartado</button>
+                                </div>
                             </div>
-                            </div>
-                            
+
                             <!-- Filtro de usuario creador -->
                             <div class="filter-section">
                                 <h4>
-                                    Creador 
+                                    Creador
                                     <span class="icon icon-user"></span>
                                 </h4>
                                 <div class="user-search-container" style="position: relative;">
@@ -156,7 +161,8 @@
                                     <span class="icon icon-search"></span>
                                     <span class="dropdown-icon">&#x25BC;</span>
                                     <div class="user-multi-select" id="user-multi-select" style="display: none;">
-                                        <input type="text" id="user-dropdown-search" class="user-dropdown-search" placeholder="Buscar por nombre o DNI">
+                                        <input type="text" id="user-dropdown-search" class="user-dropdown-search"
+                                            placeholder="Buscar por nombre o DNI">
                                         <!-- Contenedor donde se agregarán las opciones -->
                                         <div class="user-options-list" id="user-options-list"></div>
                                     </div>
@@ -165,10 +171,10 @@
                         </div>
                         <!-- Acciones: aplicar y limpiar filtros -->
                         <div class="filter-actions">
-                          <button class="btn-apply">Aplicar Filtros</button>
-                          <button class="btn-clear">Limpiar</button>
+                            <button class="btn-apply">Aplicar Filtros</button>
+                            <button class="btn-clear">Limpiar</button>
                         </div>
-                        
+
                         <div class="filter-feedback" id="filter-feedback"></div>
                     </div>
                     <div class="modal-overlay" id="modal-overlay"></div>
@@ -256,13 +262,13 @@
                         <div class="form-column">
                             <div class="form-group">
                                 <label for="engine-type">Tipo de motor</label>
-                                    <select name="engine-type" id="engine-type" class="form-select">
-                                        <option value="" disabled selected>Seleccione tipo de motor</option>
-                                        <option value="Turbofan">Turbofan</option>
-                                        <option value="Pistón">Pistón</option>
-                                        <option value="Turbohélice">Turbohélice</option>
-                                        <option value="Reactor">Reactor</option>
-                                    </select>
+                                <select name="engine-type" id="engine-type" class="form-select">
+                                    <option value="" disabled selected>Seleccione tipo de motor</option>
+                                    <option value="Turbofan">Turbofan</option>
+                                    <option value="Pistón">Pistón</option>
+                                    <option value="Turbohélice">Turbohélice</option>
+                                    <option value="Reactor">Reactor</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -307,46 +313,49 @@
             </div>
             <div class="marker-alert" id="markerAlert" role="alert">
                 <div class="marker-alert-content">
-                  <svg class="marker-alert-icon" viewBox="0 0 24 24" width="24" height="24">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                  </svg>
-                  <div class="marker-alert-info">
-                    <p class="marker-alert-text" id="markerAlertText">
-                      <span class="marker-alert-count">1</span>
-                      marcador por validar
-                    </p>
-                    <p class="marker-alert-help">
-                      Busca los marcadores en <span class="marker-alert-highlight">rojo</span> en el mapa
-                    </p>
-                  </div>
+                    <svg class="marker-alert-icon" viewBox="0 0 24 24" width="24" height="24">
+                        <path
+                            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                    </svg>
+                    <div class="marker-alert-info">
+                        <p class="marker-alert-text" id="markerAlertText">
+                            <span class="marker-alert-count">1</span>
+                            marcador por validar
+                        </p>
+                        <p class="marker-alert-help">
+                            Busca los marcadores en <span class="marker-alert-highlight">rojo</span> en el mapa
+                        </p>
+                    </div>
                 </div>
-              </div>
+            </div>
             <div class="timeline-container">
                 <button class="timeline-toggle">
-                  <i class="fas fa-chevron-up"></i>
+                    <i class="fas fa-chevron-up"></i>
                 </button>
                 <div class="timeline-content">
-                  <!-- Muestra las fechas límites de todo el dataset -->
-                  <div class="time-labels">
-                    <span id="timeline-start-date"></span>
-                    <span id="timeline-end-date"></span>
-                  </div>
-                  
-                  <!-- Contenedor para el slider dual -->
-                  <div class="slider-container">
-                    <div class="slider-ticks"></div>
-                    <div class="slider-track"></div>
-                    <!-- Slider para la fecha de inicio del rango -->
-                    <input type="range" id="start-slider" class="timeline-slider" min="0" max="100" step="1" value="0">
-                    <!-- Slider para la fecha final del rango -->
-                    <input type="range" id="end-slider" class="timeline-slider" min="0" max="100" step="1" value="100">
-                  </div>
-                  
-                  <!-- Feedback visual para indicar el rango seleccionado -->
-                  <div class="timeline-feedback">
-                    <span id="current-range"></span>
-                  </div>
-               
+                    <!-- Muestra las fechas límites de todo el dataset -->
+                    <div class="time-labels">
+                        <span id="timeline-start-date"></span>
+                        <span id="timeline-end-date"></span>
+                    </div>
+
+                    <!-- Contenedor para el slider dual -->
+                    <div class="slider-container">
+                        <div class="slider-ticks"></div>
+                        <div class="slider-track"></div>
+                        <!-- Slider para la fecha de inicio del rango -->
+                        <input type="range" id="start-slider" class="timeline-slider" min="0" max="100" step="1"
+                            value="0">
+                        <!-- Slider para la fecha final del rango -->
+                        <input type="range" id="end-slider" class="timeline-slider" min="0" max="100" step="1"
+                            value="100">
+                    </div>
+
+                    <!-- Feedback visual para indicar el rango seleccionado -->
+                    <div class="timeline-feedback">
+                        <span id="current-range"></span>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -354,6 +363,8 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="index.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
     <noscript>
         <p>Esta página requiere JavaScript para funcionar correctamente. Por favor, habilite JavaScript en su navegador.
         </p>

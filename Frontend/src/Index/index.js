@@ -299,85 +299,116 @@ elements.formPanel.addEventListener('submit', async function (e) {
     if (isValid) {
         const form = elements.formPanel;
 
-        // Captura la ubicación actual del usuario
-        let currentLocation = '';
+        // Captura los datos del formulario primero
+        const formData = {
+            fecha_avistamiento: new Date().toISOString(),
+            ubicacion: document.getElementById('location').value,
+            latitud: lat,
+            longitud: lng,
+            altitud_estimada: document.getElementById('estimated-height').value,
+            rumbo: document.getElementById('heading').value,
+            tipo_aeronave: document.getElementById('aircraft-type').value,
+            observaciones: document.getElementById('observations').value,
+            // Usar las coordenadas del marcador como ubicación por defecto
+            current_location: `${lat},${lng}`
+        };
+
+        // Campos opcionales con validaciones adicionales
+        const optionalFields = [
+            { id: 'engine-type', key: 'tipo_motor' },
+            { id: 'engine-count', key: 'cantidad_motores', parse: parseInt },
+            { id: 'color', key: 'color' },
+        ];
+
+        optionalFields.forEach(({ id, key, parse }) => {
+            const value = document.getElementById(id).value;
+            if (value) {
+                formData[key] = parse ? parse(value) : value;
+            }
+        });
+
+        // Solicitar explícitamente el permiso de geolocalización
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async position => {
+            try {
+                // Mostrar un mensaje al usuario
+                alert('Por favor, permite el acceso a tu ubicación para registrar el avistamiento.');
+                
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        resolve,
+                        reject,
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
+                    );
+                });
+                
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
-                currentLocation = `${latitude},${longitude}`;
-                document.getElementById('current_location').textContent = currentLocation;
-
-                // Captura los datos del formulario
-                const formData = {
-                    fecha_avistamiento: new Date().toISOString(),
-                    current_location: currentLocation,   // Se agrega la ubicación actual
-                    ubicacion: document.getElementById('location').value,
-                    latitud: lat,
-                    longitud: lng,
-                    altitud_estimada: document.getElementById('estimated-height').value,
-                    rumbo: document.getElementById('heading').value,
-                    tipo_aeronave: document.getElementById('aircraft-type').value,
-                    observaciones: document.getElementById('observations').value
-                };
-
-                // Campos opcionales con validaciones adicionales
-                const optionalFields = [
-                    { id: 'engine-type', key: 'tipo_motor' },
-                    { id: 'engine-count', key: 'cantidad_motores', parse: parseInt },
-                    { id: 'color', key: 'color' },
-                ];
-
-                optionalFields.forEach(({ id, key, parse }) => {
-                    const value = document.getElementById(id).value;
-                    if (value) {
-                        formData[key] = parse ? parse(value) : value;
-                    }
-                });
-
-                try {
-                    // Envía los datos al backend con fetch
-                    let response = await customFetch('/api/sightings', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formData)
-                    });
-
-                    hideForm();
-                    removeGreyMarker();
-
-                    if (response.ok) {
-                        const sighting = await response.json();
-                        
-                        // Verificar si se debe forzar el cierre de sesión
-                        if (sighting.forceLogout) {
-                            // Limpiar el localStorage
-                            localStorage.removeItem('accessToken');
-                            localStorage.removeItem('user');
-                            // Redirigir al login
-                            window.location.href = '/login.html';
-                            return;
-                        }
-
-                        addMarker(sighting.id, sighting, false, handleMarkerClick);
-                        updateRedMarkersModal();
-                    } else {
-                        const error = await response.json();
-                        console.error('Error:', error.message);
-                    }
-                } catch (err) {
-                    console.error('Error al conectar con el servidor:', err);
+                formData.current_location = `${latitude},${longitude}`;
+                document.getElementById('current_location').textContent = formData.current_location;
+                
+                // Enviar los datos después de obtener la ubicación
+                await sendFormData(formData);
+            } catch (error) {
+                console.warn('Error al obtener la geolocalización:', error);
+                // Si el usuario deniega el permiso o hay un error, preguntar si quiere continuar
+                const continuar = confirm('No se pudo obtener tu ubicación. ¿Deseas continuar con la ubicación del marcador?');
+                if (continuar) {
+                    // Mantener las coordenadas del marcador como ubicación
+                    document.getElementById('current_location').textContent = formData.current_location;
+                    await sendFormData(formData);
                 }
-            }, error => {
-                console.error('Error al obtener la geolocalización:', error);
-            });
+            }
         } else {
-            console.error('Geolocation no está disponible.');
+            alert('Tu navegador no soporta geolocalización. Se usará la ubicación del marcador.');
+            document.getElementById('current_location').textContent = formData.current_location;
+            await sendFormData(formData);
         }
     }
 });
+
+// Función auxiliar para enviar los datos del formulario
+async function sendFormData(formData) {
+    try {
+        let response = await customFetch('/api/sightings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        hideForm();
+        removeGreyMarker();
+
+        if (response.ok) {
+            const sighting = await response.json();
+            
+            // Verificar si se debe forzar el cierre de sesión
+            if (sighting.forceLogout) {
+                // Limpiar el localStorage
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('user');
+                // Redirigir al login
+                window.location.href = '/login.html';
+                return;
+            }
+
+            addMarker(sighting.id, sighting, false, handleMarkerClick);
+            updateRedMarkersModal();
+        } else {
+            const error = await response.json();
+            console.error('Error:', error.message);
+            alert('Error al guardar el avistamiento: ' + error.message);
+        }
+    } catch (err) {
+        console.error('Error al conectar con el servidor:', err);
+        alert('Error al conectar con el servidor. Por favor, intente nuevamente.');
+    }
+}
 
 document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(input => {
     input.addEventListener('input', function () {

@@ -1,3 +1,5 @@
+import { customFetch } from '/utils/auth.js';
+
 export let map = null;
 let markers = [];
 let greyMarker = null;
@@ -127,20 +129,23 @@ export function removeGreyMarker() {
 }
 
 /**
- * Realiza reverse geocoding utilizando el servicio Nominatim.
+ * Realiza reverse geocoding utilizando el servicio Nominatim a través de nuestro backend.
  * @param {number} lat - Latitud.
  * @param {number} lng - Longitud.
  * @returns {Promise<string|null>} Promesa que resuelve con la dirección (display_name) o null en caso de error.
  */
 export async function reverseGeocode(lat, lng) {
-  try {
-    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`);
-    const data = await response.json();
-    return data.display_name;
-  } catch (error) {
-    console.error('Error performing reverse geocoding:', error);
-    return null;
-  }
+    try {
+        const response = await customFetch(`/api/geocode/reverse?lat=${lat}&lon=${lng}`);
+        if (!response.ok) {
+            throw new Error(`Error en la respuesta del servidor: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.display_name;
+    } catch (error) {
+        console.error('Error performing reverse geocoding:', error);
+        return null;
+    }
 }
 
 /**
