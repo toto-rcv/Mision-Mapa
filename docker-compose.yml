@@ -14,15 +14,17 @@ services:
     networks:
       - auth_network
     depends_on:
-      - backend  
+      - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   backend:
     build: 
       context: ./Backend 
       dockerfile: Dockerfile
     container_name: sara-backend
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000"
     environment:
       - DB_HOST=db
       - DB_USER=${MYSQL_USER}
@@ -42,6 +44,8 @@ services:
       - db
     networks:
       - auth_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     image: mysql:8.0

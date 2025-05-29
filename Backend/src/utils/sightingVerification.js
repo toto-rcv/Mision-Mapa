@@ -20,7 +20,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // Check if time difference is suspicious (less than 10 minutes)
 function isSuspiciousTimeDifference(time1, time2) {
     const diffInMinutes = Math.abs(time1 - time2) / (1000 * 60);
-    return diffInMinutes < 10;
+    return diffInMinutes < 5; // Reducido a 5 minutos
 }
 
 // Check for suspicious sightings
@@ -49,6 +49,10 @@ async function checkSuspiciousSightings(sighting) {
 
         console.log('Found recent sightings:', recentSightings.length);
 
+        // Contador de avistamientos sospechosos
+        let suspiciousCount = 0;
+        const maxSuspiciousAllowed = 3; // Número máximo de avistamientos sospechosos permitidos
+
         for (const prevSighting of recentSightings) {
             const distance = calculateDistance(
                 prevSighting.latitud,
@@ -69,9 +73,15 @@ async function checkSuspiciousSightings(sighting) {
                 prevSightingDate: prevSighting.fecha_avistamiento
             });
 
-            // If distance is too large and time difference is too small, it's suspicious
-            if (distance > 100 && timeDiff) { // 100km threshold
-                console.log('Suspicious activity detected!');
+            // Si la distancia es muy grande y el tiempo es muy corto, incrementar contador
+            if (distance > 100 && timeDiff) {
+                suspiciousCount++;
+                console.log(`Suspicious activity count: ${suspiciousCount}`);
+            }
+
+            // Solo bloquear si se supera el límite de avistamientos sospechosos
+            if (suspiciousCount >= maxSuspiciousAllowed) {
+                console.log('Suspicious activity threshold exceeded!');
                 
                 // Get blocked status ID
                 const blockedStatus = await UserStatus.findOne({ where: { status: 'blocked' } });

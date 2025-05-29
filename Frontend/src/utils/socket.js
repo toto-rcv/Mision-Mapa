@@ -33,36 +33,49 @@ class SocketClient {
 
       const accessToken = localStorage.getItem('accessToken');
       if (!accessToken) {
-          console.error("No access token available to initialize SocketClient.");
-          return false; // Indicate initialization failure
+          console.log("No access token available. Socket initialization skipped.");
+          return false;
       }
 
-      this.options.auth = {
-          token: accessToken
-      };
+      try {
+          const isTokenValid = await verifyAccessToken();
+          if (!isTokenValid) {
+              console.log("Token invalid or expired. Socket initialization skipped.");
+              return false;
+          }
 
-      this.socket = io(this.url, this.options);
+          this.options.auth = {
+              token: accessToken
+          };
 
-      // Eventos base
-      this.socket.on('connect', () => {
-          this.isConnected = true;
-          this.trigger('connect');
-      });
-      this.socket.on('disconnect', (reason) => {
-          this.isConnected = false;
-          this.trigger('disconnect', reason);
-      });
-      this.socket.on('error', (error) => this.trigger('error', error));
+          this.socket = io(this.url, this.options);
 
-      return true; // Indicate successful initialization
+          // Eventos base
+          this.socket.on('connect', () => {
+              this.isConnected = true;
+              this.trigger('connect');
+          });
+          this.socket.on('disconnect', (reason) => {
+              this.isConnected = false;
+              this.trigger('disconnect', reason);
+          });
+          this.socket.on('error', (error) => this.trigger('error', error));
+
+          return true;
+      } catch (error) {
+          console.error("Error initializing socket:", error);
+          return false;
+      }
     }
   
     on(event, callback) {
       if (!this.listeners.has(event)) {
         this.listeners.set(event, []);
-        this.socket.on(event, (data) => {
-          this.listeners.get(event).forEach(cb => cb(data));
-        });
+        if (this.socket) {
+            this.socket.on(event, (data) => {
+                this.listeners.get(event).forEach(cb => cb(data));
+            });
+        }
       }
       this.listeners.get(event).push(callback);
     }
@@ -75,12 +88,12 @@ class SocketClient {
     }
   
     emit(event, data) {
-      if (this.isConnected) {
+      if (this.isConnected && this.socket) {
           this.socket.emit(event, data);
       } else {
           console.warn("Socket is not connected. Cannot emit event:", event);
       }
-  }
+    }
   
     trigger(event, data) {
       if (this.listeners.has(event)) {
@@ -89,20 +102,20 @@ class SocketClient {
     }
   
     disconnect() {
-      if (this.socket.connected) {
+      if (this.socket && this.socket.connected) {
         this.socket.disconnect();
       }
     }
 
     connect() {
-      if (this.socket && !this.socket.connected && !this.isConnected) { // Prevent double connection
+      if (this.socket && !this.socket.connected && !this.isConnected) {
           this.socket.connect();
       } else if (!this.socket) {
           console.warn("Socket not initialized. Call initialize() first.");
       } else if (this.isConnected) {
           console.warn("Socket is already connected.");
       }
-  }
+    }
   
     get id() {
         return this.socket?.id;
@@ -111,32 +124,91 @@ class SocketClient {
     get connected() {
         return this.isConnected;
     }
-  }
+}
   
-  // Configuración global (opcional)
-  let socketInstance = null;
+// Configuración global
+let socketInstance = null;
 
-  async function getSocketClient() {
-      if (!socketInstance) {
-          socketInstance = new SocketClient('ws://'); // Puedes pasar la URL base aquí o configurarla después
-          const isTokenValid = await verifyAccessToken(); // Esperar a que se verifique el token
-          if (isTokenValid) {
-              const initialized = await socketInstance.initialize(); // Inicializar y conectar solo si el token es válido
-              if (!initialized) {
-                  socketInstance = null; // Reset instance on initialization failure
-                  console.error("SocketClient initialization failed after token verification.");
-                  return null;
-              }
-              socketInstance.connect(); // Conectar manualmente después de la inicialización exitosa
-          } else {
-              socketInstance = null;
-              console.error("Token verification failed, SocketClient not initialized.");
-              return null;
-          }
-      }
-      return socketInstance;
-  }
-  
-  
-  // Exportar la función para obtener la instancia del socket
-  export default getSocketClient;
+async function getSocketClient() {
+    if (!socketInstance) {
+        const baseUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
+        console.log('Creating new socket instance for:', baseUrl);
+        
+        socketInstance = new SocketClient(baseUrl, {
+            reconnection: true,
+            reconnectionAttempts: Infinity,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000,
+            autoConnect: false,
+            transports: ['polling', 'websocket'],
+            forceNew: true,
+            path: '/socket.io/',
+            withCredentials: true,
+            extraHeaders: {
+                "Content-Type": "application/json"
+            }
+        });
+    }
+
+    // Solo intentar inicializar si hay un token
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        console.log("No access token found. Socket initialization skipped.");
+        return null;
+    }
+
+    // Si el socket no está inicializado, intentar inicializarlo
+    if (!socketInstance.socket) {
+        const initialized = await socketInstance.initialize();
+        if (!initialized) {
+            console.log("Socket initialization failed.");
+            return null;
+        }
+
+        // Añadir indicador visual de estado de conexión
+        socketInstance.on('connect', () => {
+            console.log('Socket conectado');
+            document.body.classList.add('socket-connected');
+            document.body.classList.remove('socket-disconnected');
+        });
+        
+        socketInstance.on('disconnect', (reason) => {
+            console.log('Socket desconectado:', reason);
+            document.body.classList.remove('socket-connected');
+            document.body.classList.add('socket-disconnected');
+        });
+        
+        socketInstance.on('connect_error', (error) => {
+            console.error('Error de conexión:', error);
+            document.body.classList.remove('socket-connected');
+            document.body.classList.add('socket-disconnected');
+        });
+
+        socketInstance.on('reconnect_attempt', (attemptNumber) => {
+            console.log(`Intento de reconexión #${attemptNumber}`);
+        });
+
+        socketInstance.on('reconnect', (attemptNumber) => {
+            console.log(`Reconexión exitosa después de ${attemptNumber} intentos`);
+        });
+
+        socketInstance.on('reconnect_error', (error) => {
+            console.error('Error en reconexión:', error);
+        });
+
+        socketInstance.on('reconnect_failed', () => {
+            console.error('Falló la reconexión después de todos los intentos');
+        });
+
+        // Intentar conectar después de un breve retraso
+        setTimeout(() => {
+            console.log('Intentando conectar socket...');
+            socketInstance.connect();
+        }, 1000);
+    }
+
+    return socketInstance;
+}
+
+export default getSocketClient;

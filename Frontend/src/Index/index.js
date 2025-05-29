@@ -677,39 +677,62 @@ function updateRedMarkersModal() {
 
 async function setSocketEvents() {
     const socket = await getSocketClient();
-    if (socket) {
-        socket.on('NEW_SIGHTING', (sighting) => {
+    if (!socket) {
+        console.log("Socket no inicializado - usuario no autenticado");
+        return;
+    }
 
-            if (userId !== sighting.usuario_id && matchesFilters(sighting)) {
+    socket.on('NEW_SIGHTING', (sighting) => {
+        console.log('Nuevo avistamiento recibido:', sighting);
+        // Verificar si el avistamiento coincide con los filtros actuales
+        if (matchesFilters(sighting)) {
+            // Verificar si el marcador ya existe
+            const existingMarker = getMarkers().find(m => m.id === sighting.id);
+            if (!existingMarker) {
+                console.log('Añadiendo nuevo marcador:', sighting.id);
                 addMarker(sighting.id, sighting, false, handleMarkerClick);
                 updateRedMarkersModal();
                 updateMarkersCount(getMarkers().length);
+            } else {
+                console.log('El marcador ya existe:', sighting.id);
+            }
+        } else {
+            console.log('El avistamiento no coincide con los filtros actuales');
+        }
+    });
+
+    socket.on('VALIDATE_SIGHTING', (sightingId) => {
+        console.log('Avistamiento validado recibido:', sightingId);
+        const marker = getMarkers().find(m => m.id == sightingId);
+        if (marker && marker.sighting) {
+            marker.sighting.status = 'validated';
+            if (!matchesFilters(marker.sighting)) {
+                marker.leafletObject.remove();
+            }
+            setMarkerColor(marker.id, true);
+            updateRedMarkersModal();
+        }
+    });
+
+    // Manejar reconexión
+    socket.on('reconnect', () => {
+        console.log('Socket reconectado, recargando marcadores...');
+        loadMarkers(currentFilters).then(sightings => {
+            if (sightings) {
+                updateSightingsComponents(sightings);
             }
         });
-
-        socket.on('VALIDATE_SIGHTING', (sightingId) => {
-
-            const marker = getMarkers().find(m => m.id == sightingId);
-
-            if (marker && marker.sighting) {
-                marker.sighting.status = 'validated'
-
-                if (!matchesFilters(marker.sighting)) {
-                    marker.leafletObject.remove()
-                }
-                setMarkerColor(marker.id, true)
-                updateRedMarkersModal();
-            }
-        });
-
-    } else {
-        console.error("No se pudo obtener la instancia del SocketClient. Problemas de autenticación.");
-    }
+    });
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
     await reloadUserProfile();
     const userProfile = JSON.parse(localStorage.getItem("user"));
+    if (!userProfile) {
+        console.log("Usuario no autenticado - saltando inicialización de socket");
+        return;
+    }
+
     const userPermissions = userProfile.permissions || {};
     showNavItems(userPermissions);
 
@@ -745,7 +768,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Verificar si hay marcadores rojos y mostrar el modal de notificación si es necesario
     updateRedMarkersModal();
 
-    setSocketEvents();
+    // Solo inicializar socket si el usuario está autenticado
+    if (localStorage.getItem('accessToken')) {
+        setSocketEvents();
+    }
 
     setTimeout(() => {
         updateRedMarkersModal();
@@ -759,7 +785,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
         console.warn("El botón 'clear-search-button' no se encontró en el DOM.");
     }
-
 });
 
 function updateSightingsComponents(sightings) {
@@ -1228,20 +1253,35 @@ document.addEventListener('click', function (event) {
 });
 
 function matchesFilters(sighting) {
-
-    // Verificar filtro de fecha
-    const sightingDate = new Date(sighting.fecha_avistamiento);
-    if (currentFilters.startDate && sightingDate < currentFilters.startDate) return false;
-    if (currentFilters.endDate && sightingDate > currentFilters.endDate) return false;
-
-    // Determinar el estado del avistamiento
-    if (currentFilters.statuses && currentFilters.statuses.length) {
-        if (!currentFilters.statuses.includes(sighting.status)) return false;
+    // Verificar fecha de inicio
+    if (currentFilters.startDate) {
+        const sightingDate = new Date(sighting.fecha_avistamiento);
+        if (sightingDate < currentFilters.startDate) {
+            return false;
+        }
     }
 
-    // Verificar filtro de usuario
-    if (currentFilters.userIds && currentFilters.userIds.length) {
-        if (!currentFilters.userIds.includes(sighting.usuario_id)) return false;
+    // Verificar fecha de fin
+    if (currentFilters.endDate) {
+        const sightingDate = new Date(sighting.fecha_avistamiento);
+        if (sightingDate > currentFilters.endDate) {
+            return false;
+        }
+    }
+
+    // Verificar estado
+    if (currentFilters.statuses && currentFilters.statuses.length > 0) {
+        const status = sighting.validado_por ? 'validated' : 'pending';
+        if (!currentFilters.statuses.includes(status)) {
+            return false;
+        }
+    }
+
+    // Verificar usuario
+    if (currentFilters.userIds && currentFilters.userIds.length > 0) {
+        if (!currentFilters.userIds.includes(sighting.usuario_id)) {
+            return false;
+        }
     }
 
     return true;

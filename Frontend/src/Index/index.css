@@ -1649,3 +1649,30 @@ textarea::-webkit-scrollbar-thumb:hover {
   }
 
 }
+
+/* Indicador de estado de conexión */
+.socket-connected::after {
+    content: '';
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 12px;
+    height: 12px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    z-index: 1000;
+}
+
+.socket-disconnected::after {
+    content: '';
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 12px;
+    height: 12px;
+    background-color: #f44336;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+    z-index: 1000;
+}
