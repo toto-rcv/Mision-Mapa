@@ -1342,3 +1342,47 @@ const clearSearchButton = document.getElementById('clear-search-button');
 clearSearchButton.addEventListener('click', () => {
     elements.searchInput.value = '';
 });
+
+async function getCurrentLocation() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject(new Error('La geolocalización no está soportada en este navegador.'));
+            return;
+        }
+
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        };
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                resolve({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
+            },
+            (error) => {
+                let errorMessage = 'Error al obtener la ubicación: ';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += 'Se requiere permiso para acceder a la ubicación. Por favor, habilita la geolocalización en tu navegador.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += 'La información de ubicación no está disponible.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += 'La solicitud de ubicación ha expirado.';
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                console.error(errorMessage);
+                alert(errorMessage);
+                reject(new Error(errorMessage));
+            },
+            options
+        );
+    });
+}

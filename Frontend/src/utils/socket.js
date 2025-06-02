@@ -141,13 +141,16 @@ async function getSocketClient() {
             reconnectionDelayMax: 5000,
             timeout: 20000,
             autoConnect: false,
-            transports: ['polling', 'websocket'],
+            transports: ['websocket', 'polling'],
             forceNew: true,
             path: '/socket.io/',
             withCredentials: true,
             extraHeaders: {
                 "Content-Type": "application/json"
-            }
+            },
+            upgrade: true,
+            rememberUpgrade: true,
+            rejectUnauthorized: false
         });
     }
 
