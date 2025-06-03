@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const eventEmitter = require('./eventEmitter');
+const db = require('../models');
 
 function initializeSocket(server) {
     const io = new Server(server, {
@@ -49,7 +50,6 @@ function initializeSocket(server) {
             } catch (jwtError) {
                 if (jwtError.name === 'TokenExpiredError') {
                     console.warn('Token expirado, intentando refresh...');
-                    // Aquí podrías implementar la lógica de refresh token
                     return next(new Error('Token expirado'));
                 }
                 throw jwtError;
@@ -83,12 +83,31 @@ function initializeSocket(server) {
         }
 
         // Manejar desconexión
-        socket.on('disconnect', (reason) => {
+        socket.on('disconnect', async (reason) => {
             console.log(`Usuario desconectado: ${socket.user.id} (${socket.user.role}) - Razón: ${reason}`);
-            if (reason === 'transport close') {
-                console.log('Conexión cerrada por el cliente');
-            } else if (reason === 'ping timeout') {
-                console.log('Timeout de ping');
+            
+            try {
+                // Buscar el registro de ingreso más reciente sin salida
+                const lastEntry = await db.IncomeExit.findOne({
+                    where: {
+                        dni: socket.user.id,
+                        exit: null
+                    },
+                    order: [['income', 'DESC']]
+                });
+
+                if (lastEntry) {
+                    // Actualizar el registro con la hora de salida en horario argentino
+                    const now = new Date();
+                    const argentinaTime = new Date(now.getTime() - (3 * 60 * 60 * 1000));
+                    
+                    await lastEntry.update({
+                        exit: argentinaTime
+                    });
+                    console.log(`Registro de salida actualizado para usuario ${socket.user.id}`);
+                }
+            } catch (error) {
+                console.error('Error al actualizar registro de salida:', error);
             }
         });
 

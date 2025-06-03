@@ -46,7 +46,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
-  // Buscar usuario (aunque esté bloqueado, para mostrar mensaje correcto)
+  // Buscar usuario
   const user = await User.findOne({ where: { email },
     include: {
       model: UserStatus,
@@ -56,7 +56,6 @@ exports.login = async (req, res) => {
     }
   });
 
-  // Si no existe usuario, responde igual (no revelar si existe o no)
   if (!user) {
     return res.status(401).json({ message: "Credenciales Incorrectas" });
   }
@@ -71,19 +70,27 @@ exports.login = async (req, res) => {
   const isValidPassword = await comparePassword(password, user.password);
   if (!isValidPassword) {
     user.loginAttempts += 1;
-    // Si llega a 3 intentos, bloquear por 5 minutos
     if (user.loginAttempts >= 3) {
-      user.loginBlockedUntil = new Date(Date.now() + 5 * 60 * 1000); // 5 minutos
-      user.loginAttempts = 0; // Reinicia el contador
+      user.loginBlockedUntil = new Date(Date.now() + 5 * 60 * 1000);
+      user.loginAttempts = 0;
     }
     await user.save();
     return res.status(401).json({ message: "Credenciales Incorrectas" });
   }
 
-  // Si login exitoso, reinicia contador y bloqueo
+  // Si el login es exitoso
   user.loginAttempts = 0;
   user.loginBlockedUntil = null;
   await user.save();
+
+  // Registrar el ingreso del usuario con horario argentino
+  const now = new Date();
+  const argentinaTime = new Date(now.getTime() - (3 * 60 * 60 * 1000));
+  
+  await db.IncomeExit.create({
+    dni: user.dni,
+    income: argentinaTime
+  });
 
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
@@ -210,5 +217,36 @@ exports.resetPassword = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error en el servidor." });
+  }
+};
+
+// Agregar nuevo método para registrar la salida
+exports.logout = async (req, res) => {
+  try {
+    const user = req.user;
+    
+    // Buscar el registro de ingreso más reciente sin salida
+    const lastEntry = await db.IncomeExit.findOne({
+      where: {
+        dni: user.id,
+        exit: null
+      },
+      order: [['income', 'DESC']]
+    });
+
+    if (lastEntry) {
+      // Actualizar el registro con la hora de salida en horario argentino
+      const now = new Date();
+      const argentinaTime = new Date(now.getTime() - (3 * 60 * 60 * 1000));
+      
+      await lastEntry.update({
+        exit: argentinaTime
+      });
+    }
+
+    res.json({ message: "Sesión cerrada exitosamente" });
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error);
+    res.status(500).json({ message: "Error al cerrar sesión" });
   }
 };

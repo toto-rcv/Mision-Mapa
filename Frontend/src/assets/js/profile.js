@@ -39,14 +39,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // Handle logout
-    logoutBtn.addEventListener('click', function (event) {
+    logoutBtn.addEventListener('click', async function (event) {
         event.preventDefault();
-        // Perform logout actions
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        localStorage.removeItem('sightings'); // Añadir esta línea
-        // Redirect to login page
-        window.location.href = '/login.html';
+        
+        try {
+            // Primero, desconectar el socket
+            if (window.socketInstance && window.socketInstance.socket) {
+                window.socketInstance.disconnect();
+            }
+
+            // Esperar un momento para asegurar que la desconexión del socket se procese
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Limpiar el localStorage y redirigir
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('sightings');
+            window.location.href = '/login.html';
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            // Aún así, limpiar el localStorage y redirigir
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('sightings');
+            window.location.href = '/login.html';
+        }
+    });
+
+    // Manejar el cierre de la ventana o navegación
+    window.addEventListener('beforeunload', function (event) {
+        // Desconectar el socket antes de cerrar
+        if (window.socketInstance && window.socketInstance.socket) {
+            window.socketInstance.disconnect();
+        }
     });
 });

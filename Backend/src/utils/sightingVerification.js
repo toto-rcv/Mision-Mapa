@@ -17,10 +17,16 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c; // Distance in kilometers
 }
 
-// Check if time difference is suspicious (less than 10 minutes)
+// Check if time difference is suspicious (less than 3 minutes)
 function isSuspiciousTimeDifference(time1, time2) {
     const diffInMinutes = Math.abs(time1 - time2) / (1000 * 60);
-    return diffInMinutes < 5; // Reducido a 5 minutos
+    return diffInMinutes < 3;
+}
+
+// Check if enough time has passed for long distance markers (1.5 hours)
+function hasEnoughTimeForLongDistance(time1, time2) {
+    const diffInMinutes = Math.abs(time1 - time2) / (1000 * 60);
+    return diffInMinutes >= 90; // 1.5 horas = 90 minutos
 }
 
 // Check for suspicious sightings
@@ -51,7 +57,7 @@ async function checkSuspiciousSightings(sighting) {
 
         // Contador de avistamientos sospechosos
         let suspiciousCount = 0;
-        const maxSuspiciousAllowed = 3; // Número máximo de avistamientos sospechosos permitidos
+        const maxSuspiciousAllowed = 3;
 
         for (const prevSighting of recentSightings) {
             const distance = calculateDistance(
@@ -66,15 +72,46 @@ async function checkSuspiciousSightings(sighting) {
                 new Date(sighting.fecha_avistamiento)
             );
 
+            const hasEnoughTime = hasEnoughTimeForLongDistance(
+                new Date(prevSighting.fecha_avistamiento),
+                new Date(sighting.fecha_avistamiento)
+            );
+
             console.log('Comparing with previous sighting:', {
                 distance,
                 timeDiff,
+                hasEnoughTime,
                 prevSightingId: prevSighting.id,
                 prevSightingDate: prevSighting.fecha_avistamiento
             });
 
-            // Si la distancia es muy grande y el tiempo es muy corto, incrementar contador
-            if (distance > 100 && timeDiff) {
+            // Nueva lógica de detección de actividad sospechosa
+            let isSuspicious = false;
+
+            // 1. Verificar si hay múltiples marcadores en 3 minutos
+            if (timeDiff) {
+                isSuspicious = true;
+            }
+
+            // 2. Verificar si los marcadores están a más de 50km de distancia
+            // y no ha pasado suficiente tiempo (1.5 horas)
+            if (distance > 50 && !hasEnoughTime) {
+                isSuspicious = true;
+                console.log('Suspicious: Marker too far without enough time passed');
+            }
+
+            // 3. Verificar si hay un patrón de actividad inusual
+            // (más de 5 marcadores en la última hora)
+            const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+            const recentSightingsCount = recentSightings.filter(s => 
+                new Date(s.fecha_avistamiento) > oneHourAgo
+            ).length;
+            
+            if (recentSightingsCount > 5) {
+                isSuspicious = true;
+            }
+
+            if (isSuspicious) {
                 suspiciousCount++;
                 console.log(`Suspicious activity count: ${suspiciousCount}`);
             }
@@ -104,14 +141,14 @@ async function checkSuspiciousSightings(sighting) {
                     },
                     { 
                         where: { dni: sighting.usuario_id },
-                        validate: false // Desactivar validación para esta actualización
+                        validate: false
                     }
                 );
 
                 console.log('User update result:', { updatedRows });
 
                 // Invalidar todos los tokens activos del usuario
-                const currentToken = sighting.token; // Asumiendo que el token viene en el objeto sighting
+                const currentToken = sighting.token;
                 if (currentToken) {
                     await BlacklistedToken.create({
                         token: currentToken,
