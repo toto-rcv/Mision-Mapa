@@ -1,6 +1,7 @@
 const express = require("express");
 const http = require('http');
 const cors = require('cors');
+const { inicializarProgramadores } = require('./utils/programador');
 
 const initializeSocket = require('./utils/socket');
 
@@ -99,6 +100,9 @@ app.get('/api/health', (req, res) => {
         memory: process.memoryUsage()
     });
 });
+
+// Inicializar programadores
+inicializarProgramadores();
 
 app.use("/api/sightings", sightingsRoutes);
 app.use("/api/auth", authRoutes);

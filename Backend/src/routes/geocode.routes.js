@@ -7,7 +7,7 @@ const validateRole = require("../middleware/role.middleware");
 // Ruta para reverse geocoding
 router.get('/reverse', 
     validateAccessToken, 
-    validateRole(["POA", "DETECCION", "JEFE DE DETECCION", "SUPERVISOR"]), 
+    validateRole(["POA", "DETECCION", "JEFE DE DETECCION", "SUPERVISOR", "ADMINDEVELOPER"]), 
     async (req, res) => {
         try {
             const { lat, lon } = req.query;

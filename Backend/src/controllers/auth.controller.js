@@ -153,16 +153,14 @@ exports.getProfile = async (req, res) => {
     }
 
     const permissions = {
-      deleteSightings: userR.userRank === 'DETECCION' || userR.userRank === 'JEFE DE DETECCION' || userR.userRank === 'SUPERVISOR', 
-      viewUsers: userR.userRank === 'DETECCION' || userR.userRank === 'JEFE DE DETECCION' || userR.userRank === 'SUPERVISOR'
+      deleteSightings: userR.userRank === 'DETECCION' || userR.userRank === 'JEFE DE DETECCION' || userR.userRank === 'SUPERVISOR' || userR.userRank === 'ADMINDEVELOPER', 
+      viewUsers: userR.userRank === 'DETECCION' || userR.userRank === 'JEFE DE DETECCION' || userR.userRank === 'SUPERVISOR' || userR.userRank === 'ADMINDEVELOPER',
+      verifyAI: userR.userRank === 'SUPERVISOR' || userR.userRank === 'JEFE DE DETECCION' || userR.userRank === 'ADMINDEVELOPER'
     };
-
-
 
     res.status(200).json({ user: userR, permissions: permissions });
   } catch (error) {
     console.error("Error en el controlador:", error.message);
-
     res.status(500).json({ message: "Error interno del servidor" });
   }
 }

@@ -17,7 +17,7 @@ const getAllUsers = async (req, res) => {
 
         // Determina los estados permitidos según el rol
         let allowedStatuses = ["active", "pending", "blocked"];
-        if (req.role === 'SUPERVISOR') {
+        if (req.role === 'SUPERVISOR' || req.role === 'ADMINDEVELOPER') {
             allowedStatuses = ["active", "pending", "blocked", "deleted"];
         }
 
@@ -31,7 +31,9 @@ const getAllUsers = async (req, res) => {
 
         const users = await User.findAll({
             where: {
-                userRank: { [Op.ne]: "SUPERVISOR" }
+                userRank: { 
+                    [Op.notIn]: ["SUPERVISOR", "ADMINDEVELOPER"]
+                }
             },
             include: [includeStatus],
         });
@@ -56,6 +58,7 @@ const getMinimalUsers = async (req, res) => {
                 });
                 break;
             case 'SUPERVISOR':
+            case 'ADMINDEVELOPER':
             case 'DETECCION':
             case 'JEFE DE DETECCION':
                 users = await User.findAll({
@@ -90,7 +93,7 @@ const updateUserStatus = async (req, res) => {
         const { status } = req.body;
 
         // Solo SUPERVISOR puede poner estado "deleted"
-        if (status === "deleted" && req.user.userRank !== "SUPERVISOR") {
+        if (status === "deleted" && req.user.userRank !== "SUPERVISOR" && req.user.userRank !== "ADMINDEVELOPER") {
             return res.status(403).json({ message: "No autorizado para eliminar usuarios" });
         }
 

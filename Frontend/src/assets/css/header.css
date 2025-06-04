@@ -25,6 +25,7 @@
 .title {
     font-size: 1.35rem;
     font-weight: 500;
+    margin: 0;
 }
 
 .header {
@@ -39,5 +40,49 @@
 
     .title {
         font-size: 1em;
+    }
+}
+
+.verify-ia-button {
+    background-color: #00C2D1;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    margin-left: 1rem;
+}
+
+.verify-ia-button:hover {
+    background-color: #00acc1;
+}
+
+.verify-ia-button:active {
+    transform: translateY(1px);
+}
+
+.verify-ia-button i {
+    font-size: 16px;
+}
+
+.verify-ia-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+@media screen and (max-width: 768px) {
+    .verify-ia-button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .verify-ia-button i {
+        font-size: 14px;
     }
 }

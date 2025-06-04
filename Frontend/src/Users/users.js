@@ -322,7 +322,9 @@ const UsersApp = (function () {
                         <option value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Activo</option>
                         <option value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Pendiente</option>
                         <option value="blocked" ${user.statusDetail.status === 'blocked' ? 'selected' : ''}>Blockeado</option>
-                         ${retrieveUserProfile().user.userRank === "SUPERVISOR"
+                         ${retrieveUserProfile().user.userRank === "SUPERVISOR" || retrieveUserProfile().user.userRank === "ADMINDEVELOPER"
+
+                            
                     ? `<option value="deleted" ${user.statusDetail.status === 'deleted' ? 'selected' : ''}>Eliminado</option>`
                     : ''
                 }

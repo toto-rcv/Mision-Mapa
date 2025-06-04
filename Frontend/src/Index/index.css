@@ -299,6 +299,26 @@ form button:hover {
   letter-spacing: -0.01em;
 }
 
+.verification-status {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+.verification-status.verified {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.verification-status.not-verified {
+  background-color: #f44336;
+  color: white;
+}
+
 .form-subtitle {
   display: flex;
   justify-content: space-between;
@@ -1380,6 +1400,11 @@ textarea::-webkit-scrollbar-thumb:hover {
 
   .markers-count {
       display: none;
+  }
+
+  /* Ocultar botón de verificación IA en móvil */
+  .verify-ia-button {
+      display: none !important;
   }
 
   /* Search bar styles */

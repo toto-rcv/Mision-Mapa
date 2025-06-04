@@ -18,6 +18,7 @@
     <script src="/utils/auth.js" type="module" defer></script>
     <script src="/utils/profile.js" type="module" defer></script>
     <script src="/static/js/profile.js" type="module" defer></script>
+    <script src="/utils/verifyIA.js" type="module" defer></script>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script type="module" src="/utils/socket.js"></script>
 </head>
@@ -29,6 +30,10 @@
             <h1 class="title">Mapa de Avistamientos</h1>
             <span class="markers-count"></span>
         </div>
+        <button id="verifyIAButton" class="verify-ia-button" style="display: none;">
+            <i class="fas fa-robot"></i>
+            Verificación IA
+        </button>
         <div class="profile">
             <div class="profile-avatar" aria-hidden="true">U</div>
             <div class="profile-info">
@@ -197,6 +202,7 @@
                 <div class="form-header">
                     <button class="close-button" id="close-form" aria-label="Cerrar formulario">x</button>
                     <h2 class="form-title">Nuevo avistamiento</h2>
+                    <span id="form-verification-status" class="verification-status"></span>
                     <div class="form-subtitle">
                         <div class="id-date-group">
                             <span class="sighting-id">#AV-0001</span>
@@ -365,6 +371,10 @@
     <script src="index.js" type="module"></script>
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
+    <script type="module">
+        import { initVerifyIA } from '/utils/verifyIA.js';
+        document.addEventListener('DOMContentLoaded', initVerifyIA);
+    </script>
     <noscript>
         <p>Esta página requiere JavaScript para funcionar correctamente. Por favor, habilite JavaScript en su navegador.
         </p>

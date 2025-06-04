@@ -619,7 +619,7 @@ function placeMarkersOnMap(sightings) {
 
 }
 
-function fillForm({ id, fecha_avistamiento, ubicacion, current_location, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones }) {
+function fillForm({ id, fecha_avistamiento, ubicacion, current_location, latitud, longitud, altitud_estimada, rumbo, tipo_aeronave, tipo_motor, cantidad_motores, color, observaciones, estado_verificacion }) {
 
     const form = elements.formPanel;
 
@@ -637,6 +637,30 @@ function fillForm({ id, fecha_avistamiento, ubicacion, current_location, latitud
     form.querySelector("input#color").value = color
     form.querySelector("textarea#observations").value = observaciones
 
+    // Update verification status
+    const verificationStatus = form.querySelector("#form-verification-status");
+    const userProfile = JSON.parse(localStorage.getItem("user"));
+    console.log('User Profile:', userProfile); // Debug log
+    const userRank = userProfile?.user?.userRank;
+    console.log('User Rank:', userRank); // Debug log
+    console.log('Is JEFE DE DETECCION:', userRank === 'JEFE DE DETECCION'); // Debug log
+    console.log('Is SUPERVISOR:', userRank === 'SUPERVISOR'); // Debug log
+
+    // Solo mostrar el estado de verificación para JEFE DE DETECCION, SUPERVISOR y ADMINDEVELOPER
+    if (userRank === 'JEFE DE DETECCION' || userRank === 'SUPERVISOR' || userRank === 'ADMINDEVELOPER') {
+        console.log('Showing verification status'); // Debug log
+        if (estado_verificacion === 'VERIFICADO') {
+            verificationStatus.textContent = 'VERIFICADO POR EL ALGORITMO';
+            verificationStatus.className = 'verification-status verified';
+        } else {
+            verificationStatus.textContent = 'NO VERIFICADO POR EL ALGORITMO';
+            verificationStatus.className = 'verification-status not-verified';
+        }
+        verificationStatus.style.display = 'block';
+    } else {
+        console.log('Hiding verification status'); // Debug log
+        verificationStatus.style.display = 'none';
+    }
 
     const button_save = document.getElementById('save-button');
     const button_cancel = document.getElementById('cancel-button');

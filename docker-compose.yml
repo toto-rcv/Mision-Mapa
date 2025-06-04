@@ -17,6 +17,14 @@ services:
       - backend
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   backend:
     build: 
@@ -46,6 +54,14 @@ services:
       - auth_network
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    restart: always
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   db:
     image: mysql:8.0
@@ -63,8 +79,8 @@ services:
       - .env 
     networks:
       - auth_network
-    restart:
-      unless-stopped
+    restart: always
+    stop_grace_period: 30s
 
 volumes:
   mysql_data:

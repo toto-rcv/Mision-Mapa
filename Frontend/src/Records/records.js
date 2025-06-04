@@ -96,6 +96,11 @@ const SightingsApp = (function () {
             altitud_estimada: 'modal-altitud'
         };
 
+        // Actualizar estado de verificación
+        const estadoVerificacion = document.getElementById('modal-estado-verificacion');
+        estadoVerificacion.textContent = sighting.estado_verificacion || 'NO_VERIFICADO';
+        estadoVerificacion.className = `badge-estado ${sighting.estado_verificacion === 'VERIFICADO' ? 'verificado' : 'no-verificado'}`;
+
         Object.entries(modalMapping).forEach(([propiedad, modalId]) => {
             document.getElementById(modalId).value = sighting[propiedad] || 'N/A';
         });

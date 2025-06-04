@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const eventEmitter = require('../utils/eventEmitter');
 const { SightingNotFoundError, InsufficientPermissionsError, SightingAlreadyDeletedError } = require('../errors/customErrors');
 const { checkSuspiciousSightings } = require('../utils/sightingVerification');
+const ServicioVerificacionAvistamientos = require('../services/servicioVerificacionAvistamientos');
 
 const db = require("../models");
 const Sighting = db.Sighting;
@@ -224,7 +225,7 @@ const fetchSightingsByRole = async (role, userId, whereClause = {}, options = {}
 
     if (role === "POA") {
         additionalWhere.usuario_id = userId;
-    } else if (!["JEFE DE DETECCION", "DETECCION", "SUPERVISOR"].includes(role)) {
+    } else if (!["JEFE DE DETECCION", "DETECCION", "SUPERVISOR", "ADMINDEVELOPER"].includes(role)) {
         throw new Error("Insufficient permissions");
     }
 
@@ -292,5 +293,21 @@ const markSightingAsSeen = async (req, res) => {
     }
 };
 
+const verificarAvistamientosIA = async (req, res) => {
+    try {
+        await ServicioVerificacionAvistamientos.verificarAvistamientos();
+        res.status(200).json({ message: "Verificación IA ejecutada correctamente" });
+    } catch (error) {
+        console.error("Error al ejecutar verificación IA:", error);
+        res.status(500).json({ message: "Error al ejecutar la verificación IA" });
+    }
+};
 
-module.exports = { createSighting, getAllSightings, getAllMarkers, deleteSighting, markSightingAsSeen };
+module.exports = {
+    createSighting,
+    getAllSightings,
+    deleteSighting,
+    getAllMarkers,
+    markSightingAsSeen,
+    verificarAvistamientosIA
+};
