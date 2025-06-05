@@ -131,7 +131,12 @@ let socketInstance = null;
 
 async function getSocketClient() {
     if (!socketInstance) {
-        const baseUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
+        const baseUrl = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : window.location.protocol === 'https:' 
+                ? 'wss://' + window.location.host 
+                : 'ws://' + window.location.host;
+        
         console.log('Creating new socket instance for:', baseUrl);
         
         socketInstance = new SocketClient(baseUrl, {
@@ -150,6 +155,8 @@ async function getSocketClient() {
             },
             upgrade: true,
             rememberUpgrade: true,
+            rejectUnauthorized: false,
+            secure: window.location.protocol === 'https:',
             rejectUnauthorized: false
         });
     }

@@ -165,8 +165,71 @@ const getDeleteUser = async (req, res) => {
     }
 };
 
+const updateUserDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { firstName, lastName, email, powerMilitary } = req.body;
 
+        // Validate required fields
+        if (!firstName || !lastName || !email || !powerMilitary) {
+            return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+        }
 
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: 'Formato de email inválido' });
+        }
 
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
 
-module.exports = { getAllUsers, updateUserStatus, getDeleteUser, getMinimalUsers, updateUserRank };
+        // Check if email is already taken by another user
+        const existingUser = await User.findOne({ 
+            where: { 
+                email,
+                dni: { [Op.ne]: id } // Exclude current user
+            }
+        });
+        if (existingUser) {
+            return res.status(400).json({ message: 'El email ya está en uso por otro usuario' });
+        }
+
+        // Update user details
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.email = email;
+        user.powerMilitary = powerMilitary;
+        user.confirmUpdate = req.user.id;
+
+        await user.save();
+
+        res.status(200).json({ 
+            message: 'Usuario actualizado exitosamente',
+            user: {
+                dni: user.dni,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                powerMilitary: user.powerMilitary,
+                militaryRank: user.militaryRank,
+                userRank: user.userRank,
+                status: user.status
+            }
+        });
+    } catch (error) {
+        console.error('Error al actualizar los detalles del usuario:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
+module.exports = { 
+    getAllUsers, 
+    updateUserStatus, 
+    getDeleteUser, 
+    getMinimalUsers, 
+    updateUserRank,
+    updateUserDetails 
+};

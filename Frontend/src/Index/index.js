@@ -298,6 +298,12 @@ elements.formPanel.addEventListener('submit', async function (e) {
 
     if (isValid) {
         const form = elements.formPanel;
+        const saveButton = document.getElementById('save-button');
+        
+        // Change button appearance
+        saveButton.style.backgroundColor = '#4CAF50';
+        saveButton.textContent = 'Enviando marcador';
+        saveButton.disabled = true;
 
         // Captura los datos del formulario primero
         const formData = {
@@ -327,88 +333,51 @@ elements.formPanel.addEventListener('submit', async function (e) {
             }
         });
 
-        // Solicitar explícitamente el permiso de geolocalización
-        if (navigator.geolocation) {
-            try {
-                // Mostrar un mensaje al usuario
-                alert('Por favor, permite el acceso a tu ubicación para registrar el avistamiento.');
+        try {
+            let response = await customFetch('/api/sightings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                const sighting = await response.json();
                 
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(
-                        resolve,
-                        reject,
-                        {
-                            enableHighAccuracy: true,
-                            timeout: 10000,
-                            maximumAge: 0
-                        }
-                    );
-                });
-                
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                formData.current_location = `${latitude},${longitude}`;
-                document.getElementById('current_location').textContent = formData.current_location;
-                
-                // Enviar los datos después de obtener la ubicación
-                await sendFormData(formData);
-            } catch (error) {
-                console.warn('Error al obtener la geolocalización:', error);
-                // Si el usuario deniega el permiso o hay un error, preguntar si quiere continuar
-                const continuar = confirm('No se pudo obtener tu ubicación. ¿Deseas continuar con la ubicación del marcador?');
-                if (continuar) {
-                    // Mantener las coordenadas del marcador como ubicación
-                    document.getElementById('current_location').textContent = formData.current_location;
-                    await sendFormData(formData);
+                // Verificar si se debe forzar el cierre de sesión
+                if (sighting.forceLogout) {
+                    // Limpiar el localStorage
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('user');
+                    // Redirigir al login
+                    window.location.href = '/login.html';
+                    return;
                 }
+
+                addMarker(sighting.id, sighting, false, handleMarkerClick);
+                updateRedMarkersModal();
+                
+                // Close the modal and reset the form
+                hideForm();
+                removeGreyMarker();
+                clearForm();
+            } else {
+                const error = await response.json();
+                console.error('Error:', error.message);
+                alert('Error al guardar el avistamiento: ' + error.message);
             }
-        } else {
-            alert('Tu navegador no soporta geolocalización. Se usará la ubicación del marcador.');
-            document.getElementById('current_location').textContent = formData.current_location;
-            await sendFormData(formData);
+        } catch (err) {
+            console.error('Error al conectar con el servidor:', err);
+            alert('Error al conectar con el servidor. Por favor, intente nuevamente.');
+        } finally {
+            // Reset button appearance
+            saveButton.style.backgroundColor = '';
+            saveButton.textContent = 'Guardar avistamiento';
+            saveButton.disabled = false;
         }
     }
 });
-
-// Función auxiliar para enviar los datos del formulario
-async function sendFormData(formData) {
-    try {
-        let response = await customFetch('/api/sightings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-
-        hideForm();
-        removeGreyMarker();
-
-        if (response.ok) {
-            const sighting = await response.json();
-            
-            // Verificar si se debe forzar el cierre de sesión
-            if (sighting.forceLogout) {
-                // Limpiar el localStorage
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('user');
-                // Redirigir al login
-                window.location.href = '/login.html';
-                return;
-            }
-
-            addMarker(sighting.id, sighting, false, handleMarkerClick);
-            updateRedMarkersModal();
-        } else {
-            const error = await response.json();
-            console.error('Error:', error.message);
-            alert('Error al guardar el avistamiento: ' + error.message);
-        }
-    } catch (err) {
-        console.error('Error al conectar con el servidor:', err);
-        alert('Error al conectar con el servidor. Por favor, intente nuevamente.');
-    }
-}
 
 document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(input => {
     input.addEventListener('input', function () {
@@ -714,7 +683,10 @@ async function setSocketEvents() {
             const existingMarker = getMarkers().find(m => m.id === sighting.id);
             if (!existingMarker) {
                 console.log('Añadiendo nuevo marcador:', sighting.id);
-                addMarker(sighting.id, sighting, false, handleMarkerClick);
+                const newMarker = addMarker(sighting.id, sighting, false, handleMarkerClick);
+                if (newMarker && newMarker.leafletObject) {
+                    newMarker.leafletObject.addTo(map);
+                }
                 updateRedMarkersModal();
                 updateMarkersCount(getMarkers().length);
             } else {
@@ -746,6 +718,16 @@ async function setSocketEvents() {
                 updateSightingsComponents(sightings);
             }
         });
+    });
+
+    // Manejar desconexión
+    socket.on('disconnect', () => {
+        console.log('Socket desconectado');
+    });
+
+    // Manejar errores de conexión
+    socket.on('connect_error', (error) => {
+        console.error('Error de conexión del socket:', error);
     });
 }
 

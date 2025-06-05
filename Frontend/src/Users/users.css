@@ -396,7 +396,134 @@ form input {
 
 }
 
+/* Edit form styles */
+.edit-form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    visibility: visible;
+    opacity: 1;
+}
 
+.edit-form-container {
+    background-color: #26252a;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10000;
+}
+
+.edit-form-container h3 {
+    color: #00bcd4;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.edit-user-form {
+    display: block;
+    width: 100%;
+}
+
+.edit-user-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.edit-user-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.edit-user-form input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #3d3d3d;
+    border-radius: 4px;
+    background-color: #1e1e24;
+    color: #fff;
+}
+
+.edit-user-form input:focus {
+    border-color: #00bcd4;
+    outline: none;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.save-btn, .cancel-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.save-btn {
+    background-color: #00bcd4;
+    color: #fff;
+}
+
+.save-btn:hover {
+    background-color: #0097a7;
+}
+
+.cancel-btn {
+    background-color: #3d3d3d;
+    color: #fff;
+}
+
+.cancel-btn:hover {
+    background-color: #4d4d4d;
+}
+
+/* Edit button styles */
+.edit-btn {
+    background-color: #00bcd4;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    transition: background-color 0.3s ease;
+    z-index: 999;
+}
+
+.edit-btn:hover {
+    background-color: #0097a7;
+}
+
+/* Responsive styles for edit form */
+@media (max-width: 768px) {
+    .edit-form-container {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .save-btn, .cancel-btn {
+        width: 100%;
+    }
+}
 
 /* ==========================================================================
      Media Queries (ordenadas de mayor a menor)

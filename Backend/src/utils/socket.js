@@ -76,10 +76,12 @@ function initializeSocket(server) {
     io.on('connection', (socket) => {
         console.log(`Usuario conectado: ${socket.user.id} (${socket.user.role})`);
 
-        // Unir a room de administradores
-        if (['DETECCION', 'JEFE DE DETECCION'].includes(socket.user.role)) {
-            socket.join('admin-room');
-            console.log(`Admin conectado: ${socket.user.id}`);
+        // Unir a room de usuarios autorizados
+        if (['DETECCION', 'JEFE DE DETECCION', 'SUPERVISOR', 'ADMINDEVELOPER'].includes(socket.user.role)) {
+            socket.join('authorized-room');
+            console.log(`Usuario autorizado conectado: ${socket.user.id} (${socket.user.role})`);
+        } else {
+            console.log(`Usuario no autorizado conectado: ${socket.user.id} (${socket.user.role})`);
         }
 
         // Manejar desconexión
@@ -139,7 +141,9 @@ function initializeSocket(server) {
     eventEmitter.on('NEW_SIGHTING', (sighting) => {
         try {
             console.log('Nuevo avistamiento emitido:', sighting.id);
-            io.to('admin-room').emit('NEW_SIGHTING', sighting);
+            // Emitir solo a usuarios autorizados
+            io.to('authorized-room').emit('NEW_SIGHTING', sighting);
+            console.log('Evento NEW_SIGHTING enviado a usuarios autorizados');
         } catch (error) {
             console.error('Error al emitir NEW_SIGHTING:', error);
         }
@@ -148,7 +152,9 @@ function initializeSocket(server) {
     eventEmitter.on('VALIDATE_SIGHTING', (sighting_id) => {
         try {
             console.log('Avistamiento validado emitido:', sighting_id);
-            io.to('admin-room').emit('VALIDATE_SIGHTING', sighting_id);
+            // Emitir solo a usuarios autorizados
+            io.to('authorized-room').emit('VALIDATE_SIGHTING', sighting_id);
+            console.log('Evento VALIDATE_SIGHTING enviado a usuarios autorizados');
         } catch (error) {
             console.error('Error al emitir VALIDATE_SIGHTING:', error);
         }

@@ -300,9 +300,12 @@ const UsersApp = (function () {
         `;
 
         const tbody = table.querySelector('tbody');
+        const currentUser = retrieveUserProfile();
+        const canEdit = currentUser.user.userRank === "SUPERVISOR" || currentUser.user.userRank === "ADMINDEVELOPER";
+
         usersToDisplay.forEach(user => {
             const row = document.createElement('tr');
-            row.setAttribute('data-id', user.id);
+            row.setAttribute('data-id', user.dni);
             row.innerHTML = `
                 <td data-label="D.N.I:" >${formatDNI(user.dni)}</td>
                 <td class="userForze" data-label="Fuerza Per.:" >${user.powerMilitary ? user.powerMilitary.trim() : ''}</td>
@@ -322,17 +325,14 @@ const UsersApp = (function () {
                         <option value="active" ${user.statusDetail.status === 'active' ? 'selected' : ''}>Activo</option>
                         <option value="pending" ${user.statusDetail.status === 'pending' ? 'selected' : ''}>Pendiente</option>
                         <option value="blocked" ${user.statusDetail.status === 'blocked' ? 'selected' : ''}>Blockeado</option>
-                         ${retrieveUserProfile().user.userRank === "SUPERVISOR" || retrieveUserProfile().user.userRank === "ADMINDEVELOPER"
-
-                            
-                    ? `<option value="deleted" ${user.statusDetail.status === 'deleted' ? 'selected' : ''}>Eliminado</option>`
-                    : ''
-                }
+                        ${user.statusDetail.status === 'deleted' ? `<option value="deleted" selected>Eliminado</option>` : ''}
                     </select>
-               <td class="actions-cell">
-                  <button class="delete-btn" data-id="${user.dni}"
-                    ${retrieveUserProfile().user.userRank === "DETECCION" ? 'disabled style="cursor:not-allowed;opacity:0.6;"' : ''}
-                    >Eliminar</button>
+                </td>
+                <td class="actions-cell">
+                    ${canEdit ? `<button class="edit-btn" data-id="${user.dni}">Cambiar</button>` : ''}
+                    <button class="delete-btn" data-id="${user.dni}"
+                        ${retrieveUserProfile().user.userRank === "DETECCION" ? 'disabled style="cursor:not-allowed;opacity:0.6;"' : ''}
+                        >Eliminar</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -438,6 +438,124 @@ const UsersApp = (function () {
                 elements.modalConfirmDelete.style.display = 'block';
             });
         });
+
+        // Add event listeners for edit buttons
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const userId = event.target.getAttribute('data-id');
+                const row = event.target.closest('tr');
+                const user = usersList.find(u => u.dni === parseInt(userId));
+                
+                if (user) {
+                    showEditForm(row, user);
+                }
+            });
+        });
+    }
+
+    function showEditForm(row, user) {
+        // Remove any existing form first
+        const existingForm = document.querySelector('.edit-form-overlay');
+        if (existingForm) {
+            existingForm.remove();
+        }
+
+        // Create form HTML
+        const formHTML = `
+            <div class="edit-form-overlay" style="display: flex;">
+                <div class="edit-form-container">
+                    <h3>Editar Usuario</h3>
+                    <form class="edit-user-form">
+                        <div class="form-group">
+                            <label for="firstName">Nombre:</label>
+                            <input type="text" id="firstName" name="firstName" value="${user.firstName}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Apellido:</label>
+                            <input type="text" id="lastName" name="lastName" value="${user.lastName}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" value="${user.email}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="powerMilitary">Fuerza Perteneciente:</label>
+                            <input type="text" id="powerMilitary" name="powerMilitary" value="${user.powerMilitary}" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn">Guardar</button>
+                            <button type="button" class="cancel-btn">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        // Add form to the page
+        const formContainer = document.createElement('div');
+        formContainer.innerHTML = formHTML;
+        document.body.appendChild(formContainer);
+
+        // Add event listeners
+        const form = formContainer.querySelector('.edit-user-form');
+        const overlay = formContainer.querySelector('.edit-form-overlay');
+        const cancelBtn = formContainer.querySelector('.cancel-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = {
+                firstName: form.firstName.value,
+                lastName: form.lastName.value,
+                email: form.email.value,
+                powerMilitary: form.powerMilitary.value
+            };
+
+            try {
+                const response = await customFetch(`/api/users/${user.dni}/details`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Error al actualizar el usuario');
+                }
+
+                const result = await response.json();
+                
+                // Update the user in the list
+                const userIndex = usersList.findIndex(u => u.dni === user.dni);
+                if (userIndex !== -1) {
+                    usersList[userIndex] = { ...usersList[userIndex], ...result.user };
+                }
+
+                // Update the table
+                renderTable(usersList);
+                renderPaginationButtons();
+
+                // Show success message
+                alert('Usuario actualizado exitosamente');
+                
+                // Remove the form
+                formContainer.remove();
+            } catch (error) {
+                alert(error.message || 'Error al actualizar el usuario');
+            }
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            formContainer.remove();
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                formContainer.remove();
+            }
+        });
     }
 
     // ================================
@@ -540,7 +658,7 @@ async function getAllUsers(statusFilter = 'all') {
 
 async function deleteUser(userId) {
     try {
-        const response = await fetch(`/api/users/${userId}/deleteUser`, {
+        const response = await customFetch(`/api/users/${userId}/deleteUser`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${accessToken}`,
@@ -549,7 +667,11 @@ async function deleteUser(userId) {
         });
         const result = await response.json();
         if (response.ok) {
-            location.reload();
+            // Actualizar la lista de usuarios después de eliminar
+            usersList = await getAllUsers(currentStatusFilter);
+            currentDisplayList = usersList;
+            renderTable(currentDisplayList);
+            renderPaginationButtons();
         } else {
             alert(result.message);
         }
